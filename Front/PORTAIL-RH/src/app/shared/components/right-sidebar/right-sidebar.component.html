@@ -1,0 +1,29 @@
+<aside class="right-sidebar">
+  <section class="calendar">
+    <mat-card>
+      <mat-calendar [(selected)]="selected" ngSkipHydration></mat-calendar>
+    </mat-card>
+  </section>
+
+  <!-- Use 'as' to alias the async result and handle undefined -->
+  <ng-container *ngIf="(birthdayUsers$ | async) as birthdayUsers">
+    <section class="birthday-message" *ngIf="birthdayUsers.length > 0">
+      <ng-container *ngFor="let user of birthdayUsers">
+        <ng-container *ngIf="authenticatedUserId === user.id; else otherUserBirthday">
+          <!-- Special message for the authenticated user -->
+          <p class="highlight">Joyeux anniversaire <span class="user-name">{{ user.fullName }}</span> ! 🎉</p>
+        </ng-container>
+        <ng-template #otherUserBirthday>
+          <!-- Message for other users with a birthday today -->
+          <p>
+            C'est l'anniversaire de <span class="user-name">{{ user.fullName }}</span>,
+            souhaitez-lui un joyeux anniversaire !
+            <button class="wish-button" (click)="wishHappyBirthday(user)">Souhaiter</button>
+          </p>
+        </ng-template>
+      </ng-container>
+    </section>
+  </ng-container>
+
+  
+</aside>

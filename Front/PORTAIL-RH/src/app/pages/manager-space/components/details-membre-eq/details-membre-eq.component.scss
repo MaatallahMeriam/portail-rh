@@ -1,0 +1,373 @@
+$primary-color: #230046;
+$secondary-color: #56142F;
+$accent-color: #FF6B00;
+$success-color: #2E7D32;
+$warning-color: #ED6C02;
+$error-color: #D32F2F;
+$background-color: #F8F9FA;
+$card-background: #FFFFFF;
+$border-radius: 12px;
+$transition: all 0.3s ease;
+
+.collab-home {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: $background-color;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.feed {
+  position: fixed;
+  top: 65px;
+  left: 280px;
+  right: 50px;
+  bottom: 0;
+  overflow-y: auto;
+  background: transparent;
+  max-width: none;
+  padding: 20px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.container {
+  max-width: 100%;
+  margin: 20px auto;
+  margin-left: -10px;
+  padding: 20px;
+  margin-top: -10px;
+  background-color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  font-size: 16px;
+  color: $primary-color;
+}
+
+.section-title {
+  color: $primary-color;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  margin-top: -5px;
+  position: relative;
+  padding-bottom: 15px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(135deg, $primary-color, $accent-color, #ff00ea);
+    border-radius: 2px;
+  }
+}
+
+/* Carte Utilisateur */
+.user-card {
+  background: $card-background;
+  border-radius: $border-radius;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: $transition;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid $primary-color;
+}
+
+.user-details {
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    color: $primary-color;
+    font-weight: 600;
+  }
+
+  .poste {
+    font-size: 16px;
+    color: #e900ab;
+    margin: 5px 0;
+  }
+
+  .contact-info {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #2c3e50;
+
+    strong {
+      font-weight: 600;
+      margin-right: 5px;
+    }
+  }
+}
+
+/* Carrousel des Congés */
+.conges-slider-container {
+  margin-top: 20px;
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  padding: 20px;
+  background: $background-color;
+}
+
+.conge-card {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 25px;
+  margin: 10px;
+  min-height: 150px;
+  position: relative;
+  transition: $transition;
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+
+  &.leave-renouvelable {
+    background: linear-gradient(135deg, #948185, #B39DA2);
+  }
+
+  &.leave-incrementale {
+    background: linear-gradient(135deg, #65538B, #6762A7);
+  }
+
+  &.leave-decrementale {
+    background: linear-gradient(135deg, #3E204C, $secondary-color);
+  }
+
+  .content-card {
+    margin-top: 10px;
+    color: #fff;
+
+    p {
+      margin: 8px 0;
+      font-size: 14px;
+      line-height: 1.5;
+
+      strong {
+        font-weight: 600;
+        margin-right: 5px;
+      }
+    }
+  }
+}
+
+.no-conges-message {
+  text-align: center;
+  padding: 15px;
+  background: rgba($primary-color, 0.05);
+  border-radius: $border-radius;
+  margin-top: 20px;
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    color: $primary-color;
+  }
+}
+
+/* Section Télétravail */
+.teletravail-section {
+  margin-top: 30px;
+}
+
+.calendar-card {
+  padding: 15px;
+  border-radius: $border-radius;
+  background: rgba($primary-color, 0.03);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+
+  .month-year {
+    font-size: 16px;
+    font-weight: 500;
+    color: $primary-color;
+    text-transform: uppercase;
+  }
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  text-align: center;
+}
+
+.day-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: $primary-color;
+  padding: 5px 0;
+}
+
+.calendar-day {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #2c3e50;
+  border-radius: 50%;
+  transition: $transition;
+  margin: 0 auto;
+
+  &.filler {
+    color: #ccc;
+  }
+
+  &.today {
+    background-color: #a2cfff;
+    color: #fff;
+  }
+
+  &.teletravail {
+    background: linear-gradient(135deg, $primary-color, #3a0073);
+    color: #fff;
+  }
+}
+
+.no-planning-message {
+  text-align: center;
+  padding: 15px;
+  background: rgba($error-color, 0.05);
+  border-radius: $border-radius;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: $error-color;
+  }
+}
+
+/* Responsivité */
+@media (max-width: 1200px) {
+  .feed {
+    left: 250px;
+    max-width: none;
+  }
+
+  .user-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .profile-photo {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .feed {
+    left: 0;
+    right: 0;
+    max-width: 100%;
+  }
+
+  .user-details {
+    h3 {
+      font-size: 18px;
+    }
+
+    .poste {
+      font-size: 14px;
+    }
+
+    .contact-info {
+      font-size: 12px;
+    }
+  }
+
+  .calendar-day {
+    width: 25px;
+    height: 25px;
+    font-size: 10px;
+  }
+}
+
+@media screen and (max-width: 1470px) and (min-width: 1022px) {
+  .feed {
+    left: 270px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .feed {
+    left: 200px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .feed {
+    right: 0;
+    width: 100%;
+  }
+
+  .user-card {
+    padding: 15px;
+  }
+
+  .profile-photo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .user-details {
+    h3 {
+      font-size: 16px;
+    }
+
+    .poste {
+      font-size: 12px;
+    }
+
+    .contact-info {
+      font-size: 11px;
+    }
+  }
+
+  .calendar-day {
+    width: 20px;
+    height: 20px;
+    font-size: 9px;
+  }
+}

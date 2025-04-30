@@ -1,0 +1,471 @@
+$primary-color: #230046;
+$pink-background: #35004F;
+$blue-background: #65538B;
+$gray-background: #5A0C35;
+$background-color: #F8F9FA;
+$border-radius: 12px;
+$transition: all 0.3s ease;
+$success-color: #2E7D32;
+$warning-color: #ED6C02;
+$error-color: #D32F2F;
+
+.content {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: white;
+  position: relative; // Add position relative to allow absolute positioning of the badge
+}
+
+h2 {
+  margin-left: 30px;
+  color: #230046;
+  font-size: 29px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #230046, #c1006a);
+  border-radius: 2px;
+}
+
+h3 {
+  color: #230046;
+  margin-left: 30px;
+}
+
+.planning-exists {
+  max-width: 800px;
+  margin-left: 150px;
+  padding: 20px;
+  background: white;
+  border-radius: $border-radius;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.planning-form {
+  max-width: 800px;
+  margin-left: 150px;
+  padding: 20px;
+  background: white;
+  border-radius: $border-radius;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.policy-selection {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  margin-left: 30px;
+}
+
+.policy-option {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 16px;
+  color: $primary-color;
+  cursor: pointer;
+
+  input[type="radio"] {
+    accent-color: $primary-color;
+  }
+}
+
+.form-field {
+  margin-bottom: 20px;
+  margin-left: 30px;
+
+  label {
+    display: block;
+    font-size: 16px;
+    color: $primary-color;
+    margin-bottom: 5px;
+  }
+
+  input {
+    width: 100%;
+    max-width: 200px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+}
+
+.calendar-card {
+  max-width: 800px;
+  margin-left: 30px;
+  padding: 20px;
+  border-radius: $border-radius;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #fdfcfc;
+  margin-bottom: 20px;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+
+  .month-year {
+    font-size: 18px;
+    font-weight: 500;
+    color: $primary-color;
+    text-transform: uppercase;
+  }
+
+  .max-days-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: $primary-color;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .nav-button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: $primary-color;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover {
+      color: darken($primary-color, 10%);
+    }
+  }
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.day-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: $primary-color;
+  padding: 8px 0;
+}
+
+.calendar-day {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: #2c3e50;
+  border-radius: 50%;
+  transition: $transition;
+  margin: 0 auto;
+  cursor: pointer;
+
+  &.filler {
+    color: #ccc;
+    cursor: default;
+  }
+
+  &.today {
+    background-color: #a2cfff;
+    color: #fff;
+  }
+
+  &.selected {
+    background: linear-gradient(135deg, $primary-color, #3a0073);
+    color: #fff;
+  }
+
+  &:hover:not(.filler):not(.selected) {
+    background: rgba($primary-color, 0.1);
+  }
+}
+
+.nav-link-container {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.nav-link {
+  font-size: 16px;
+  color: $primary-color;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    color: darken($primary-color, 10%);
+    text-decoration: underline;
+    transform: scale(1.05);
+  }
+}
+
+.save-button {
+  width: auto;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 8px;
+  background: linear-gradient(45deg, $primary-color, #3a0073);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: $transition;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 25px;
+  margin-left: 30px;
+
+  &:hover {
+    transform: scale(1.05);
+    background: linear-gradient(45deg, darken($primary-color, 5%), darken(#3a0073, 5%));
+  }
+
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.collab-home {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+}
+
+.app-sidebar {
+  position: fixed;
+  left: 0;
+  top: 70px;
+  bottom: 0;
+  width: 250px;
+  background: #f4f4f4;
+  z-index: 100;
+}
+
+.feed {
+  position: fixed;
+  top: 70px;
+  bottom: 0;
+  left: 250px;
+  width: calc(100% - 250px);
+  overflow-y: auto;
+  background: #fff;
+}
+
+.feed::-webkit-scrollbar {
+  display: none;
+}
+
+// Styles for the animated month badge
+.month-badge {
+  position: absolute;
+  top: 20px;
+  right:45px;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+
+  .badge-content {
+    width: 100%;
+    height: 100%;
+    background: #c1006a;
+    border-radius: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    animation: pulse 2s infinite ease-in-out;
+    transition: $transition;
+
+    &:hover {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .month-text {
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .year-text {
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+}
+
+// Keyframes for the pulsing animation
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Ajustements responsifs */
+@media (max-width: 1200px) {
+  .feed {
+    left: 250px;
+    right: 0;
+    max-width: none;
+  }
+
+  .month-badge {
+    width: 100px;
+    height: 100px;
+
+    .badge-content {
+      .month-text {
+        font-size: 18px;
+      }
+
+      .year-text {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .feed {
+    left: 20px;
+    padding: 10px;
+  }
+
+  .month-badge {
+    width: 80px;
+    height: 80px;
+    top: 10px;
+    right: 10px;
+
+    .badge-content {
+      .month-text {
+        font-size: 16px;
+      }
+
+      .year-text {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .planning-exists,
+  .planning-form {
+    margin-left: 20px;
+  }
+}
+
+@media screen and (max-width: 1473px) {
+  .app-sidebar {
+    width: 220px;
+  }
+
+  .feed {
+    left: 240px;
+    width: calc(100% - 220px);
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .app-sidebar {
+    width: 200px;
+  }
+
+  .feed {
+    left: 200px;
+    width: calc(100% - 200px);
+  }
+}
+
+@media screen and (max-width: 768px) and (min-width: 481px) {
+  .app-sidebar {
+    display: none;
+  }
+
+  .app-right-sidebar {
+    width: 200px;
+  }
+
+  .feed {
+    top: 80px;
+    left: 200px;
+    right: 220px;
+    max-width: calc(100% - 150px);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .app-right-sidebar {
+    display: none;
+  }
+
+  .feed {
+    right: 0;
+    width: 100%;
+  }
+
+  .month-badge {
+    width: 60px;
+    height: 60px;
+    top: 5px;
+    right: 5px;
+
+    .badge-content {
+      .month-text {
+        font-size: 14px;
+      }
+
+      .year-text {
+        font-size: 10px;
+      }
+    }
+  }
+
+  .planning-exists,
+  .planning-form {
+    margin-left: 10px;
+  }
+}

@@ -1,0 +1,32 @@
+<div class="login-frame">
+  <div class="login-container">
+    <div class="image-section">
+      <img src="assets/images/team_excellia.jpg" alt="Team Excellia" />
+    </div>
+    <div class="form-section">
+      <h1>Bienvenue !</h1>
+      <form class="form" (ngSubmit)="onLogin()">
+        <label for="username">Username ou E-mail</label>
+        <input
+          type="text"
+          id="username"
+          [(ngModel)]="usernameOrEmail"
+          name="usernameOrEmail"
+          placeholder="Username ou E-mail"
+        />
+
+        <label for="password">Mot de passe</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="*************"
+        />
+        
+        <button type="submit">Se Connecter</button>
+       
+      </form>
+    </div>
+  </div>
+</div>

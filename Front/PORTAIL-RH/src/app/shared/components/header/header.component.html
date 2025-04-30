@@ -1,0 +1,45 @@
+<header class="header">
+  <div class="logo">
+    <img src="assets/images/logo.PNG" alt="Excellia Solutions">
+  </div>
+
+  <nav class="nav-links">
+    <div class="nav-icon" (click)="navigateToHome()">
+      <mat-icon class="home-icon">home</mat-icon>
+    </div>
+    <div class="notification-icon-wrapper">
+      <mat-icon class="notification-icon" (click)="showNotifications()">notifications</mat-icon>
+      <span class="badge" *ngIf="notificationCount > 0 && !showNotificationsDropdown">{{ notificationCount }}</span>
+    </div>
+    
+    <div class="notification-dropdown" *ngIf="showNotificationsDropdown">
+      <div class="dropdown-header">
+        <span>Notifications</span>
+        <button class="close-btn" (click)="showNotifications()">×</button>
+      </div>
+      <div class="dropdown-content">
+        <div *ngFor="let notification of notifications" class="notification-item" [ngClass]="{'read': notification.read}" (click)="goToDemande(notification)">
+          <div class="notification-user">
+            <img [src]="notification.userImage || 'assets/icons/user-login-icon-14.png'" alt="User Avatar" class="user-avatar">
+            <span class="user-name">{{ notification.userName }}</span>
+          </div>
+          <div class="notification-details">
+            <div class="notification-message">{{ notification.message }}</div>
+            <span class="notification-time">{{ notification.createdAt | date:'short' }}</span>
+          </div>
+        </div>
+        <div *ngIf="notifications.length === 0" class="no-notifications">Aucune notification</div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="user-info" [matMenuTriggerFor]="userMenu">
+    <span class="username">{{ user ? (user.nom + ' ' + user.prenom) : 'Non connecté' }}</span>
+    <img [src]="getUserImage()" alt="User Avatar">
+    <mat-menu #userMenu="matMenu" class="user-dropdown">
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon> Logout
+      </button>
+    </mat-menu>
+  </div>
+</header>

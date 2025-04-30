@@ -1,0 +1,121 @@
+
+      <div class="form-section">
+        <h1>Créer Un User </h1>
+        <form (ngSubmit)="onRegister()">
+          <div class="form-group">
+            <label for="userName">Nom d'utilisateur</label>
+            <input
+              type="text"
+              id="userName"
+              [(ngModel)]="userName"
+              name="userName"
+              placeholder="Nom d'utilisateur"
+            />
+          </div>
+  
+          <div class="form-group">
+            <label for="nom">Nom</label>
+            <input
+              type="text"
+              id="nom"
+              [(ngModel)]="nom"
+              name="nom"
+              placeholder="Nom"
+            />
+          </div>
+  
+          <div class="form-group">
+            <label for="prenom">Prénom</label>
+            <input
+              type="text"
+              id="prenom"
+              [(ngModel)]="prenom"
+              name="prenom"
+              placeholder="Prénom"
+            />
+          </div>
+  
+          <div class="form-group">
+            <label for="mail">E-mail</label>
+            <input
+              type="email"
+              id="mail"
+              [(ngModel)]="mail"
+              name="mail"
+              placeholder="E-mail"
+            />
+          </div>
+  
+          <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input
+              type="password"
+              id="password"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="*************"
+            />
+          </div>
+  
+          <!-- Nouveau champ pour confirmer le mot de passe -->
+          <div class="form-group">
+            <label for="confirmPassword">Confirmer votre mot de passe</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              [(ngModel)]="confirmPassword"
+              name="confirmPassword"
+              placeholder="*************"
+              [class.error]="passwordMismatch" 
+            />
+          </div>
+  
+          <div class="form-group">
+            <label for="dateNaissance">Date de naissance</label>
+            <input
+              type="date"
+              id="dateNaissance"
+              [(ngModel)]="dateNaissance"
+              name="dateNaissance"
+            />
+          </div>
+  
+          <div class="form-group">
+            <label for="poste">Poste</label>
+            <input
+              type="text"
+              id="poste"
+              [(ngModel)]="poste"
+              name="poste"
+              placeholder="Poste"
+            />
+          </div>
+  
+          <div class="form-group">
+            <label for="departement">Département</label>
+            <select
+              id="departement"
+              [(ngModel)]="departement"
+              name="departement"
+            >
+              <option value="" disabled selected>Sélectionnez un département</option>
+              <option *ngFor="let dept of departementOptions" [value]="dept">{{dept}}</option>
+            </select>
+          </div>
+  
+          <div class="form-group">
+            <label for="role">Rôle</label>
+            <select
+              id="role"
+              [(ngModel)]="role"
+              name="role"
+            >
+              <option value="" disabled selected>Sélectionnez un rôle</option>
+              <option *ngFor="let role of roleOptions" [value]="role">{{role}}</option>
+            </select>
+          </div>
+  
+          <button type="submit">Enregistrer</button>
+          
+        </form>
+      </div>

@@ -1,0 +1,91 @@
+.sidebar {
+    width: 200px;
+    background: #230046;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;  
+    transition: all 0.3s ease-in-out; 
+    height:100vh;
+    flex-shrink: 0; 
+}
+.espace-user{
+    display: flex;
+    width: 100%;
+    
+}
+.sidebar nav a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 10px 0;
+    font-family: 'Alegreya', serif;
+    font-weight: bold;
+}
+
+.sidebar nav a:hover {
+        text-decoration: underline;
+        cursor: pointer;
+
+
+}
+
+.menu{   
+    text-decoration: underline;
+
+    color: white;
+    font-family: 'Amaranth', sans-serif;
+    margin-bottom: 50px;
+    margin: 20px;
+    margin-left: 0px;
+}
+nav {
+    display: flex;
+    flex-direction: column;
+    gap: 30px; 
+    margin-top: 20px; }
+
+    
+    
+    .submenu {
+        display: flex;
+        flex-direction: column;
+        padding-left: 30px; 
+        font-size:15px; 
+        font-family: 'Alegreya', serif;
+        margin-top: -25px;
+    }
+    
+    .submenu a {
+        color: #ddd; 
+        text-decoration: none;
+        padding: 5px 0;
+    }
+    
+    .submenu a:hover {
+        text-decoration: underline;
+        color: white;
+    }
+  
+
+
+
+
+@media screen and (max-width: 1024px) {
+    .sidebar {
+        width: 150px;  
+        padding: 15px;
+    }
+
+    .sidebar nav a {
+        font-size: 14px;
+        padding: 8px 0;
+    }
+    .sidebar .logout  {
+        font-size: 14px;
+        padding: 8px 0;
+    }
+}
+
+

@@ -1,0 +1,59 @@
+<aside class="right-sidebar">
+  <section class="calendar">
+    <mat-card>
+      <mat-calendar [(selected)]="selected" ngSkipHydration></mat-calendar>
+    </mat-card>
+  </section>
+
+  <section class="team-members">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          MEMBRES DE L'EQUIPE
+          <button mat-icon-button [matMenuTriggerFor]="teamMenu" class="menu-button">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #teamMenu="matMenu" class="dropdown-menu">
+            <button mat-menu-item (click)="navigateToTeamDetails()">
+              <mat-icon>info</mat-icon>
+              Détails Équipe
+            </button>
+          </mat-menu>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="members-grid">
+          <ng-container *ngFor="let member of teamMembers | slice:0:maxVisibleMembers; let i = index">
+            <div class="member-photo" [style.backgroundImage]="getBackgroundImage(member)" [attr.title]="member.prenom + ' ' + member.nom"></div>
+          </ng-container>
+          <div *ngIf="teamMembers.length > maxVisibleMembers" class="more-members">
+            +{{ teamMembers.length - maxVisibleMembers }}
+          </div>
+        </div>
+        <p *ngIf="teamMembers.length === 0" class="no-members">Aucun membre dans l'équipe.</p>
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+  <!-- Birthday message section -->
+  <ng-container *ngIf="(birthdayUsers$ | async) as birthdayUsers">
+    <section class="birthday-message" *ngIf="birthdayUsers.length > 0">
+      <ng-container *ngFor="let user of birthdayUsers | slice:0:1">
+        <ng-container *ngIf="authenticatedUserId === user.id; else otherUserBirthday">
+          <!-- Special message for the authenticated user -->
+          <p class="highlight">Joyeux anniversaire <span class="user-name">{{ user.fullName }}</span> ! 🎉</p>
+        </ng-container>
+        <ng-template #otherUserBirthday>
+          <!-- Message for other users with a birthday today -->
+          <p>
+            C'est l'anniversaire de <span class="user-name">{{ user.fullName }}</span>,
+            souhaitez-lui un joyeux anniversaire !
+            <button class="wish-button" (click)="wishHappyBirthday(user)">Souhaiter</button>
+          </p>
+        </ng-template>
+      </ng-container>
+    </section>
+  </ng-container>
+
+  
+</aside>

@@ -1,0 +1,263 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-sidebar></app-sidebar>
+
+    <div class="feed">
+      <div class="container">
+        <h2 class="title">Liste Des Utilisateurs</h2>
+
+        <div class="history-header">
+          <input
+            class="search"
+            type="text"
+            placeholder="Rechercher un utilisateur..."
+            [(ngModel)]="searchText"
+            (ngModelChange)="filterUsers()"
+          />
+          <button class="add-button" (click)="toggleForm()">+</button>
+        </div>
+
+        <ngx-datatable
+        class="material"
+        [rows]="filteredUsers"
+        [columns]="columns"
+        [columnMode]="'force'"
+        [headerHeight]="40"
+        [footerHeight]="40"
+        [rowHeight]="'auto'" 
+        [scrollbarV]="false"
+        [scrollbarH]="true"
+        [sorts]="[{ prop: 'id', dir: 'asc' }]"
+        (activate)="onRowClick($event)"
+        [messages]="{
+          emptyMessage: 'Aucun utilisateur trouvé',
+          totalMessage: 'utilisateurs au total'
+        }"
+      >
+            <!-- Définir explicitement les colonnes -->
+            <ngx-datatable-column name="Utilisateur" [width]="200">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <div class="user-cell">
+                  <img
+                    [src]="row.image || '/assets/icons/user-login-icon-14.png'"
+                    alt="Photo de {{ row.nom }} {{ row.prenom }}"
+                    class="profile-photo"
+                  />
+                  <span>{{ row.nom }} {{ row.prenom }}</span>
+                </div>
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column prop="departement" name="Département" [width]="150"></ngx-datatable-column>
+            <ngx-datatable-column prop="poste" name="Poste" [width]="150"></ngx-datatable-column>
+            <ngx-datatable-column prop="role" name="Rôle" [width]="100"></ngx-datatable-column>
+            <!-- Colonne pour les actions -->
+            <ngx-datatable-column name="Actions" [sortable]="false" [width]="50">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <div class="actions-cell">
+                  <button mat-icon-button (click)="toggleMenu(row, $event)" class="menu-button">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <div class="dropdown-menu" *ngIf="selectedUser === row">
+                    <button mat-button (click)="viewDetails(row); $event.stopPropagation()">
+                      <mat-icon>visibility</mat-icon>
+                      Détails user
+                    </button>
+                    <button mat-button (click)="archiveUser(row); $event.stopPropagation()">
+                      <mat-icon class="archive">archive</mat-icon>
+                      Archiver user
+                    </button>
+                    <button mat-button (click)="deleteUser(row); $event.stopPropagation()">
+                      <mat-icon class="delete">delete</mat-icon>
+                      Supprimer user
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+            </ngx-datatable-column>
+          </ngx-datatable>
+
+          <!-- Form for creating a user -->
+          <div *ngIf="showFirstForm" class="form-container">
+            <button class="close-button" (click)="toggleForm()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <div class="form-section">
+              <h1>Ajouter Un Utilisateur</h1>
+              <form (ngSubmit)="register()">
+                <div class="form-group">
+                  <label for="userName">Nom d'utilisateur</label>
+                  <input
+                    type="text"
+                    id="userName"
+                    [(ngModel)]="userName"
+                    name="userName"
+                    placeholder="Nom d'utilisateur"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="nom">Nom</label>
+                  <input
+                    type="text"
+                    id="nom"
+                    [(ngModel)]="nom"
+                    name="nom"
+                    placeholder="Nom"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="prenom">Prénom</label>
+                  <input
+                    type="text"
+                    id="prenom"
+                    [(ngModel)]="prenom"
+                    name="prenom"
+                    placeholder="Prénom"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="mail">E-mail</label>
+                  <input
+                    type="email"
+                    id="mail"
+                    [(ngModel)]="mail"
+                    name="mail"
+                    placeholder="E-mail"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="password">Mot de passe</label>
+                  <input
+                    type="password"
+                    id="password"
+                    [(ngModel)]="password"
+                    name="password"
+                    placeholder="*************"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="confirmPassword">Confirmer votre mot de passe</label>
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    [(ngModel)]="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="*************"
+                    [class.error]="passwordMismatch"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="dateNaissance">Date de naissance</label>
+                  <input
+                    type="date"
+                    id="dateNaissance"
+                    [(ngModel)]="dateNaissance"
+                    name="dateNaissance"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="poste">Poste</label>
+                  <input
+                    type="text"
+                    id="poste"
+                    [(ngModel)]="poste"
+                    name="poste"
+                    placeholder="Poste"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="departement">Département</label>
+                  <select
+                    id="departement"
+                    [(ngModel)]="departement"
+                    name="departement"
+                    required
+                  >
+                    <option value="" disabled selected>Sélectionnez un département</option>
+                    <option *ngFor="let dept of departementOptions" [value]="dept">{{ dept }}</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="role">Rôle</label>
+                  <select
+                    id="role"
+                    [(ngModel)]="role"
+                    name="role"
+                    required
+                  >
+                    <option value="" disabled selected>Sélectionnez un rôle</option>
+                    <option *ngFor="let role of roleOptions" [value]="role">{{ role }}</option>
+                  </select>
+                </div>
+
+                <div class="form-actions">
+                  <button type="submit" class="submit-button"
+                    [disabled]="passwordMismatch">Enregistrer</button>
+                  
+                  <button type="button" class="cancel-button" 
+                    (click)="toggleForm()"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Form for uploading files -->
+          <div *ngIf="showFileUploadForm" class="form-container">
+            <div class="form-section">
+              <h1>Joindre les fichiers</h1>
+              <form (ngSubmit)="uploadFiles()">
+                <div class="form-group">
+                  <label for="cv">CV</label>
+                  <input
+                    class="file"
+                    type="file"
+                    id="cv"
+                    (change)="onFileChange($event, 'cv')"
+                    accept=".pdf,.doc,.docx"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="diplome">Diplôme</label>
+                  <input
+                    class="file"
+                    type="file"
+                    id="diplome"
+                    (change)="onFileChange($event, 'diplome')"
+                    accept=".pdf,.doc,.docx"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="contrat">Contrat</label>
+                  <input
+                    class="file"
+                    type="file"
+                    id="contrat"
+                    (change)="onFileChange($event, 'contrat')"
+                    accept=".pdf,.doc,.docx"
+                  />
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="cancel-button" mat-raised-button color="warn" (click)="toggleFileUploadForm()">Skip</button>
+                  <button type="submit" class="submit-button" mat-raised-button color="primary">Uploader</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <app-right-sidebar></app-right-sidebar>
+  </div>

@@ -1,0 +1,125 @@
+<div class="collab-home">
+    <app-header></app-header>
+  
+    <div class="main-content">
+      <app-sidebar-admin></app-sidebar-admin>
+  
+      <div class="feed">
+        <div class="container">
+          <h2 class="title">Liste des documents</h2>
+  
+          <div class="history-header">
+            <input
+              class="search"
+              type="text"
+              placeholder="Rechercher un document..."
+              [(ngModel)]="searchText"
+              (ngModelChange)="filterDocuments()"
+            />
+            <button class="add-button" (click)="toggleForm()">+</button>
+          </div>
+  
+          <div class="documents-grid">
+            <div class="document-card" *ngFor="let document of filteredDocuments">
+              <div class="document-icon">
+                <mat-icon>description</mat-icon>
+              </div>
+              <div class="document-info">
+                <h3 class="document-name">{{ document.name }}</h3>
+                <p class="document-description">{{ document.description }}</p>
+                <span class="document-category">{{ document.categorie }}</span>
+              </div>
+              <div class="document-actions">
+                <button mat-icon-button (click)="toggleMenu(document); $event.stopPropagation()" class="menu-button">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <div class="dropdown-menu" *ngIf="selectedDocument === document">
+                  <button mat-button (click)="deleteDocument(document)">
+                    <mat-icon>delete</mat-icon>
+                    Supprimer
+                  </button>
+                  <button mat-button (click)="editDocument(document)">
+                    <mat-icon>edit</mat-icon>
+                    Modifier
+                  </button>
+                  <button mat-button (click)="downloadDocument(document.id)">
+                    <mat-icon>download</mat-icon>
+                    Télécharger
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Form Modal -->
+          <div *ngIf="showForm" class="form-container">
+            <h2>{{ isEditing ? 'Modifier Document' : 'Créer un nouveau document' }}</h2>
+            <form (ngSubmit)="submitForm()">
+              <label for="doc-name">Nom du document :</label>
+              <input
+                id="doc-name"
+                type="text"
+                [(ngModel)]="docName"
+                name="docName"
+                placeholder="Nom du document"
+                required
+              />
+  
+              <label for="doc-description">Description :</label>
+              <input
+                id="doc-description"
+                type="text"
+                [(ngModel)]="docDescription"
+                name="docDescription"
+                placeholder="Description du document"
+                required
+              />
+  
+              <label for="doc-categorie">Catégorie :</label>
+              <input
+                id="doc-categorie"
+                type="text"
+                [(ngModel)]="docCategorie"
+                name="docCategorie"
+                placeholder="Catégorie du document"
+                required
+              />
+  
+              <label for="doc-file">
+                {{ isEditing ? 'Modifier le fichier (optionnel) :' : 'Joindre un fichier :' }}
+              </label>
+              <input
+                id="doc-file"
+                type="file"
+                (change)="onFileChange($event)"
+                accept=".pdf,.doc,.docx"
+                [required]="!isEditing"
+              />
+  
+              <div class="form-actions">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  type="submit"
+                  class="submit-button"
+                >
+                  {{ isEditing ? 'Modifier' : 'Soumettre' }}
+                </button>
+                <button
+                  mat-raised-button
+                  color="warn"
+                  type="button"
+                  class="cancel-button"
+                  (click)="toggleForm()"
+                >
+                  Annuler
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+  
+      <app-right-sidebar></app-right-sidebar>
+    </div>
+  </div>

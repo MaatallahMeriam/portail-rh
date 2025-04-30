@@ -1,0 +1,389 @@
+$primary-color: #230046;
+$secondary-color: #56142F;
+$accent-color: #FF6B00;
+$success-color: #2E7D32;
+$warning-color: #ED6C02;
+$error-color: #D32F2F;
+$background-color: #F8F9FA;
+$card-background: #FFFFFF;
+$border-radius: 12px;
+$transition: all 0.3s ease;
+
+.collab-home {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: $background-color;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.feed {
+  position: fixed;
+  top: 70px;
+  left: 280px;
+  right: 250px;
+  bottom: 0;
+  background: transparent;
+  max-width: 900px;
+  padding: 20px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.container {
+  max-width: 100%;
+  height: auto; /* Allow the container to grow with content */
+  min-height: 500px; /* Ensure a minimum height for visibility */
+  margin: 20px auto;
+  margin-left: -10px;
+  padding: 20px;
+  margin-top: -10px;
+  background-color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+}
+
+.title {
+  margin-top: -3px;
+  color: $primary-color;
+  font-size: 29px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, $primary-color, $accent-color);
+  border-radius: 2px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba($primary-color, 0.1);
+}
+
+.history-section {
+  background: $card-background;
+  border-radius: $border-radius;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.history-content {
+  padding: 15px;
+  height: 400px; /* Increased height to show more rows */
+}
+
+.search-bar {
+  margin-bottom: 20px;
+  padding: 0 15px;
+
+  input {
+    width: 95%;
+    margin-top: 20px;
+    margin-bottom: -10px;
+    padding: 10px 15px;
+    border: 1px solid rgba($primary-color, 0.2);
+    border-radius: $border-radius;
+    font-size: 14px;
+    color: #2c3e50;
+    outline: none;
+    transition: $transition;
+
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 5px rgba($primary-color, 0.3);
+    }
+
+    &::placeholder {
+      color: rgba($primary-color, 0.5);
+    }
+  }
+}
+
+:host ::ng-deep {
+  .ngx-datatable {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    height: 100%; 
+
+    .datatable-header {
+      background: rgba($primary-color, 0.03);
+      border-bottom: 1px solid rgba($primary-color, 0.1);
+
+      .datatable-header-cell {
+        padding: 12px 10px;
+        font-weight: 600;
+        color: $primary-color;
+        font-size: 15px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .datatable-body {
+      .datatable-body-row {
+        border-bottom: 1px solid rgba(35, 0, 70, 0.05);
+        transition: $transition;
+
+        &:hover {
+          background: rgba(35, 0, 70, 0.02);
+          transform: translateY(-1px);
+        }
+
+        .datatable-body-cell {
+          align-items: center;
+          justify-content: center;
+          padding: 15px 12px; /* Increased padding for better spacing */
+          font-size: 15px;
+          color: #2c3e50;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .datatable-footer {
+      background: rgba($primary-color, 0.03);
+      border-top: 1px solid rgba($primary-color, 0.1);
+      padding: 15px 20px;
+      font-size: 14px;
+      color: $primary-color;
+    }
+  }
+}
+
+.collaborateur-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.profile-photo {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover; /* Ensure the image scales properly */
+  border: 1px solid rgba($primary-color, 0.1);
+}
+
+.footer-total {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-weight: 600;
+  span {
+    margin-bottom: 15px;
+  }
+}
+
+// Status styles (copied from DmdLogManagerComponent)
+.status-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.status-en-attente {
+    background: rgba($warning-color, 0.1);
+    color: $warning-color;
+  }
+
+  &.status-validee {
+    background: rgba($success-color, 0.1);
+    color: $success-color;
+  }
+
+  &.status-refusee {
+    background: rgba($error-color, 0.1);
+    color: $error-color;
+  }
+}
+
+
+@media (max-width: 1200px) {
+  .feed {
+    left: 250px;
+    right: 0;
+    max-width: none;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .app-right-sidebar {
+    width: 180px;
+  }
+
+  .feed {
+    left: 500px;
+    right: 250px;
+    max-width: calc(100% - 300px);
+  }
+}
+@media (max-width: 768px) {
+  .feed {
+    left: 0;
+    padding: 10px;
+  }
+
+  .container{
+    padding: 15px;
+  }
+
+}
+
+@media screen and (max-width: 1470px) and (min-width: 1022px) {
+  .app-sidebar {
+    width: 220px;
+  }
+
+  .app-right-sidebar {
+    width: 220px;
+  }
+
+  .feed {
+    left: 270px;
+    right: 270px;
+    max-width: 980px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .app-sidebar {
+    width: 150px;
+  }
+
+  .app-right-sidebar {
+    display: none;
+  }
+
+  .feed {
+    left: 200px;
+    right: 0;
+    max-width: calc(100% - 150px);
+  }
+}
+
+
+@media screen and (max-width: 768px) and (min-width: 481px) {
+  .app-sidebar {
+    display: none;
+  }
+
+  .app-right-sidebar {
+    width: 200px;
+  }
+
+  .feed {
+    left: 200px;
+    right: 220px;
+    max-width: calc(100% - 200px);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .app-right-sidebar {
+    display: none;
+  }
+
+  .feed {
+    right: 0;
+    width: 100%;
+  }
+
+}
+
+
+
+
+// Responsive Design
+@media (max-width: 1200px) {
+  .feed {
+    left: 250px;
+    right: 0;
+    max-width: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .feed {
+    left: 0;
+    padding: 10px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+}
+
+@media screen and (max-width: 1470px) and (min-width: 1022px) {
+  .feed {
+    left: 270px;
+    right: 270px;
+    max-width: 900px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .feed {
+    left: 200px;
+    right: 0;
+    max-width: calc(100% - 150px);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .feed {
+    left: 0;
+    right: 0;
+    max-width: 100%;
+  }
+}
+
+@media screen and (max-width: 768px) and (min-width: 481px) {
+  .feed {
+    left: 0;
+    right: 0;
+    max-width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .feed {
+    right: 0;
+    width: 100%;
+  }
+}

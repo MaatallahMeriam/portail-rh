@@ -1,0 +1,70 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-sidebar></app-sidebar>
+
+    <div class="feed">
+      <div class="container">
+        <h2 class="title">Plannings de Télétravail - {{ currentMonth | date: 'MMMM yyyy' }}</h2>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" *ngIf="loading">
+          <span>Chargement...</span>
+        </div>
+
+        <!-- Grille des cartes -->
+        <div class="planning-grid" *ngIf="!loading">
+          <div class="user-card" *ngFor="let userPlanning of userPlannings">
+            <div class="user-info">
+              <img
+                [src]="userPlanning.userImage || '/assets/icons/user-login-icon-14.png'"
+                alt="Photo de {{ userPlanning.userName }}"
+                class="profile-photo"
+              />
+              <div class="user-details">
+                <h3>{{ userPlanning.userName }}</h3>
+                <p>{{ userPlanning.userPoste }}</p>
+              </div>
+            </div>
+
+            <!-- Si l'utilisateur a un planning pour ce mois -->
+            <ng-container *ngIf="userPlanning.hasPlanning; else noPlanning">
+              <div class="calendar-card">
+                <div class="calendar-header">
+                  <span class="month-year">{{ currentMonth | date: 'MMMM yyyy' }}</span>
+                </div>
+                <div class="calendar-grid">
+                  <div class="day-label" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">{{ day }}</div>
+                  <div
+                    class="calendar-day"
+                    *ngFor="let day of userPlanning.calendarDays"
+                    [ngClass]="{
+                      'filler': !day.isCurrentMonth,
+                      'today': day.isToday,
+                      'teletravail': userPlanning.selectedDays.includes(formatDate(day.date))
+                    }"
+                  >
+                    {{ day.date.getDate() }}
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- Si l'utilisateur n'a pas de planning -->
+            <ng-template #noPlanning>
+              <div class="no-planning-message">
+                <p>{{ userPlanning.userName }} n'a pas encore fixé son planning de ce mois.</p>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Message si aucun utilisateur -->
+        <div class="no-users-message" *ngIf="!loading && userPlannings.length === 0">
+          <p>Aucun utilisateur trouvé pour ce mois.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

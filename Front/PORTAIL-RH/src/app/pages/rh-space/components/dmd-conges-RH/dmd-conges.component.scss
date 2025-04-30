@@ -1,0 +1,699 @@
+$primary-color: #230046;
+$pink-background: #35004F;
+$blue-background: #65538B;
+$gray-background: #5A0C35;
+$background-color: #F8F9FA;
+$border-radius: 12px;
+$transition: all 0.3s ease;
+$success-color: #2E7D32;
+$warning-color: #ED6C02;
+$error-color: #D32F2F;
+
+.content {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: white;
+}
+
+h2 {
+  margin-top: -10px;
+  color: #230046;
+  font-size: 29px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #230046, #FF6B00);
+  border-radius: 2px;
+}
+
+h3 {
+  color: #230046;
+}
+
+.add-button {
+  background: linear-gradient(45deg, $primary-color, #3a0073);
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: $transition;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+
+  &:hover {
+    transform: scale(1.1);
+    background: linear-gradient(45deg, darken($primary-color, 5%), darken(#3a0073, 5%));
+  }
+}
+
+.history-table-container {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid rgba($primary-color, 0.1);
+  background-color: white;
+  border-radius: $border-radius;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-top: -20px;
+}
+
+:host ::ng-deep {
+  .ngx-datatable {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    
+    .datatable-header {
+      background: rgba($primary-color, 0.03);
+      border-bottom: 1px solid rgba($primary-color, 0.1);
+      
+      .datatable-header-cell {
+        padding: 16px;
+        font-weight: 600;
+        color: $primary-color;
+        font-size: 14px;
+      }
+    }
+    .datatable-body-row {
+      width: 100%;
+    }
+    .datatable-body {
+      .datatable-body-row {
+        border-bottom: 1px solid rgba(35, 0, 70, 0.05);
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: rgba(35, 0, 70, 0.02);
+          transform: translateY(-1px);
+        }
+
+        .datatable-body-cell {
+          padding: 15px;
+          font-size: 14px;
+          color: #2c3e50;
+        }
+      }
+    }
+
+    .custom-footer {
+      padding: 15px;
+      font-size: 14px;
+      color: $primary-color;
+      text-align: left;
+      font-weight: 500;
+    }
+  }
+
+  .mat-menu-panel.dropdown-menu {
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+
+    .mat-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(35, 0, 70, 0.05);
+      }
+
+      mat-icon {
+        margin-right: 8px;
+        color: $primary-color;
+      }
+    }
+  }
+}
+
+.search-container {
+  position: relative;
+  margin-bottom: 20px;
+  width: 100%; // Le conteneur prend toute la largeur disponible
+  max-width: 500px; // Largeur maximale pour les grands écrans
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba($primary-color, 0.5);
+  }
+
+  .search-input {
+    width: 100%; // Prend toute la largeur du conteneur parent
+    padding: 12px 12px 12px 40px;
+    border: 2px solid rgba($primary-color, 0.1);
+    border-radius: 8px;
+    font-size: 14px;
+    transition: $transition;
+    box-sizing: border-box; // S'assure que padding et border sont inclus dans la largeur
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+  }
+}
+
+.leave-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  mat-icon {
+    font-size: 18px;
+    color: $primary-color;
+
+    &.leave-paid {
+      color: $pink-background;
+    }
+
+    &.leave-authorization {
+      color: $blue-background;
+    }
+
+    &.leave-other {
+      color: $gray-background;
+    }
+  }
+}
+
+.status-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.status-en-attente {
+    background: rgba($warning-color, 0.1);
+    color: $warning-color;
+  }
+
+  &.status-validee {
+    background: rgba($success-color, 0.1);
+    color: $success-color;
+  }
+
+  &.status-refusee {
+    background: rgba($error-color, 0.1);
+    color: $error-color;
+  }
+}
+
+.leave-balance {
+  margin: 20px 0;
+  flex: 1;
+  margin-top: -10px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+
+  .slider-container {
+    margin-top: -20px;
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    padding: 20px;
+    background: #f8f9fa;
+  }
+
+  .leave-card {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 10px;
+    min-height: 200px;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+
+    &.leave-paid {
+      background: linear-gradient(135deg, #948185, #B39DA2);
+    }
+
+    &.leave-authorization {
+      background: linear-gradient(135deg, #65538B, #6762A7);
+    }
+
+    &.leave-other {
+      background: linear-gradient(135deg, #3E204C, #56142F);
+    }
+
+    .content-card {
+      margin-top: 20px;
+      color: #fff;
+
+      p {
+        margin: 10px 0;
+        font-size: 14px;
+        line-height: 1.5;
+
+        strong {
+          font-weight: 600;
+          margin-right: 5px;
+        }
+      }
+    }
+
+    .actions-cell {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+    }
+
+    .menu-button {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      padding: 8px;
+      border-radius: 50%;
+      color: #fff;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+.carousel-slide {
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.calendar-history {
+  display: flex;
+  gap: 20px;
+  border-radius: $border-radius;
+  padding: 20px;
+  background-color: #f8f9fa;
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .calendar, .history {
+    flex: 1;
+
+    h2 {
+      color: $gray-background;
+      font-weight: bold;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+  }
+
+  .calendar {
+    mat-card {
+      height: 320px;
+      border-radius: $border-radius;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+  }
+
+  .history {
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+  }
+}
+
+.collab-home {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+}
+
+.app-sidebar {
+  position: fixed;
+  left: 0;
+  top: 70px;
+  bottom: 0;
+  width: 250px;
+  background: #f4f4f4;
+  z-index: 100;
+}
+
+.feed {
+  position: fixed;
+  top: 70px;
+  bottom: 0;
+  left: 250px;
+  width: calc(100% - 250px);
+  overflow-y: auto;
+  background: #fff;
+}
+
+.feed::-webkit-scrollbar {
+  display: none;
+}
+
+.feed::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 5px;
+}
+
+.feed::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.calendar-card {
+  padding: 15px;
+  border-radius: $border-radius;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+
+  .month-year {
+    font-size: 16px;
+    font-weight: 500;
+    color: $primary-color;
+    text-transform: uppercase;
+  }
+
+  .nav-button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: $primary-color;
+    padding: 5px 10px;
+    transition: $transition;
+
+    &:hover {
+      color: darken($primary-color, 10%);
+    }
+  }
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  text-align: center;
+}
+
+.day-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: $primary-color;
+  padding: 5px 0;
+}
+
+.calendar-day {
+  width: 30px; 
+  height: 30px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #2c3e50;
+  border-radius: 50%;
+  transition: $transition;
+  margin: 0 auto; 
+
+  &.filler {
+    color: #ccc;
+  }
+
+  &.today {
+    background-color: #a2cfff;
+    color: #fff;
+  }
+
+  &.leave-day {
+    color: #fff;
+
+    &.leave-paid {
+      background: linear-gradient(135deg, #948185, #B39DA2);
+    }
+
+    &.leave-authorization {
+      background: linear-gradient(135deg, #65538B, #6762A7);
+    }
+
+    &.leave-other {
+      background: linear-gradient(135deg, #3E204C, #56142F);
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+// Ajustements responsifs pour le search-container et search-input
+@media (max-width: 1200px) {
+  .search-container {
+    max-width: 400px; // Réduire la largeur maximale sur des écrans intermédiaires
+  }
+
+  .feed {
+    left: 250px;
+    right: 0;
+    max-width: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-container {
+    max-width: 100%; // Prend toute la largeur disponible sur les petits écrans
+    padding: 0 10px; // Ajoute un padding pour éviter que l'input ne touche les bords
+  }
+
+  .search-input {
+    font-size: 12px; // Réduire la taille de la police pour les petits écrans
+    padding: 10px 10px 10px 35px; // Ajuster le padding pour l'icône
+  }
+
+  .search-icon {
+    left: 10px; // Ajuster la position de l'icône
+    font-size: 16px; // Réduire légèrement la taille de l'icône
+  }
+
+  .feed {
+    left: 0;
+    padding: 10px;
+  }
+
+  .container {
+    padding: 15px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+@media screen and (max-width: 1473px) {
+  .app-sidebar {
+    width: 220px;
+  }
+
+  .feed {
+    left: 220px;
+    width: calc(100% - 220px);
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .app-sidebar {
+    width: 200px;
+  }
+
+  .feed {
+    left: 200px;
+    width: calc(100% - 200px);
+  }
+
+  .search-container {
+    max-width: 350px; // Réduire encore la largeur maximale
+  }
+}
+
+@media screen and (max-width: 768px) and (min-width: 481px) {
+  .app-sidebar {
+    display: none;
+  }
+
+  .feed {
+    left: 0;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .app-sidebar {
+    display: none;
+  }
+
+  .feed {
+    left: 0;
+    width: 100%;
+  }
+
+  .search-container {
+    max-width: 100%; // Prend toute la largeur disponible
+    padding: 0 5px; // Ajuster le padding pour les très petits écrans
+  }
+
+  .search-input {
+    font-size: 11px; // Réduire encore la taille de la police
+    padding: 8px 8px 8px 30px; // Ajuster le padding pour l'icône
+  }
+
+  .search-icon {
+    left: 8px; // Ajuster la position de l'icône
+    font-size: 14px; // Réduire la taille de l'icône
+  }
+}
+
+@media screen and (max-width: 1470px) and (min-width: 1022px) {
+  .app-sidebar {
+    width: 220px; 
+  }
+
+  .app-right-sidebar {
+    width: 220px; 
+  }
+
+  .feed {
+    left: 270px; 
+    right: 270px; 
+    max-width: 980px; 
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .app-sidebar {
+    width: 150px; 
+  }
+
+  .app-right-sidebar {
+    display: none; 
+  }
+
+  .feed {
+    left: 200px; 
+    right: 0; 
+    max-width: calc(100% - 150px);
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .app-sidebar {
+    width: 200px; 
+  }
+
+  .app-right-sidebar {
+    display: none; 
+  }
+
+  .feed {
+    left: 250px; 
+    right: 250px; 
+    max-width: calc(100% - 150px);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .app-right-sidebar {
+    width: 180px;
+  }
+
+  .feed {
+    left: 500px; 
+    right: 250px; 
+    max-width: calc(100% - 300px);
+  }
+}
+
+@media screen and (max-width: 768px) and (min-width: 481px) {
+  .app-sidebar {
+    display: none; 
+  }
+
+  .app-right-sidebar {
+    width: 200px; 
+  }
+
+  .feed {
+    left: 200px; 
+    right: 220px; 
+    max-width: calc(100% - 200px); 
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .app-right-sidebar {
+    display: none; 
+  }
+
+  .feed {
+    right: 0; 
+    width: 100%; 
+  }
+}

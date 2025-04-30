@@ -1,0 +1,270 @@
+.right-sidebar {
+  position: fixed;
+  right: 0;
+  top: 65px;
+  width: 250px;
+  background:  #817a90;
+
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  border-left: 0.2px solid rgba(0, 0, 0, 0.084);
+  transition: width 0.3s ease-in-out;
+}
+
+.calendar {
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.team-members {
+  margin-top: 15px;
+  width: 100%;
+}
+
+.team-members mat-card {
+  background: #F4F3F6;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(70, 70, 70, 0.811);
+  padding: 10px;
+}
+
+.team-members mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.team-members mat-card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  color: #230046;
+  margin-bottom: 10px;
+  margin-top: -20px;
+}
+
+.menu-button {
+  color: #230046;
+  margin-left: 10px;
+}
+
+.menu-button mat-icon {
+  font-size: 20px;
+}
+
+.dropdown-menu {
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+
+  button {
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(35, 0, 70, 0.05);
+    }
+  }
+}
+
+.members-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.member-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid #230046;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.member-photo:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(53, 37, 135, 0.5);
+}
+
+.more-members {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #230046;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  border: 2px solid #230046;
+}
+
+.no-members {
+  font-family: 'Amaranth', sans-serif;
+  font-size: 12px;
+  color: #ffff;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.birthday-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #bab5b6;
+  color: #fff;
+  font-family: 'Amaranth', sans-serif;
+  font-size: 12px;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); // Enhanced shadow for alert effect
+  height: 70px;
+  animation: fadeInScale 0.5s ease-in-out; // Add animation
+
+  // Style the paragraph to handle wrapping and button
+  p {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  // Highlight style for the authenticated user's birthday message
+  &.highlight {
+    background-color: #ff6b6b; // Brighter color to highlight the authenticated user's birthday
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); // Even more pronounced shadow
+  }
+}
+
+.user-name {
+  font-weight: bold;
+  color: #230046;
+}
+
+// Style for the "Souhaiter" button
+.wish-button {
+  background: linear-gradient(50deg, #230046, #817a90,);
+  color: white;
+  margin-top: 3px;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-family: 'Amaranth', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(35, 0, 70, 0.3);  }
+}
+
+
+// Animation for the birthday message
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .right-sidebar {
+    width: 200px;
+  }
+  .logout {
+    margin-left: 20px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .right-sidebar {
+    width: 180px;
+  }
+  .logout {
+    justify-content: flex-start;
+    margin-left: 10px;
+  }
+  .logout-btn {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+  .member-photo,
+  .more-members {
+    width: 35px;
+    height: 35px;
+  }
+  .more-members {
+    font-size: 12px;
+  }
+  .birthday-message {
+    font-size: 11px;
+    height: auto;
+    min-height: 50px;
+    padding: 8px;
+
+    .wish-button {
+      font-size: 9px;
+      padding: 3px 6px;
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .right-sidebar {
+    width: 50px;
+    position: relative;
+    height: auto;
+  }
+  .logout {
+    justify-content: center;
+    margin-left: 0;
+    width: 100%;
+  }
+  .logout-btn {
+    font-size: 14px;
+    padding: 6px 8px;
+    width: 90%;
+    text-align: center;
+  }
+  .team-members mat-card-title {
+    font-size: 14px;
+  }
+  .member-photo,
+  .more-members {
+    width: 30px;
+    height: 30px;
+  }
+  .more-members {
+    font-size: 10px;
+  }
+  .birthday-message {
+    font-size: 10px;
+    height: auto;
+    min-height: 40px;
+    padding: 6px;
+
+    .wish-button {
+      font-size: 8px;
+      padding: 2px 4px;
+    }
+  }
+}

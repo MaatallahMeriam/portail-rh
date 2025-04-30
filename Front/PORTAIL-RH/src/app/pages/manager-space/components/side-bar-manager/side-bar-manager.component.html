@@ -1,0 +1,21 @@
+<aside class="sidebar">
+    <a class="menu">☰ MENU</a>
+    <nav>
+        <a href="#" (click)="toggleSubmenu($event)">SOUMETTRE DEMANDES</a>
+
+       
+        <div class="submenu" *ngIf="submenuVisible">
+            <a (click)="navigateTo('dmd-doc-manager')">Demande document</a>
+            <a (click)="navigateTo('dmd-log-manager')">Demande logistique</a>
+            <a (click)="navigateTo('dmd-conges-manager')">Demande Congés </a>
+        </div>
+
+        <a (click)="navigateTo('trait-dmd')">TRAITEMENT DEMANDES</a>
+        <a (click)="navigateTo('planning-manager')">PLANNING TELETRAVAIL</a>
+        <a href="#">BOITE A IDEES</a>
+        <a href="#">DOCUMENTHEQUE</a>
+       
+    </nav>
+
+    
+</aside>

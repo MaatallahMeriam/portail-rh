@@ -1,0 +1,357 @@
+package com.example.PORTAIL_RH.feed_service.pub_service.Service.IMPL;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Reaction;
+import com.example.PORTAIL_RH.feed_service.pub_service.Entity.FeedPost;
+import com.example.PORTAIL_RH.feed_service.pub_service.Entity.IdeeBoitePost;
+import com.example.PORTAIL_RH.feed_service.pub_service.Entity.NewsPost;
+import com.example.PORTAIL_RH.feed_service.pub_service.Entity.Publication;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.UUID;
+import com.example.PORTAIL_RH.feed_service.pub_service.DTO.PublicationDTO;
+import com.example.PORTAIL_RH.feed_service.pub_service.DTO.PublicationRequest;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.ReactionDTO;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.ReactionRequest;
+import com.example.PORTAIL_RH.user_service.user_service.Entity.Users;
+import com.example.PORTAIL_RH.feed_service.pub_service.Repo.PublicationRepository;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.ReactionRepository;
+import com.example.PORTAIL_RH.user_service.user_service.Repo.UsersRepository;
+import com.example.PORTAIL_RH.feed_service.pub_service.Service.PublicationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+
+@Service
+public class PublicationServiceImpl implements PublicationService {
+
+    @Autowired
+    private PublicationRepository publicationRepository;
+
+    @Autowired
+    private ReactionRepository reactionRepository;
+
+    @Autowired
+    private UsersRepository usersRepository;
+
+    private static final String UPLOAD_DIR = "uploads/news/";
+
+    private PublicationDTO mapToDTO(Publication publication) {
+        PublicationDTO dto = new PublicationDTO();
+        dto.setId(publication.getId());
+        dto.setType(publication.getType());
+        dto.setUserId(publication.getUser().getId());
+        dto.setUserNom(publication.getUser().getNom());
+        dto.setCreatedAt(publication.getCreatedAt());
+
+        if (publication instanceof FeedPost feed) {
+            dto.setMediaUrl(feed.getMediaUrl());
+            dto.setContent(feed.getContent());
+        } else if (publication instanceof NewsPost news) {
+            dto.setImageUrl(news.getImageUrl());
+            dto.setTitre(news.getTitre());
+            dto.setDescription(news.getDescription());
+        } else if (publication instanceof IdeeBoitePost idee) {
+            dto.setIdee(idee.getIdee());
+        }
+
+        return dto;
+    }
+
+    private ReactionDTO mapToReactionDTO(Reaction reaction) {
+        ReactionDTO dto = new ReactionDTO();
+        dto.setId(reaction.getId());
+        dto.setUserId(reaction.getUser().getId());
+        dto.setUserNom(reaction.getUser().getNom());
+        dto.setPublicationId(reaction.getPublication().getId());
+        dto.setType(reaction.getType());
+        return dto;
+    }
+    @Override
+    public PublicationDTO createNewsWithImage(MultipartFile image, String titre, String description, Long userId) {
+        try {
+            // Vérifier l'utilisateur
+            Users user = usersRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Générer un nom de fichier unique
+            String uniqueFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+            Path filePath = Paths.get(UPLOAD_DIR + uniqueFileName);
+
+            // Créer le dossier s'il n'existe pas et sauvegarder l'image
+            Files.createDirectories(filePath.getParent());
+            Files.write(filePath, image.getBytes());
+
+            // Créer une nouvelle NewsPost
+            NewsPost news = new NewsPost();
+            news.setImageUrl(filePath.toString());
+            news.setTitre(titre);
+            news.setDescription(description);
+            news.setUser(user);
+            news.setType(Publication.PublicationType.NEWS);
+            news.setCreatedAt(new Date());
+
+            // Sauvegarder la news
+            Publication savedNews = publicationRepository.save(news);
+            user.addPublication(savedNews);
+            usersRepository.save(user);
+
+            return mapToDTO(savedNews);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la création de la news avec image", e);
+        }
+    }
+
+
+    @Override
+    public PublicationDTO createPublication(PublicationRequest publicationRequest) {
+        Users user = usersRepository.findById(Long.valueOf(publicationRequest.getUserId()))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Publication publication;
+        switch (publicationRequest.getType()) {
+            case FEED:
+                FeedPost feed = new FeedPost();
+                feed.setMediaUrl(publicationRequest.getMediaUrl());
+                feed.setContent(publicationRequest.getContent());
+                publication = feed;
+                break;
+            case NEWS:
+                NewsPost news = new NewsPost();
+                news.setImageUrl(publicationRequest.getImageUrl());
+                news.setTitre(publicationRequest.getTitre());
+                news.setDescription(publicationRequest.getDescription());
+                publication = news;
+                break;
+            case BOITE_IDEE:
+                IdeeBoitePost idee = new IdeeBoitePost();
+                idee.setIdee(publicationRequest.getIdee());
+                publication = idee;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid publication type");
+        }
+
+        publication.setUser(user);
+        publication.setType(publicationRequest.getType());
+        publication.setCreatedAt(new Date());
+
+        Publication savedPublication = publicationRepository.save(publication);
+        user.addPublication(savedPublication);
+        usersRepository.save(user);
+
+        return mapToDTO(savedPublication);
+    }
+
+    @Override
+    public List<PublicationDTO> getAllPublications() {
+        return publicationRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PublicationDTO> getPublicationsByUserId(Long userId) {
+        return publicationRepository.findByUserId(userId).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PublicationDTO getPublicationById(Long id) {
+        Publication publication = publicationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Publication not found"));
+        return mapToDTO(publication);
+    }
+
+    @Override
+    public void deletePublication(Long id) {
+        Publication publication = publicationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Publication not found"));
+        Users user = publication.getUser();
+        user.removePublication(publication);
+        usersRepository.save(user);
+        publicationRepository.delete(publication);
+    }
+
+    @Override
+    public List<ReactionDTO> getReactionsByPublicationId(Long publicationId) {
+        return reactionRepository.findByPublicationId(publicationId).stream()
+                .map(this::mapToReactionDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PublicationDTO> getAllNews() {
+        return publicationRepository.findByType(Publication.PublicationType.NEWS).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PublicationDTO createNews(PublicationRequest publicationRequest) {
+        publicationRequest.setType(Publication.PublicationType.NEWS);
+        return createPublication(publicationRequest);
+    }
+
+    @Override
+    public PublicationDTO updateNews(Long id, PublicationRequest publicationRequest) {
+        Publication publication = publicationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("News not found"));
+        if (!(publication instanceof NewsPost)) {
+            throw new IllegalArgumentException("Publication is not a NewsPost");
+        }
+        NewsPost news = (NewsPost) publication;
+
+        if (publicationRequest.getTitre() != null) {
+            news.setTitre(publicationRequest.getTitre());
+        }
+        if (publicationRequest.getDescription() != null) {
+            news.setDescription(publicationRequest.getDescription());
+        }
+        if (publicationRequest.getImageUrl() != null) {
+            news.setImageUrl(publicationRequest.getImageUrl());
+        } // If imageUrl is null, keep the existing value
+
+        Publication updatedPublication = publicationRepository.save(news);
+        return mapToDTO(updatedPublication);
+    }
+
+    @Override
+    public PublicationDTO updateNewsWithImage(Long id, MultipartFile image, String titre, String description) {
+        try {
+            Publication publication = publicationRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("News not found"));
+            if (!(publication instanceof NewsPost)) {
+                throw new IllegalArgumentException("Publication is not a NewsPost");
+            }
+            NewsPost news = (NewsPost) publication;
+
+            if (titre != null) {
+                news.setTitre(titre);
+            }
+            if (description != null) {
+                news.setDescription(description);
+            }
+
+            if (image != null && !image.isEmpty()) {
+                String uniqueFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+                Path filePath = Paths.get(UPLOAD_DIR + uniqueFileName);
+                Files.createDirectories(filePath.getParent());
+                Files.write(filePath, image.getBytes());
+                news.setImageUrl(filePath.toString());
+            } // If no image is provided, keep the existing imageUrl
+
+            Publication updatedPublication = publicationRepository.save(news);
+            return mapToDTO(updatedPublication);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la mise à jour de la news avec image", e);
+        }
+    }
+
+    @Override
+    public void deleteNews(Long id) {
+        deletePublication(id);
+    }
+
+    @Override
+    public List<PublicationDTO> getAllIdeeBoite() {
+        return publicationRepository.findByType(Publication.PublicationType.BOITE_IDEE).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PublicationDTO createIdeeBoite(PublicationRequest publicationRequest) {
+        publicationRequest.setType(Publication.PublicationType.BOITE_IDEE);
+        return createPublication(publicationRequest);
+    }
+
+    @Override
+    public PublicationDTO updateIdeeBoite(Long id, PublicationRequest publicationRequest) {
+        Publication publication = publicationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("IdeeBoite not found"));
+        if (!(publication instanceof IdeeBoitePost)) {
+            throw new IllegalArgumentException("Publication is not an IdeeBoitePost");
+        }
+        IdeeBoitePost idee = (IdeeBoitePost) publication;
+        idee.setIdee(publicationRequest.getIdee());
+        Publication updatedPublication = publicationRepository.save(idee);
+        return mapToDTO(updatedPublication);
+    }
+
+    @Override
+    public void deleteIdeeBoite(Long id) {
+        deletePublication(id);
+    }
+
+    @Override
+    public List<PublicationDTO> getAllFeed() {
+        return publicationRepository.findByType(Publication.PublicationType.FEED).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PublicationDTO createFeed(PublicationRequest publicationRequest) {
+        publicationRequest.setType(Publication.PublicationType.FEED);
+        return createPublication(publicationRequest);
+    }
+
+    @Override
+    public PublicationDTO updateFeed(Long id, PublicationRequest publicationRequest) {
+        Publication publication = publicationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Feed not found"));
+        if (!(publication instanceof FeedPost)) {
+            throw new IllegalArgumentException("Publication is not a FeedPost");
+        }
+        FeedPost feed = (FeedPost) publication;
+        feed.setMediaUrl(publicationRequest.getMediaUrl());
+        feed.setContent(publicationRequest.getContent());
+        Publication updatedPublication = publicationRepository.save(feed);
+        return mapToDTO(updatedPublication);
+    }
+
+    @Override
+    public void deleteFeed(Long id) {
+        deletePublication(id);
+    }
+
+    @Override
+    public ReactionDTO createReaction(ReactionRequest reactionRequest) {
+        Users user = usersRepository.findById(reactionRequest.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Publication publication = publicationRepository.findById(reactionRequest.getPublicationId())
+                .orElseThrow(() -> new RuntimeException("Publication not found"));
+
+        Reaction reaction = new Reaction();
+        reaction.setUser(user);
+        reaction.setPublication(publication);
+        reaction.setType(reactionRequest.getType());
+
+        Reaction savedReaction = reactionRepository.save(reaction);
+        user.addReaction(savedReaction);
+        publication.addReaction(savedReaction);
+        usersRepository.save(user);
+        publicationRepository.save(publication);
+
+        return mapToReactionDTO(savedReaction);
+    }
+
+    @Override
+    public void deleteReaction(Long id) {
+        Reaction reaction = reactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reaction not found"));
+        Users user = reaction.getUser();
+        Publication publication = reaction.getPublication();
+        user.removeReaction(reaction);
+        publication.removeReaction(reaction);
+        usersRepository.save(user);
+        publicationRepository.save(publication);
+        reactionRepository.delete(reaction);
+    }
+}

@@ -1,0 +1,221 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-sidebar></app-sidebar>
+
+    <div class="feed">
+      <div class="leave-balance">
+        <div class="history-header">
+          <h2>Motifs Congés Généraux :</h2>
+          <button class="add-button-conges" (click)="toggleForm()">+</button>
+        </div>
+        <div class="slider-container">
+          <owl-carousel-o [options]="customOptions">
+            <ng-container *ngFor="let leave of leaveBalances; let i = index">
+              <ng-template carouselSlide>
+                <div class="leave-card" [ngClass]="leave.color">
+                  <div class="actions-cell">
+                    <button
+                      mat-icon-button
+                      (click)="toggleSlideMenu(i); $event.stopPropagation()"
+                      class="menu-button"
+                      type="button"
+                    >
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <div class="dropdown-menu" *ngIf="selectedSlideIndex === i">
+                      <button mat-button (click)="openEditForm(leave); $event.stopPropagation()">
+                        <mat-icon>edit</mat-icon>
+                        Modifier
+                      </button>
+                      <button mat-button (click)="deleteCongeType(leave); $event.stopPropagation()">
+                        <mat-icon>delete</mat-icon>
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
+                  <h4>{{ leave.nom }}</h4>
+                  <p>Type : {{ leave.type }}</p>
+                  <p>Validité : {{ leave.validite }}</p>
+                </div>
+              </ng-template>
+            </ng-container>
+          </owl-carousel-o>
+        </div>
+      </div>
+
+      <div class="history">
+        <h3>Détails Congés Utilisateurs :</h3>
+        <div class="history-header">
+          <input
+            class="search"
+            type="text"
+            placeholder="Rechercher un utilisateur..."
+            [(ngModel)]="searchText"
+            (ngModelChange)="filterUsers()"
+          />
+        </div>
+
+        <div class="history-table-container">
+          <ngx-datatable
+            class="material"
+            [rows]="filteredUsers"
+            [columns]="columns"
+            [columnMode]="'force'"
+            [headerHeight]="40"
+            [footerHeight]="40"
+            [rowHeight]="'auto'"
+            [scrollbarV]="false"
+            [scrollbarH]="true"
+            [sorts]="[{ prop: 'id', dir: 'asc' }]"
+            [messages]="{
+              emptyMessage: 'Aucun utilisateur trouvé',
+              totalMessage: 'utilisateurs au total'
+            }"
+          >
+            <ngx-datatable-column name="Utilisateur" [width]="200">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <div class="user-cell">
+                  <img
+                    [src]="row.image || '/assets/icons/user-login-icon-14.png'"
+                    alt="Photo de {{ row.nom }} {{ row.prenom }}"
+                    class="profile-photo"
+                  />
+                  <span>{{ row.nom }} {{ row.prenom }}</span>
+                </div>
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column prop="departement" name="Département" [width]="150"></ngx-datatable-column>
+            <ngx-datatable-column prop="poste" name="Poste" [width]="100"></ngx-datatable-column>
+            <ngx-datatable-column name="Congés" [width]="200">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <div
+                  class="conges-container"
+                  *ngIf="userCongeTypes[row.id] && userCongeTypes[row.id].length > 0; else noConges"
+                >
+                  <span
+                    *ngFor="let conge of userCongeTypes[row.id]"
+                    class="conge-chip"
+                    [ngClass]="getChipColor(conge.type || '')"
+                  >
+                    {{ conge.nom || conge.type }}
+                  </span>
+                </div>
+                <ng-template #noConges>
+                  <span class="no-conges">Aucun congé</span>
+                </ng-template>
+              </ng-template>
+            </ngx-datatable-column>
+          </ngx-datatable>
+
+          <!-- Formulaire pour ajouter ou modifier un congé -->
+          <div *ngIf="showForm" class="form-container">
+            <button class="close-button" (click)="toggleForm()">✖</button>
+            <h2>{{ editMode ? 'Modifier Motif Congé' : 'Créer Motif Congé' }}</h2>
+            <form (ngSubmit)="submitForm()">
+              <div class="form-group">
+                <label for="congesType">Type congé :</label>
+                <select
+                  id="congesType"
+                  [(ngModel)]="congesType"
+                  name="congesType"
+                  (ngModelChange)="onTypeChange()"
+                  required
+                >
+                  <option value="RENOUVELABLE">Renouvelable</option>
+                  <option value="INCREMENTALE">Incrémentale</option>
+                  <option value="DECREMENTALE">Décrémentale</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="nom">Nom :</label>
+                <input type="text" id="nom" [(ngModel)]="nom" name="nom" required />
+              </div>
+
+              <div class="form-group">
+                <label for="abreviation">Abréviation :</label>
+                <input
+                  type="text"
+                  id="abreviation"
+                  [(ngModel)]="abreviation"
+                  name="abreviation"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="unite">Unité :</label>
+                <select id="unite" [(ngModel)]="unite" name="unite" required>
+                  <option value="Jours">Jours</option>
+                  <option value="Heure">Heure</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="solde">Solde initial :</label>
+                <input
+                  type="number"
+                  id="solde"
+                  [(ngModel)]="solde"
+                  name="solde"
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="validite">Validité :</label>
+                <input
+                  id="validite"
+                  type="date"
+                  [(ngModel)]="validite"
+                  name="validite"
+                  required
+                />
+              </div>
+
+              <div class="form-group" *ngIf="congesType === 'RENOUVELABLE' || congesType === 'INCREMENTALE'">
+                <label for="periodicite">Périodicité :</label>
+                <select id="periodicite" [(ngModel)]="periodicite" name="periodicite" required>
+                  <option value="MENSUELLE">Mensuelle (1 mois)</option>
+                  <option value="TRIMESTRIELLE">Trimestrielle (3 mois)</option>
+                  <option value="SEMESTRIELLE">Semestrielle (6 mois)</option>
+                  <option value="ANNUELLE">Annuelle (12 mois)</option>
+                </select>
+              </div>
+
+              <div class="form-group" *ngIf="congesType === 'INCREMENTALE'">
+                <label for="pasIncrementale">Pas incrémental :</label>
+                <input
+                  type="number"
+                  id="pasIncrementale"
+                  [(ngModel)]="pasIncrementale"
+                  name="pasIncrementale"
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div class="form-actions">
+                <button
+                  type="button"
+                  class="cancel-button"
+                  (click)="toggleForm()"
+                >
+                  Annuler
+                </button>
+                <button type="submit" class="submit-button">
+                  {{ editMode ? 'Mettre à jour' : 'Créer' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <app-right-sidebar></app-right-sidebar>
+  </div>
+</div>

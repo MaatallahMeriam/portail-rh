@@ -1,0 +1,188 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-sidebar></app-sidebar>
+
+    <div class="feed">
+      <div class="container">
+        <h2 class="title">L'équipe {{ equipe?.nom || '...' }}</h2>
+
+        <!-- Manager Card -->
+        <div class="manager-section">
+          <div class="manager-card" *ngIf="manager">
+            <div class="manager-header">
+              <h3>Manager de l'équipe</h3>
+              <button class="menu-button" (click)="toggleManagerMenu()">
+                <mat-icon class="manag-gestion">more_vert</mat-icon>
+                <div class="dropdown-menu" *ngIf="showManagerMenu">
+                  <div class="dropdown-item" (click)="toggleManagerForm()">
+                    <mat-icon class="icon-edit">edit</mat-icon>
+                    Modifier
+                  </div>
+                </div>
+              </button>
+            </div>
+            <div class="manager-content">
+              <img [src]="manager.image || '/assets/icons/user-login-icon-14.png'"
+                   alt="Photo de {{ manager.nom }} {{ manager.prenom }}"
+                   class="manager-photo" />
+              <div class="manager-info">
+                <h4 class="manager-name">{{ manager.nom }} {{ manager.prenom }}</h4>
+                <p class="manager-role">Département : {{ manager.departement }}</p>
+                <p class="manager-details">{{ manager.role }} • {{ manager.poste }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="manager-card no-manager" *ngIf="!manager && equipe">
+            <div class="manager-header">
+              <h3>Manager de l'équipe</h3>
+              <button class="menu-button" (click)="toggleManagerForm()">
+                <mat-icon>person_add</mat-icon>
+              </button>
+            </div>
+            <div class="empty-manager">
+              <mat-icon class="empty-icon">person_outline</mat-icon>
+              <p>Aucun manager assigné</p>
+              <button class="assign-button" (click)="toggleManagerForm()">
+                Assigner un manager
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulaire de modification du manager -->
+        <div class="modal-overlay" *ngIf="showManagerForm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>{{ manager ? 'Modifier le manager' : 'Assigner un manager' }}</h3>
+              <button class="close-button" (click)="toggleManagerForm()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input
+                class="search"
+                type="text"
+                placeholder="Rechercher un manager..."
+                [(ngModel)]="managerSearchText"
+                (ngModelChange)="filterManagers()"
+              />
+
+              <div class="users-grid">
+                <div class="user-card" *ngFor="let user of filteredManagerUsers">
+                  <mat-radio-button
+                    [value]="user.id"
+                    [checked]="selectedManagerId === user.id"
+                    (change)="selectManager(user.id)">
+                    <div class="user-info">
+                      <img [src]="user.image || '/assets/icons/user-login-icon-14.png'"
+                           alt="Photo"
+                           class="user-photo" />
+                      <div class="user-details">
+                        <span class="user-name">{{ user.prenom }} {{ user.nom }}</span>
+                        <span class="user-role">{{ user.role }}</span>
+                        <span class="user-department">{{ user.departement }}</span>
+                      </div>
+                    </div>
+                  </mat-radio-button>
+                </div>
+              </div>
+
+              <div class="modal-actions">
+                <button class="cancel-button" (click)="toggleManagerForm()">Annuler</button>
+                <button class="submit-button" (click)="confirmManagerSelection()">Confirmer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section des membres -->
+        <div class="members-section">
+          <div class="section-header">
+            <h3>Membres de l'équipe</h3>
+            <button class="add-button" (click)="toggleAddMemberForm()">
+              <mat-icon>person_add</mat-icon>
+              Ajouter un membre
+            </button>
+          </div>
+
+          <!-- Grid des membres -->
+          <div class="members-grid" *ngIf="teamMembers.length > 0">
+            <div class="member-card" *ngFor="let member of teamMembers">
+              <button class="remove-button" (click)="removeUserFromTeam(member.id)">
+                <mat-icon class="icon">delete</mat-icon>
+              </button>
+              <img [src]="member.image || '/assets/icons/user-login-icon-14.png'"
+                   alt="Photo"
+                   class="member-photo" />
+              <div class="member-info">
+                <h4 class="member-name">{{ member.nom }} {{ member.prenom }}</h4>
+                <p class="member-role">{{ member.role }}</p>
+                <p class="member-details">{{ member.departement }} • {{ member.poste }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="teamMembers.length === 0">
+            <mat-icon class="empty-icon">group_outline</mat-icon>
+            <p>Aucun membre dans cette équipe</p>
+            <button class="add-button" (click)="toggleAddMemberForm()">
+              Ajouter des membres
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal d'ajout de membres -->
+        <div class="modal-overlay" *ngIf="showAddMemberForm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>Ajouter des membres</h3>
+              <button class="close-button" (click)="toggleAddMemberForm()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input
+                class="search"
+                type="text"
+                placeholder="Rechercher un utilisateur..."
+                [(ngModel)]="searchText"
+                (ngModelChange)="filterUsers()"
+              />
+
+              <div class="users-grid">
+                <div class="user-card" *ngFor="let user of filteredUsers">
+                  <mat-checkbox
+                    [(ngModel)]="user.checked"
+                    (change)="onUserSelect(user.id, $event.checked)">
+                    <div class="user-info">
+                      <img [src]="user.image || '/assets/icons/user-login-icon-14.png'"
+                           alt="Photo"
+                           class="user-photo" />
+                      <div class="user-details">
+                        <span class="user-name">{{ user.prenom }} {{ user.nom }}</span>
+                        <span class="user-role">{{ user.role }}</span>
+                        <span class="user-department">{{ user.departement }}</span>
+                      </div>
+                    </div>
+                  </mat-checkbox>
+                </div>
+              </div>
+
+              <div class="modal-actions">
+                <button class="cancel-button" (click)="toggleAddMemberForm()">Annuler</button>
+                <button class="submit-button" (click)="addSelectedUsersToTeam()">
+                  Ajouter les membres sélectionnés
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <app-right-sidebar></app-right-sidebar>
+  </div>
+</div>

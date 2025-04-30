@@ -1,0 +1,630 @@
+/* Styles de base */
+.collab-home {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Sidebars */
+.app-sidebar, .app-right-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  background: #ffffff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.app-sidebar {
+  left: 0;
+  width: 250px;
+}
+
+.app-right-sidebar {
+  right: 0;
+  width: 250px;
+}
+
+/* Zone principale */
+.feed {
+  position: fixed;
+  top: 70px;
+  left: 280px;
+  right: 250px;
+  bottom: 0;
+  overflow-y: auto;
+  background: transparent;
+  max-width: 900px;
+  padding: 20px;
+}
+.feed::-webkit-scrollbar {
+  width: 8px;
+}
+
+.feed::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 4px;
+}
+
+.feed::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Container principal */
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 30px;
+  background: linear-gradient(135deg, #ffffff, #f8f8f8);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(35, 0, 70, 0.1);
+}
+
+/* Section des congés */
+.leave-balance {
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(35, 0, 70, 0.15);
+}
+
+.leave-balance h2 {
+  color: #230046;
+  font-size: 28px;
+  font-weight: 600;
+  margin-top: -3px;
+  margin-bottom: 25px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.leave-balance h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(135deg, #230046, #FF6B00, #ff00ea);
+  border-radius: 2px;
+}
+
+/* Carrousel des types de congés */
+.slider-container {
+  margin-top: -20px;
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  padding: 20px;
+  background: #f8f9fa;
+}
+
+.leave-card {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 25px;
+  margin: 10px;
+  min-height: 200px;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+
+  &.leave-renouvelable {
+    background: linear-gradient(135deg, #948185, #B39DA2);
+  }
+
+  &.leave-incrementale {
+    background: linear-gradient(135deg, #65538B, #6762A7);
+  }
+
+  &.leave-decrementale {
+    background: linear-gradient(135deg, #3E204C, #56142F);
+  }
+
+  h4 {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+
+  p {
+    color: #ffffff;
+    font-size: 14px;
+    margin: 8px 0;
+    opacity: 0.9;
+  }
+}
+
+/* Bouton d'ajout */
+.add-button-conges {
+  background: linear-gradient(45deg, #230046, #3a0073);
+  color: white;
+  border: none;
+  width: 35px;
+  height: 35px;
+  font-size: 20px;
+  margin-right: 30px;
+  margin-top: -35px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-button-conges:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(35, 0, 70, 0.3);
+}
+
+/* Actions (menu déroulant) */
+.actions-cell {
+  position: absolute;
+  top: 10px;
+  right: 15px; /* Increased from 10px to 15px to shift the button left */
+}
+
+.menu-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #ffffff;
+
+  mat-icon {
+    margin-left: -2px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+}
+
+.menu-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.dropdown-menu {
+  background-color: white;
+  position: absolute;
+  top: 40px;
+  right: 0;
+  border-radius: 10px;
+  min-width: 150px;
+  z-index: 1000;
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.2);
+  overflow: hidden;
+}
+
+/* Appliquer le gradient en fonction du type de congé */
+
+/* Styles des boutons dans le dropdown */
+.dropdown-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  color: #230046; /* Texte blanc pour contraster avec le gradient */
+  background: transparent; /* Pas de fond, juste le gradient du parent */
+  border: none;
+  width: 100%;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+  background: rgba(255, 255, 255, 0.1); /* Légère superposition blanche au survol */
+}
+
+.dropdown-menu button mat-icon {
+  margin-left: -15px;
+  color: #230046;
+}
+
+/* Section historique */
+.history {
+  margin-top: 40px;
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 8px 25px rgba(35, 0, 70, 0.15);
+}
+
+.history h3 {
+  color: #230046;
+  font-size: 24px;
+  font-weight: 600;
+  margin-top: -10px;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.history h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #230046, #FF6B00);
+  border-radius: 2px;
+}
+
+/* En-tête de recherche */
+.history-header {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  align-items: center;
+}
+
+.search {
+  flex: 1;
+  padding: 12px 20px;
+  border: 2px solid rgba(35, 0, 70, 0.1);
+  border-radius: 10px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.search:focus {
+  border-color: #230046;
+  box-shadow: 0 0 0 3px rgba(35, 0, 70, 0.1);
+  outline: none;
+}
+
+/* Table des utilisateurs */
+.history-table-container {
+  min-height: 400px;
+  position: relative;
+  border-radius: 15px;
+  background: white;
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+  overflow: hidden;
+}
+
+/* Styles pour ngx-datatable */
+:host ::ng-deep {
+  .ngx-datatable.material {
+    background: #ffffff;
+    border-radius: 15px;
+
+    .datatable-header {
+      background: #ffffff;
+      padding: 15px 0;
+
+      .datatable-header-cell {
+        color: #230046;
+        font-weight: 600;
+        font-size: 15px;
+        height: fit-content;
+        padding: 15px;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        margin-bottom: 200px;
+        margin-top: -20px;
+      }
+    }
+
+    .datatable-body {
+      .datatable-body-row {
+        border-bottom: 1px solid rgba(35, 0, 70, 0.05);
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: rgba(35, 0, 70, 0.02);
+          transform: translateY(-1px);
+        }
+
+        .datatable-body-cell {
+          padding: 15px;
+          font-size: 14px;
+          color: #2c3e50;
+        }
+      }
+    }
+
+    .datatable-footer {
+      margin-left: 15px; /* Add margin-left to the footer */
+    }
+  }
+}
+
+/* Cellule utilisateur */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Chips de congés */
+.conges-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.conge-chip {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #ffffff;
+  transition: all 0.3s ease;
+
+  &.leave-renouvelable {
+    background: linear-gradient(135deg, #948185, #B39DA2);
+  }
+
+  &.leave-incrementale {
+    background: linear-gradient(135deg, #65538B, #6762A7);
+  }
+
+  &.leave-decrementale {
+    background: linear-gradient(135deg, #3E204C, #56142F);
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.no-conges {
+  color: #666;
+  font-style: italic;
+}
+
+/* Formulaire */
+.form-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(35, 0, 70, 0.2);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.form-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.form-container::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 4px;
+}
+
+.form-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.form-container h2 {
+  text-align: center;
+  color: #230046;
+  margin-top: -15px;
+  margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #230046;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  background: rgba(35, 0, 70, 0.1);
+  transform: rotate(90deg);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  color: #230046;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid rgba(35, 0, 70, 0.1);
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #230046;
+  box-shadow: 0 0 0 3px rgba(35, 0, 70, 0.1);
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+  margin-top: 30px;
+}
+
+.submit-button,
+.cancel-button {
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.submit-button {
+  background: #230046;
+  color: white;
+}
+
+.submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.2);
+}
+
+.cancel-button {
+  color: #898888;
+  background: #eee;
+}
+
+.cancel-button:hover {
+  background: #eee;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.2);
+}
+
+/* Media Queries */
+@media (max-width: 1457px) {
+  .app-sidebar {
+    width: 200px;
+  }
+
+  .app-right-sidebar {
+    display: none;
+  }
+
+  .feed {
+    left: 250px;
+    right: 300px;
+    max-width: calc(100% - 150px);
+  }
+}
+
+@media (max-width: 1300px) {
+  .app-sidebar {
+    width: 200px;
+  }
+
+  .app-right-sidebar {
+    display: none;
+  }
+
+  .feed {
+    left: 250px;
+    right: 300px;
+    max-width: calc(100% - 150px);
+  }
+
+  .leave-card {
+    min-height: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-sidebar {
+    display: none;
+  }
+
+  .app-right-sidebar {
+    width: 180px;
+  }
+
+  .feed {
+    left: 200px;
+    right: 250px;
+    max-width: calc(100% - 180px);
+  }
+
+  .leave-card {
+    min-height: 160px;
+  }
+
+  .history-header {
+    flex-direction: column;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .form-container {
+    width: 95%;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-right-sidebar {
+    display: none;
+  }
+
+  .feed {
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 10px;
+  }
+
+  .leave-card {
+    min-height: 140px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .submit-button,
+  .cancel-button {
+    width: 100%;
+  }
+}

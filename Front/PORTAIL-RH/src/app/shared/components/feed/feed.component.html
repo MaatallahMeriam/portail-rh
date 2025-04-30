@@ -1,0 +1,28 @@
+<div class="post-box">
+    <img src="assets/icons/user-login-icon-14.png" alt="User">
+    
+    <div class="post-content">
+        <textarea [(ngModel)]="newPostContent" class="textarea" placeholder="Exprimez-vous..."></textarea>
+        <div class="post-actions">
+            
+            <button class="Publier" (click)="addPost()">Publier</button>
+        </div>
+    </div>
+</div>
+
+<div class="feed-container">
+    <div class="feed-section" *ngFor="let post of publications">
+        <section class="publication">
+            <div class="post-header">
+                <img [src]="post.userPhoto" alt="User" class="profile-pic">
+                <div>
+                    <strong>{{ post.userName }}</strong>
+                    <small>{{ post.timestamp | date:'short' }}</small>
+                </div>
+            </div>
+            
+            <p>{{ post.content }}</p>
+            <img *ngIf="post.image" [src]="post.image" alt="Post Image" class="post-img">
+        </section>
+    </div>
+</div>

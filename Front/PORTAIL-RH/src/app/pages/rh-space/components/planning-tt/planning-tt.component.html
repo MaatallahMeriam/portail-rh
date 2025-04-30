@@ -1,0 +1,115 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-sidebar></app-sidebar>
+    <div class="feed">
+      <main class="content">
+        <h2>Planning Télétravail :</h2>
+
+        <!-- Badge for Current Month -->
+        <div class="month-badge">
+          <div class="badge-content">
+            <span class="month-text">{{ currentMonth | date: 'MMMM' }}</span>
+            <span class="year-text">{{ currentMonth | date: 'yyyy' }}</span>
+          </div>
+        </div>
+
+        <!-- Message si un planning existe -->
+        <div class="planning-exists" *ngIf="existingPlanning">
+          <h3>Un planning TT est déjà créé pour ce mois !</h3>
+          <div class="calendar-card">
+            <div class="calendar-header">
+              <span class="month-year">Planning " {{ existingPlanning.politique }} " est créé</span>
+              <span class="max-days-badge" *ngIf="existingPlanning.nombreJoursMax">
+                <mat-icon>event</mat-icon> Max {{ existingPlanning.nombreJoursMax }} jours
+              </span>
+            </div>
+            <div class="calendar-grid">
+              <div class="day-label" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">{{ day }}</div>
+              <div
+                class="calendar-day"
+                *ngFor="let day of calendarDays"
+                [ngClass]="{
+                  'filler': !day.isCurrentMonth,
+                  'today': day.isToday,
+                  'selected': isSelectedDay(day.date)
+                }"
+              >
+                {{ day.date.getDate() }}
+              </div>
+            </div>
+            <!-- Lien de navigation vers list-plannings -->
+            <div class="nav-link-container">
+              <a class="nav-link" [routerLink]="['/list-plannings']">Voir tous les plannings</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulaire de création si aucun planning n'existe -->
+        <div class="planning-form" *ngIf="!existingPlanning">
+          <!-- Radio buttons pour la politique -->
+          <div class="policy-selection">
+            <label class="policy-option">
+              <input type="radio" name="politique" value="CHOIX_LIBRE" [(ngModel)]="planning.politique" (change)="onPolitiqueChange()">
+              Choix Libre
+            </label>
+            <label class="policy-option">
+              <input type="radio" name="politique" value="SEUIL_LIBRE" [(ngModel)]="planning.politique" (change)="onPolitiqueChange()">
+              Seuil Libre
+            </label>
+            <label class="policy-option">
+              <input type="radio" name="politique" value="PLANNING_FIXE" [(ngModel)]="planning.politique" (change)="onPolitiqueChange()">
+              Planning Fixe
+            </label>
+          </div>
+
+          <!-- Champ pour SEUIL_LIBRE et PLANNING_FIXE -->
+          <div class="form-field" *ngIf="planning.politique === 'SEUIL_LIBRE' || planning.politique === 'PLANNING_FIXE'">
+            <label for="nombreJoursMax">Nombre de jours max :</label>
+            <input class="jours"
+              type="number"
+              id="nombreJoursMax"
+              [(ngModel)]="planning.nombreJoursMax"
+              min="1"
+              placeholder="Nombre de jours max"
+            />
+          </div>
+
+          <!-- Calendrier personnalisé pour PLANNING_FIXE -->
+          <div class="calendar-card" *ngIf="planning.politique === 'PLANNING_FIXE'">
+            <div class="calendar-header">
+              <button class="nav-button" (click)="previousMonth()"><</button>
+              <span class="month-year">{{ currentMonth | date: 'MMMM yyyy' }}</span>
+              <button class="nav-button" (click)="nextMonth()">></button>
+            </div>
+            <div class="calendar-grid">
+              <div class="day-label" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">{{ day }}</div>
+              <div
+                class="calendar-day"
+                *ngFor="let day of calendarDays"
+                [ngClass]="{
+                  'filler': !day.isCurrentMonth,
+                  'today': day.isToday,
+                  'selected': isSelectedDay(day.date)
+                }"
+                (click)="toggleDay(day.date)"
+              >
+                {{ day.date.getDate() }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Bouton Enregistrer -->
+          <button
+            class="add-button save-button"
+            (click)="createPlanning()"
+            [disabled]="!isFormValid()"
+          >
+            Enregistrer
+          </button>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>

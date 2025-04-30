@@ -1,0 +1,133 @@
+.login-frame {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: url('/assets/images/fcd3.jpg'); // Chemin corrigé
+  background-size: cover; // Couvre toute la zone
+  background-position: center; // Centre l'image
+  background-repeat: no-repeat; // Pas de répétition
+  background-color: #d4d2e3; // Couleur de secours
+  position: relative; // Pour gérer les éléments enfants
+  overflow: hidden;
+
+  // Optionnel : Ajoute un overlay pour la lisibilité
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3); // Overlay léger
+    z-index: 0;
+  }
+}
+.form{
+  margin-top: 30px;
+}
+.login-container {
+  display: flex;
+  background-color: #230046;
+  border-radius: 15px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  width: 900px;
+  position: relative; // Au-dessus de l'overlay
+  z-index: 1;
+}
+
+.image-section {
+  width: 50%;
+  padding: 20px;
+}
+
+.image-section img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.form-section {
+  width: 50%;
+  background-color: white;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+h1 {
+  font-size: 35px;
+  font-weight: bold;
+  color: #56142F;
+}
+
+form {
+  width: 100%;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-left: -380px;
+}
+
+.checkbox-container label {
+  font-size: 12px;
+  margin-left: -50px;
+}
+
+.checkbox-container input {
+  margin-right: -320px;
+  margin-top: 14.5px;
+}
+
+button {
+  background-color: #230046;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+}
+
+p {
+  font-size: 14px;
+  margin-top: 15px;
+}
+
+p a {
+  font-weight: bold;
+  color: #56142F;
+  text-decoration: none;
+}
+
+p a:hover {
+  text-decoration: underline;
+}

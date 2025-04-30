@@ -1,0 +1,121 @@
+package com.example.PORTAIL_RH.user_service.user_service.Controller;
+
+import com.example.PORTAIL_RH.user_service.conges_service.DTO.UserCongesDTO;
+import com.example.PORTAIL_RH.user_service.user_service.DTO.UsersDTO;
+import com.example.PORTAIL_RH.user_service.dossier_service.Entity.DossierUser;
+import com.example.PORTAIL_RH.user_service.dossier_service.DTO.ResponseDossier;
+import com.example.PORTAIL_RH.user_service.user_service.Service.UsersService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/users")
+public class UsersController {
+
+    @Autowired
+    private UsersService usersService;
+
+    @GetMapping("/get")
+    public ResponseEntity<List<UsersDTO>> getAllUsers() {
+        List<UsersDTO> users = usersService.getAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/get/active")
+    public ResponseEntity<List<UsersDTO>> getAllActiveUsers() {
+        List<UsersDTO> users = usersService.getAllActiveUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/get/active/no-equipe")
+    public ResponseEntity<List<UsersDTO>> getAllActiveUsersWithNoEquipe() {
+        List<UsersDTO> users = usersService.getAllActiveUsersWithNoEquipe();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+    @PostMapping("/{id}/profile-photo")
+    public ResponseEntity<UsersDTO> updateProfilePhoto(
+            @PathVariable Long id,
+            @RequestParam("image") MultipartFile image) throws Exception {
+        UsersDTO updatedUser = usersService.updateProfilePhoto(id, image);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+    @GetMapping("/get/deactivated")
+    public ResponseEntity<List<UsersDTO>> getAllDeactivatedUsers() {
+        List<UsersDTO> users = usersService.getAllDeactivatedUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<UsersDTO> createUser(@RequestBody UsersDTO userDTO) {
+        UsersDTO createdUser = usersService.createUser(userDTO);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UsersDTO> updateUser(@PathVariable Long id, @RequestBody UsersDTO userDTO) {
+        UsersDTO updatedUser = usersService.updateUser(id, userDTO);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<UsersDTO> activateUser(@PathVariable Long id) {
+        UsersDTO activatedUser = usersService.activateUser(id);
+        return new ResponseEntity<>(activatedUser, HttpStatus.OK);
+    }
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<UsersDTO> deactivateUser(@PathVariable Long id) {
+        UsersDTO deactivatedUser = usersService.deactivateUser(id);
+        return new ResponseEntity<>(deactivatedUser, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        usersService.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/{id}/dossier")
+    public ResponseEntity<DossierUser> getDossierByUserId(@PathVariable Long id) {
+        DossierUser dossier = usersService.getDossierByUserId(id);
+        return new ResponseEntity<>(dossier, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/dossier")
+    public ResponseEntity<DossierUser> updateDossierByUserId(
+            @PathVariable Long id, @RequestBody DossierUser updatedDossier) {
+        DossierUser dossier = usersService.updateDossierByUserId(id, updatedDossier);
+        return new ResponseEntity<>(dossier, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/dossier")
+    public ResponseEntity<Void> deleteDossierByUserId(@PathVariable Long id) {
+        usersService.deleteDossierByUserId(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/{id}/dossier/upload")
+    public ResponseEntity<ResponseDossier> uploadDossierFiles(
+            @PathVariable Long id,
+            @RequestParam(value = "cv", required = false) MultipartFile cv,
+            @RequestParam(value = "contrat", required = false) MultipartFile contrat,
+            @RequestParam(value = "diplome", required = false) MultipartFile diplome) throws Exception {
+        ResponseDossier response = usersService.uploadFilesForUser(id, cv, contrat, diplome);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UsersDTO> getUserById(@PathVariable Long id) {
+        UsersDTO user = usersService.getUserById(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/conges")
+    public ResponseEntity<List<UserCongesDTO>> getUserConges(@PathVariable Long id) {
+        List<UserCongesDTO> conges = usersService.getUserConges(id);
+        return new ResponseEntity<>(conges, HttpStatus.OK);
+    }
+}

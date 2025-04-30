@@ -1,0 +1,24 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-side-bar-manager></app-side-bar-manager>
+
+    <div class="feed">
+      <h2 class="section-title">Liste des membres :</h2>
+      <div class="members-container">
+        <div class="member-card" *ngFor="let member of teamMembers" (click)="navigateToMemberDetails(member.id)">
+          <div class="member-photo" [style.backgroundImage]="getBackgroundImage(member)"></div>
+          <div class="member-info">
+            <h3>{{ member.prenom }} {{ member.nom }}</h3>
+            <p class="poste">{{ member.poste }}</p>
+            <p class="mail">{{ member.mail }}</p>
+          </div>
+        </div>
+        <p *ngIf="teamMembers.length === 0" class="no-members">Aucun membre dans l'équipe.</p>
+      </div>
+    </div>
+
+    <app-right-side-manager></app-right-side-manager>
+  </div>
+</div>

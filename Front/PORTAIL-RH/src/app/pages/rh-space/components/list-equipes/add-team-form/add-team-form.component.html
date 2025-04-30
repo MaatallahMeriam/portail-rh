@@ -1,0 +1,85 @@
+<div class="form-container">
+  <div class="form-modal">
+    <div class="modal-header">
+      <h3>Ajouter une équipe</h3>
+      <button class="close-button" (click)="onClose()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <form>
+      <div class="form-group">
+        <label for="nom">Nom de l'équipe</label>
+        <input id="nom" type="text" [(ngModel)]="newEquipe.nom" name="nom" placeholder="Nom" required />
+      </div>
+
+      <div class="form-group">
+        <label for="departement">Département</label>
+        <input id="departement" type="text" [(ngModel)]="newEquipe.departement" name="departement" placeholder="Département" required />
+      </div>
+
+      <div class="form-group">
+        <label for="manager">Manager</label>
+        <input
+          id="manager"
+          type="text"
+          [(ngModel)]="managerSearchText"
+          name="managerSearch"
+          placeholder="Sélectionner un manager..."
+          (click)="toggleManagerSelectionModal()"
+          readonly
+        />
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-cancel" (click)="onClose()">Annuler</button>
+        <button type="button" class="btn btn-submit" (click)="onCreate()">Créer</button>
+      </div>
+    </form>
+
+    <!-- Modal de sélection du manager -->
+    <div class="modal-overlay" *ngIf="showManagerSelectionModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Sélectionner un manager</h3>
+          <button class="close-button" (click)="toggleManagerSelectionModal()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input
+            class="search"
+            type="text"
+            placeholder="Rechercher un manager..."
+            [(ngModel)]="managerFilterText"
+            (ngModelChange)="onManagerSearch($event)"
+          />
+
+          <div class="users-grid">
+            <div class="user-card" *ngFor="let user of filteredActiveUsers">
+              <mat-radio-button
+                [value]="user.id"
+                [checked]="newEquipe.managerId === user.id"
+                (change)="onManagerSelect(user.id)">
+                <div class="user-info">
+                  <img [src]="user.image || 'assets/icons/user-login-icon-14.png'"
+                       alt="Photo"
+                       class="user-photo" />
+                  <div class="user-details">
+                    <span class="user-name">{{ user.prenom }} {{ user.nom }}</span>
+                    <span class="user-role">{{ user.role }}</span>
+                    <span class="user-department">{{ user.departement }}</span>
+                  </div>
+                </div>
+              </mat-radio-button>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn btn-cancel" (click)="toggleManagerSelectionModal()">Annuler</button>
+            <button class="btn btn-submit" (click)="confirmManagerSelection()">Confirmer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

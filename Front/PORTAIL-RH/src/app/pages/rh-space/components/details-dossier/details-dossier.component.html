@@ -1,0 +1,19 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-sidebar></app-sidebar>
+
+    <div class="feed">
+      <h2 class ="title ">Dossier Utilisateur - Mr/Mrs {{ user ? (user.nom + ' ' + user.prenom) : 'Chargement...' }}</h2>
+      <div class="parametrage-container">
+        <div class="option-card" *ngFor="let option of options" (click)="navigateTo(option.route)">
+          <img [src]="option.icon" alt="{{ option.label }}">
+          <span>{{ option.label }}</span>
+        </div>
+      </div>
+    </div>
+
+    <app-right-sidebar></app-right-sidebar>
+  </div>
+</div>

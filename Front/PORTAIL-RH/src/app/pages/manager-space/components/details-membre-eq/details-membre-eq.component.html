@@ -1,0 +1,80 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-side-bar-manager></app-side-bar-manager>
+
+    <div class="feed">
+      <div class="container">
+        <!-- Chargement -->
+        <div class="loading-spinner" *ngIf="loading">
+          <span>Chargement...</span>
+        </div>
+
+        <!-- Carte de l'utilisateur -->
+        <div class="user-card" *ngIf="!loading && user">
+          <div class="user-info">
+            <div class="profile-photo" [style.backgroundImage]="getBackgroundImage(user)"></div>
+            <div class="user-details">
+              <h3>{{ user.prenom }} {{ user.nom }}</h3>
+              <p class="poste">{{ user.poste }}</p>
+              <p class="contact-info"><strong>Numéro :</strong> {{ user.numero }}</p>
+              <p class="contact-info"><strong>Email :</strong> {{ user.mail }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carrousel des congés -->
+        <div class="conges-slider-container" *ngIf="!loading">
+          <h2 class="section-title">Congés Associés</h2>
+          <owl-carousel-o [options]="carouselOptions" *ngIf="userConges.length > 0">
+            <ng-container *ngFor="let conge of userConges">
+              <ng-template carouselSlide>
+                <mat-card class="conge-card" [ngClass]="getColorForType(conge.type)">
+                  <mat-card-content class="content-card">
+                    <p><strong>Nom :</strong> {{ conge.nom }}</p>
+                    <p><strong>Validité :</strong> {{ conge.validite }}</p>
+                    <p><strong>Solde :</strong> {{ conge.soldeInitial }} {{ conge.unite }}</p>
+                  </mat-card-content>
+                </mat-card>
+              </ng-template>
+            </ng-container>
+          </owl-carousel-o>
+          <p *ngIf="userConges.length === 0" class="no-conges-message">
+            Aucun congé associé à cet utilisateur.
+          </p>
+        </div>
+
+        <!-- Calendrier de télétravail -->
+        <div class="teletravail-section" *ngIf="!loading">
+          <h2 class="section-title">Planning de Télétravail - {{ currentMonth | date: 'MMMM yyyy' }}</h2>
+          <div class="calendar-card" *ngIf="hasPlanning; else noPlanning">
+            <div class="calendar-header">
+              <span class="month-year">{{ currentMonth | date: 'MMMM yyyy' }}</span>
+            </div>
+            <div class="calendar-grid">
+              <div class="day-label" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">{{ day }}</div>
+              <div
+                class="calendar-day"
+                *ngFor="let day of calendarDays"
+                [ngClass]="{
+                  'filler': !day.isCurrentMonth,
+                  'today': day.isToday,
+                  'teletravail': selectedDays.includes(formatDate(day.date))
+                }"
+              >
+                {{ day.date.getDate() }}
+              </div>
+            </div>
+          </div>
+          <ng-template #noPlanning>
+            <div class="no-planning-message">
+              <p>{{ user?.prenom }} {{ user?.nom }} n'a pas encore fixé son planning de ce mois.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

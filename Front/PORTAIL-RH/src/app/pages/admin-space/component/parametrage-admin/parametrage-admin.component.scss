@@ -1,0 +1,276 @@
+/* Styles existants pour header, sidebar et right-sidebar */
+.collab-home {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden; 
+    background-color: #f8f9fa;
+}
+
+.app-sidebar, .app-right-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 100; 
+}
+
+.app-sidebar {
+    left: 0;
+    width: 250px; 
+    background: #f4f4f4;
+}
+
+.app-right-sidebar {
+    right: 0;
+    width: 250px; 
+    background: #f4f4f4;
+}
+
+/* Styles améliorés pour la zone feed */
+.feed {
+    position: fixed; 
+    top: 70px; 
+    left: 350px; 
+    right: 250px; 
+    bottom: 0; 
+    overflow-y: auto; 
+    max-width: 1200px;
+    padding: 20px 40px;
+    margin: 0 auto;
+}
+
+/* Style amélioré pour le titre */
+h2 { 
+    color: #230046;
+    font-size: 32px;
+    font-weight: 600;
+    margin: 30px 0;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(135deg, #230046, #FF6B00,#ff00ea);
+    border-radius: 2px;
+}
+
+/* Style amélioré pour la grille de paramétrage */
+.parametrage-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 30px 0;
+    margin-top: 20px;
+    justify-items: start;
+    
+}
+
+/* Style amélioré pour les cards */
+.option-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 30px;
+    height: 200px; /* Fixed height */
+    width: 100%; /* Ensures card takes full grid cell width */
+    max-width: 280px; /* Matches grid’s minimum column width for consistency */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(35, 0, 70, 0.1);
+    box-sizing: border-box;
+}
+
+.option-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #230046, #FF6B00);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.option-card:hover::before {
+    opacity: 1;
+}
+
+.option-card img {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.option-card span {
+    color: #230046;
+    font-weight: 600;
+    font-size: 18px;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.option-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(35, 0, 70, 0.1);
+}
+
+.option-card:hover img {
+    transform: scale(1.1);
+}
+
+/* Scrollbar personnalisée */
+.feed::-webkit-scrollbar {
+    width: 8px;
+}
+
+.feed::-webkit-scrollbar-thumb {
+    background-color: rgba(35, 0, 70, 0.2);
+    border-radius: 4px;
+}
+
+.feed::-webkit-scrollbar-track {
+    background: transparent;
+}
+@media (max-width: 1139px) {
+    .parametrage-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 768px) {
+    .parametrage-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 892px) {
+    .parametrage-container {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+  @media (max-width: 480px) {
+    .parametrage-container {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+  
+@media screen and (max-width: 1457px) {
+    .app-sidebar {
+        width: 200px; 
+    }
+
+    .app-right-sidebar {
+        display: none; 
+    }
+
+    .feed {
+        left: 250px; 
+        right: 300px; 
+        max-width: calc(100% - 150px);
+    }
+}
+
+
+@media screen and (max-width: 1300px) {
+    .app-sidebar {
+        width: 200px; 
+    }
+
+    .app-right-sidebar {
+        display: none; 
+    }
+
+    .feed {
+        left: 250px; 
+        right: 300px; 
+        max-width: calc(100% - 150px);
+    }
+}
+
+
+
+@media screen and (max-width: 1139px) {
+    .app-sidebar {
+        width: 200px; 
+    }
+
+    .app-right-sidebar {
+        display: none; 
+    }
+
+    .feed {
+        left: 250px; 
+        right: 300px; 
+        max-width: calc(100% - 150px);
+    }
+}
+
+
+
+
+@media screen and (max-width: 1024px) {
+    .app-sidebar {
+        width: 200px; 
+    }
+
+    .app-right-sidebar {
+        display: none; 
+    }
+
+    .feed {
+        left: 220px; 
+        right: 250px; 
+        max-width: calc(100% - 150px);
+    }
+}
+
+
+
+
+@media screen and (max-width: 768px) {
+    .app-sidebar {
+        display: none; 
+    }
+
+    .app-right-sidebar {
+        width: 180px;
+    }
+
+    .feed {
+        left: 200px; 
+        right: 250px; 
+        max-width: calc(100% - 180px);
+    }
+}
+
+
+
+
+
+
+@media screen and (max-width: 480px) {
+    .app-right-sidebar {
+        display: none; 
+    }
+
+    .feed {
+        right: 0; 
+        width: 100%; 
+    }
+}

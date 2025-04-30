@@ -1,0 +1,123 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2>Soumettre une demande de congé</h2>
+    <button type="button" class="close-button" (click)="dialogRef.close()">✕</button>
+  </div>
+  <div class="dialog-content">
+    <form [formGroup]="demandeForm" class="leave-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="congeTypeId">Type de congé</label>
+          <select 
+            id="congeTypeId"
+            formControlName="congeTypeId"
+            (change)="updateSoldeAndUnite($any($event.target).value)"
+            required
+          >
+            <option value="">Sélectionnez un type</option>
+            <option *ngFor="let leave of data.leaveBalances" [value]="leave.id">
+              {{ leave.type }} <!-- Affiche le nom du CongeType -->
+            </option>
+          </select>
+          <span class="error-message" *ngIf="demandeForm.get('congeTypeId')?.hasError('required') && demandeForm.get('congeTypeId')?.touched">
+            Ce champ est requis
+          </span>
+        </div>
+
+        <div class="form-group solde-group">
+          <label>Solde disponible</label>
+          <div class="solde-badge">
+            {{ demandeForm.get('solde')?.value || '0' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="duree">Durée</label>
+          <input 
+            type="number" 
+            id="duree"
+            formControlName="duree"
+            required
+            min="1"
+            placeholder="Entrez la durée"
+            class="duree-input"
+          >
+          <span class="error-message" *ngIf="demandeForm.get('duree')?.hasError('required') && demandeForm.get('duree')?.touched">
+            Ce champ est requis
+          </span>
+          <span class="error-message" *ngIf="demandeForm.get('duree')?.hasError('min') && demandeForm.get('duree')?.touched">
+            La durée doit être supérieure à 0
+          </span>
+          <span class="error-message" *ngIf="demandeForm.hasError('soldeInsuffisant') && demandeForm.get('duree')?.touched">
+            Le solde disponible est insuffisant
+          </span>
+        </div>
+        <div class="form-group unite-group">
+          <label>Unité</label>
+          <div class="unite-badge">
+            {{ demandeForm.get('unite')?.value || '-' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row date-row">
+        <div class="form-group">
+          <label for="dateDebut">Date de début</label>
+          <input 
+            type="date" 
+            id="dateDebut"
+            formControlName="dateDebut"
+            required
+          >
+          <span class="error-message" *ngIf="demandeForm.get('dateDebut')?.hasError('required') && demandeForm.get('dateDebut')?.touched">
+            Ce champ est requis
+          </span>
+        </div>
+        <div class="form-group">
+          <label class="date-fin" for="dateFin">Date de fin</label>
+          <input 
+            type="date" 
+            id="dateFin"
+            formControlName="dateFin"
+            required
+          >
+          <span class="error-message" *ngIf="demandeForm.get('dateFin')?.hasError('required') && demandeForm.get('dateFin')?.touched">
+            Ce champ est requis
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group full-width">
+        <label for="commentaires">Commentaires</label>
+        <textarea 
+          id="commentaires"
+          formControlName="commentaires"
+          rows="4"
+          placeholder="Ajoutez des commentaires (facultatif)"
+        ></textarea>
+      </div>
+
+      <div class="form-group full-width">
+        <label>Pièce jointe (facultatif)</label>
+        <div class="file-input-container">
+          <button type="button" class="file-button" (click)="fileInput.click()">
+            Choisir un fichier
+          </button>
+          <span class="file-name">{{ fileName || 'Aucun fichier choisi' }}</span>
+          <input 
+            #fileInput 
+            type="file" 
+            (change)="onFileChange($event)" 
+            hidden
+          >
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="dialog-actions">
+    <button type="button" class="cancel-button" (click)="dialogRef.close()">Annuler</button>
+    <button type="button" class="submit-button" [disabled]="demandeForm.invalid" (click)="submit()">Envoyer</button>
+  </div>
+</div>

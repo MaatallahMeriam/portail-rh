@@ -1,0 +1,603 @@
+/* Layout global */
+.collab-home {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Sidebars */
+.app-sidebar, .app-right-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  background: #ffffff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.app-sidebar {
+  left: 0;
+  width: 250px;
+}
+
+.app-right-sidebar {
+  right: 0;
+  width: 250px;
+}
+
+/* Zone principale */
+.feed {
+  position: fixed;
+  top: 70px;
+  left: 300px;
+  right: 250px;
+  bottom: 0;
+  overflow-y: auto;
+  background: transparent;
+  max-width: 900px;
+}
+
+/* Container principal */
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* En-tête avec titre et recherche */
+.title {
+  color: #230046;
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  margin-left: 10px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(135deg, #230046, #FF6B00, #ff00ea);
+  border-radius: 2px;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  gap: 20px;
+}
+
+.search {
+  flex-grow: 1;
+  padding: 12px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  margin-left: 10px;
+  border-color: #230046;
+}
+
+.search:focus {
+  border-color: #230046;
+  box-shadow: 0 0 0 3px rgba(35, 0, 70, 0.1);
+  outline: none;
+}
+
+.add-button {
+  background: linear-gradient(45deg, #230046, #5600ad);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  margin-right: 30px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(35, 0, 70, 0.2);
+}
+
+/* Table des utilisateurs */
+.history-table-container {
+  min-height: 400px;
+  position: relative;
+  margin-top: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  max-width: 200px;
+}
+
+/* Styles pour ngx-datatable */
+:host ::ng-deep {
+  .ngx-datatable.material {
+    background: #ffffff;
+    border-radius: 12px;
+    max-width: 900px;
+
+    .datatable-header {
+      background: #ffffff;
+      padding: 15px 0;
+      max-width: 900px;
+
+      .datatable-header-cell {
+        color: #230046;
+        font-weight: 600;
+        font-size: 15px;
+        height: fit-content;
+        padding: 15px;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex; 
+        
+        margin-bottom: 200px;
+        margin-top: -20px;
+      }
+    }
+
+    .datatable-body {
+      .datatable-body-row {
+        border-bottom: 3px solid rgba(35, 0, 70, 0.02);
+        transition: all 0.3s ease;
+
+        .datatable-body-cell {
+          padding: 15px;
+          font-size: 14px;
+          color: #2c3e50;
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+  }
+}
+
+/* Cellule utilisateur */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Menu d'actions */
+.actions-cell {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-button:hover {
+  background-color: rgba(35, 0, 70, 0.05);
+}
+
+.dropdown-menu {
+  position: fixed;
+  margin-top: 15px;
+  margin-left: -150px;
+  margin-right: 70px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+  z-index: 9999;
+  border: 1px solid #e0e0e0;
+}
+
+.dropdown-menu button {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #2c3e50;
+  font-size: 14px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+  background-color: rgba(35, 0, 70, 0.05);
+  color: #230046;
+}
+
+.dropdown-menu button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #2c3e50;
+}
+
+.archive {
+  left: 4px;
+}
+
+.delete {
+  left: 10px;
+}
+
+/* Formulaire */
+.form-container {
+  position: fixed;
+  top: 54%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh; /* Ajusté pour mieux s'adapter aux petits écrans */
+  overflow-y: auto;
+  z-index: 1000;
+  box-sizing: border-box; /* Assure que le padding est inclus dans la largeur/hauteur */
+
+  .close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #666;
+    }
+
+    &:hover {
+      background: rgba(35, 0, 70, 0.05);
+      mat-icon {
+        color: #230046;
+      }
+    }
+  }
+}
+
+.form-container::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.form-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.form-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Réduit pour les petits écrans */
+}
+
+.form-section h1 {
+  color: #230046;
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 5px;
+  margin-top: -10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+label {
+  display: block;
+  color: #230046;
+  font-weight: 600;
+  margin-bottom: 8px;
+  margin-top: 8px;
+}
+
+input, select {
+  padding: 12px;
+  border: 2px solid rgba(35, 0, 70, 0.1);
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  width: 100%; /* Assure que les champs prennent toute la largeur disponible */
+  box-sizing: border-box;
+}
+
+input:focus, select:focus {
+  border-color: #230046;
+  box-shadow: 0 0 0 3px rgba(35, 0, 70, 0.1);
+  outline: none;
+}
+
+input.error {
+  border-color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.05);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px; /* Réduit pour les petits écrans */
+}
+
+.submit-button,
+.cancel-button {
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.submit-button {
+  background: #230046;
+  color: white;
+}
+
+.submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.2);
+}
+
+.cancel-button {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.cancel-button:hover {
+  background: #eee;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.2);
+}
+
+/* File inputs */
+.file {
+  border: 2px dashed #e0e0e0;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.file:hover {
+  border-color: #230046;
+  background-color: rgba(35, 0, 70, 0.02);
+}
+
+/* Scrollbar */
+.feed::-webkit-scrollbar {
+  width: 8px;
+}
+
+.feed::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 4px;
+}
+
+.feed::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Media Queries */
+@media screen and (max-width: 1300px) {
+  .app-sidebar {
+    width: 200px;
+  }
+
+  .app-right-sidebar {
+    display: none;
+  }
+
+  .feed {
+    left: 250px;
+    right: 300px;
+    max-width: calc(100% - 150px);
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .app-sidebar {
+    width: 200px;
+  }
+
+  .app-right-sidebar {
+    display: none;
+  }
+
+  .feed {
+    left: 250px;
+    right: 250px;
+    max-width: calc(100% - 150px);
+  }
+
+  .container {
+    padding: 20px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .app-sidebar {
+    display: none;
+  }
+
+  .app-right-sidebar {
+    width: 180px;
+  }
+
+  .feed {
+    left: 200px;
+    right: 250px;
+    max-width: calc(100% - 180px);
+  }
+
+  .history-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .form-container {
+    padding: 20px;
+    width: 95%; /* Ajuste la largeur pour mieux s'adapter */
+    max-height: 85vh; /* Réduit la hauteur maximale */
+    border-radius: 12px; /* Réduit légèrement le border-radius */
+  }
+
+  .form-section h1 {
+    font-size: 24px; /* Réduit la taille du titre */
+  }
+
+  input, select {
+    font-size: 13px; /* Réduit la taille de la police pour les champs */
+    padding: 10px; /* Réduit le padding */
+  }
+
+  label {
+    font-size: 14px; /* Réduit la taille des labels */
+  }
+
+  .form-actions {
+    gap: 10px; /* Réduit l'espacement entre les boutons */
+  }
+
+  .submit-button, .cancel-button {
+    padding: 10px 20px; /* Réduit le padding des boutons */
+    font-size: 14px; /* Réduit la taille de la police des boutons */
+  }
+
+  .close-button {
+    top: 10px;
+    right: 10px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .app-right-sidebar {
+    display: none;
+  }
+
+  .feed {
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
+  .container {
+    padding: 15px;
+    margin: 10px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .form-container {
+    padding: 15px;
+    width: 100%; /* Prend toute la largeur */
+    height: 100vh; /* Prend toute la hauteur de l'écran */
+    max-height: none; /* Supprime la limite de hauteur */
+    top: 0;
+    left: 0;
+    transform: none; /* Supprime la transformation pour couvrir l'écran */
+    border-radius: 0; /* Supprime le border-radius pour un look plein écran */
+  }
+
+  .form-section {
+    gap: 15px; /* Réduit encore l'espacement */
+  }
+
+  .form-section h1 {
+    font-size: 20px; /* Réduit encore la taille du titre */
+  }
+
+  input, select {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  label {
+    font-size: 13px;
+  }
+
+  .form-actions {
+    flex-direction: column; /* Passe les boutons en colonne */
+    gap: 10px;
+  }
+
+  .submit-button, .cancel-button {
+    width: 100%; /* Les boutons prennent toute la largeur */
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .close-button {
+    top: 8px;
+    right: 8px;
+  }
+}

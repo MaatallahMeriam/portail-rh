@@ -1,0 +1,21 @@
+<div class="form-container">
+    <div class="form-modal">
+      <h3>Modifier une équipe</h3>
+      <form>
+        <div class="form-group">
+          <label for="edit-nom">Nom de l'équipe</label>
+          <input id="edit-nom" type="text" [(ngModel)]="editEquipeData.nom" name="edit-nom" placeholder="Nom" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="edit-departement">Département</label>
+          <input id="edit-departement" type="text" [(ngModel)]="editEquipeData.departement" name="edit-departement" placeholder="Département" required />
+        </div>
+  
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" (click)="onClose()">Annuler</button>
+          <button type="button" class="btn btn-submit" (click)="onUpdate()">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>

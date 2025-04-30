@@ -1,0 +1,588 @@
+.collab-home {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  .main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .title {
+    text-align: center;
+    color: #230046;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
+  /* Header avec recherche et bouton d'ajout */
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+  }
+  
+  .search {
+    flex-grow: 1;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  
+    &:focus {
+      border-color: #230046;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(35, 0, 70, 0.1);
+    }
+  }
+  
+  .add-button {
+    background: #230046;
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  
+    &:hover {
+      background: #340069;
+      transform: scale(1.05);
+    }
+  }
+  
+  /* Grid de documents */
+  .documents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+  }
+  
+  .document-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  
+    .document-icon {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+  
+      mat-icon {
+        font-size: 40px;
+        width: 40px;
+        height: 40px;
+        color: #230046;
+      }
+    }
+  
+    .document-info {
+      flex: 1;
+  
+      .document-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #230046;
+        margin: 0 0 8px 0;
+      }
+  
+      .document-description {
+        font-size: 14px;
+        color: #666;
+        margin: 0 0 12px 0;
+        line-height: 1.4;
+      }
+  
+      .document-category {
+        display: inline-block;
+        padding: 4px 12px;
+        background: #f0f0f0;
+        border-radius: 15px;
+        font-size: 12px;
+        color: #555;
+      }
+    }
+  
+    .document-actions {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+  }
+  
+  /* Menu déroulant */
+  .menu-button {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-radius: 50%;
+  
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+  
+    mat-icon {
+      color: #666;
+      font-size: 20px;
+    }
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    z-index: 1000;
+    overflow: hidden;
+  
+    button {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+      color: #333;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+  
+      &:hover {
+        background-color: #f5f5f5;
+      }
+  
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+  
+  /* Formulaire */
+  .form-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    z-index: 200;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+  
+    h2 {
+      color: #230046;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 24px;
+    }
+  
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+  
+    label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+  
+    input {
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+  
+      &:focus {
+        border-color: #230046;
+        outline: none;
+      }
+    }
+  
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      margin-top: 25px;
+  
+      
+    }
+  }
+  
+  .submit-button,
+  .cancel-button {
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .submit-button {
+    background: #230046;
+    color: white;
+  }
+  
+  .submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(35, 0, 70, 0.2);
+  }
+  
+  .cancel-button {
+    background: #f5f5f5;
+    color: #666;
+  }
+  
+  .cancel-button:hover {
+    background: #eee;
+  }
+  
+  .feed {
+    position: fixed; 
+    top: 70px; 
+    left: 350px; 
+    right: 250px; 
+    bottom: 0; 
+    overflow-y: auto; 
+    max-width: 800px; 
+    background: #fff;
+  }
+  
+  .feed::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .feed::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+    border-radius: 5px;
+  }
+  
+  .feed::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  /* Responsive Design - Updated Media Queries */
+  @media screen and (max-width: 1440px) {
+    .container {
+      max-width: 1100px;
+    }
+  
+    .documents-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+  }
+  
+  @media screen and (max-width: 1457px) {
+    .app-sidebar {
+        width: 200px; 
+    }
+  
+    .app-right-sidebar {
+        display: none; 
+    }
+  
+    .feed {
+        left: 250px; 
+        right: 300px; 
+        max-width: calc(100% - 150px);
+    }
+  }
+  @media screen and (max-width: 1300px) {
+    .app-sidebar {
+        width: 200px; 
+    }
+  
+    .app-right-sidebar {
+        display: none; 
+    }
+  
+    .feed {
+        left: 250px; 
+        right: 300px; 
+        max-width: calc(100% - 150px);
+    }
+  }
+  @media screen and (max-width: 1200px) {
+    .container {
+      max-width: 900px;
+      margin: 15px;
+    }
+  
+    .documents-grid {
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+  
+    .feed {
+      padding: 15px;
+    }
+  }
+  
+  @media screen and (max-width: 992px) {
+    .container {
+      margin: 10px;
+    }
+  
+    .documents-grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 15px;
+    }
+  
+    .document-card {
+      padding: 15px;
+  
+      .document-icon mat-icon {
+        font-size: 35px;
+        width: 35px;
+        height: 35px;
+      }
+    }
+  }
+  @media screen and (max-width: 1139px) {
+    .app-sidebar {
+        width: 200px; 
+    }
+  
+    .app-right-sidebar {
+        display: none; 
+    }
+  
+    .feed {
+        left: 250px; 
+        right: 300px; 
+        max-width: calc(100% - 150px);
+    }
+  }
+  
+  
+  @media screen and (max-width: 1024px) {
+    .app-sidebar {
+        width: 200px; 
+    }
+  
+    .app-right-sidebar {
+        display: none; 
+    }
+  
+    .feed {
+        left: 220px; 
+        right: 250px; 
+        max-width: calc(100% - 150px);
+    }
+  }
+  
+  
+  
+  
+  @media screen and (max-width: 768px) {
+    .app-sidebar {
+        display: none; 
+    }
+  
+    .app-right-sidebar {
+        width: 180px;
+    }
+  
+    .feed {
+        left: 200px; 
+        right: 250px; 
+        max-width: calc(100% - 180px);
+    }
+  }
+  
+  
+  
+  
+  
+  
+  @media screen and (max-width: 480px) {
+    .app-right-sidebar {
+        display: none; 
+    }
+  
+    .feed {
+        right: 0; 
+        width: 100%; 
+    }
+  }
+  
+  @media screen and (max-width: 768px) {
+    .container {
+      margin: 10px;
+      padding: 15px;
+    }
+  
+    .documents-grid {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+  
+    .history-header {
+      flex-direction: row;
+      gap: 10px;
+    }
+  
+    .document-card {
+      .document-name {
+        font-size: 16px;
+      }
+  
+      .document-description {
+        font-size: 13px;
+      }
+    }
+  
+    .form-container {
+      padding: 20px;
+      width: 95%;
+    }
+  }
+  
+  @media screen and (max-width: 576px) {
+    .container {
+      margin: 8px;
+      padding: 12px;
+    }
+  
+    .history-header {
+      flex-direction: column;
+      
+      .search {
+        width: 100%;
+      }
+      
+      .add-button {
+        align-self: flex-end;
+      }
+    }
+  
+    .documents-grid {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+  
+    .document-card {
+      padding: 12px;
+  
+      .document-icon mat-icon {
+        font-size: 30px;
+        width: 30px;
+        height: 30px;
+      }
+  
+      .document-name {
+        font-size: 15px;
+      }
+  
+      .document-description {
+        font-size: 12px;
+      }
+    }
+  
+    .form-container {
+      padding: 15px;
+      width: 100%;
+      border-radius: 0;
+      height: 100vh;
+      max-height: 100vh;
+      top: 0;
+      left: 0;
+      transform: none;
+  
+      h2 {
+        font-size: 20px;
+      }
+  
+      .form-actions {
+        flex-direction: column;
+        
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+  
+  /* Layout spécifique */
+  .app-sidebar,
+  .app-right-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+  }
+  
+  .app-sidebar {
+    left: 0;
+    width: 250px;
+  }
+  
+  .app-right-sidebar {
+    right: 0;
+    width: 250px;
+  }
+  
+  @media screen and (max-width: 1300px) {
+    .app-right-sidebar {
+      display: none;
+    }
+  }
+  
+  @media screen and (max-width: 992px) {
+    .app-sidebar {
+      width: 200px;
+    }
+  }
+  
+  @media screen and (max-width: 768px) {
+    .app-sidebar {
+      display: none;
+    }
+  }
