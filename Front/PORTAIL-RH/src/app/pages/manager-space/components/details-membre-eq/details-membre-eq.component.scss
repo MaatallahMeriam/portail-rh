@@ -25,14 +25,21 @@ $transition: all 0.3s ease;
 
 .feed {
   position: fixed;
-  top: 65px;
+  top: 80px;
   left: 280px;
   right: 50px;
   bottom: 0;
   overflow-y: auto;
   background: transparent;
-  max-width: none;
+  max-width: 1200;
   padding: 20px;
+  transition: all 0.3s ease-in-out;
+
+  &.sidebar-collapsed {
+    left: 100px;
+    right: 20px;
+    max-width: 1500px;
+  }
 
   &::-webkit-scrollbar {
     display: none;
@@ -88,6 +95,7 @@ $transition: all 0.3s ease;
   padding: 20px;
   margin-bottom: 20px;
   transition: $transition;
+  max-width: 450px;
 
   &:hover {
     transform: translateY(-5px);
@@ -143,7 +151,6 @@ $transition: all 0.3s ease;
   border-radius: 15px;
   overflow: hidden;
   padding: 20px;
-  background: $background-color;
 }
 
 .conge-card {
@@ -281,7 +288,14 @@ $transition: all 0.3s ease;
 @media (max-width: 1200px) {
   .feed {
     left: 250px;
+    right: 0 px;
     max-width: none;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
   }
 
   .user-info {
@@ -301,6 +315,12 @@ $transition: all 0.3s ease;
     left: 0;
     right: 0;
     max-width: 100%;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
   }
 
   .user-details {
@@ -327,12 +347,26 @@ $transition: all 0.3s ease;
 @media screen and (max-width: 1470px) and (min-width: 1022px) {
   .feed {
     left: 270px;
+    max-width: 1300px;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
   }
 }
 
 @media screen and (max-width: 1024px) {
   .feed {
-    left: 200px;
+    left: 250px;
+
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
   }
 }
 
@@ -340,6 +374,12 @@ $transition: all 0.3s ease;
   .feed {
     right: 0;
     width: 100%;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
   }
 
   .user-card {

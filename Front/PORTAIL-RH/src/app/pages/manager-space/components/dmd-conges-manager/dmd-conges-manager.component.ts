@@ -53,7 +53,7 @@ export class DmdCongesManagerComponent implements OnInit {
   userCongesList: UserCongesDTO[] = [];
   validatedDemandes: DemandeDTO[] = [];
 
-  currentDate: Date = new Date(); // Use the actual current date
+  currentDate: Date = new Date();
   currentMonth: string;
   currentYear: number;
   calendarDays: { date: Date; isCurrentMonth: boolean }[] = [];
@@ -87,6 +87,8 @@ export class DmdCongesManagerComponent implements OnInit {
     nav: true,
   };
 
+  isSidebarCollapsed = false; // Track sidebar state
+
   constructor(
     private authService: AuthService,
     private congeTypeService: CongeTypeService,
@@ -95,7 +97,6 @@ export class DmdCongesManagerComponent implements OnInit {
     private dialog: MatDialog
   ) {
     // Initialize current month and year based on the actual current date
-    this.currentDate = new Date(); // Dynamically set to today's date
     this.currentMonth = this.currentDate.toLocaleString('default', { month: 'long' }).toUpperCase();
     this.currentYear = this.currentDate.getFullYear();
     this.generateCalendar();
@@ -105,6 +106,12 @@ export class DmdCongesManagerComponent implements OnInit {
     this.fetchUserConges();
     this.fetchDemandes();
     this.fetchValidatedDemandes();
+  }
+
+  // Handle sidebar state changes
+  onSidebarStateChange(isCollapsed: boolean) {
+    this.isSidebarCollapsed = isCollapsed;
+    this.cdr.markForCheck(); // Ensure change detection runs
   }
 
   // Fetch validated leave requests (statut = VALIDEE)

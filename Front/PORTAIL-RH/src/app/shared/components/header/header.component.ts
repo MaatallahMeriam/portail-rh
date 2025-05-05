@@ -6,12 +6,12 @@ import { NotificationService, Notification } from '../../../services/notificatio
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatMenuModule],
+  imports: [CommonModule, MatIconModule, MatTooltipModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
@@ -106,6 +106,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  formatNotificationMessage(notification: Notification): string {
+    const type = notification.type?.toLowerCase();
+    const message = notification.message?.toLowerCase() || '';
+    
+    if (type === 'conges') {
+      if (message.includes('acceptée')) {
+        return 'Demande de congé acceptée';
+      } else if (message.includes('refusée')) {
+        return 'Demande de congé refusée';
+      }
+      return 'Nouvelle demande de congé';
+    } else if (type === 'document') {
+      return 'Nouvelle demande de document';
+    } else if (type === 'logistique') {
+      return 'Nouvelle demande logistique';
+    }
+    return message || 'Nouvelle notification';
+  }
+
   goToDemande(notification: Notification): void {
     const userRole = this.authService.getUserRole();
     const notificationType = notification.type;
@@ -174,6 +193,57 @@ export class HeaderComponent implements OnInit, OnDestroy {
         break;
       default:
         console.warn('Rôle non reconnu :', userRole);
+        this.router.navigate(['/login']);
+    }
+  }
+
+  navigateToTeam(): void {
+    const userRole = this.authService.getUserRole();
+    if (!userRole) {
+      console.warn('Aucun rôle trouvé pour l\'utilisateur. Redirection vers la page de connexion.');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    switch (userRole) {
+      case 'COLLAB':
+        this.router.navigate(['/membre-collab']);
+        break;
+      case 'RH':
+        this.router.navigate(['/membre-rh']);
+        break;
+      case 'MANAGER':
+        this.router.navigate(['/details-eq']);
+        break;
+      default:
+        console.warn('Rôle non reconnu pour la navigation vers la page équipe :', userRole);
+        this.router.navigate(['/login']);
+    }
+  }
+
+  navigateToProfile(): void {
+    const userRole = this.authService.getUserRole();
+    if (!userRole) {
+      console.warn('Aucun rôle trouvé pour l\'utilisateur. Redirection vers la page de connexion.');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    switch (userRole) {
+      case 'COLLAB':
+        this.router.navigate(['/profile-collab']);
+        break;
+      case 'MANAGER':
+        this.router.navigate(['/profil-manager']);
+        break;
+      case 'RH':
+        this.router.navigate(['/profil-rh']);
+        break;
+        case 'ADMIN':
+        this.router.navigate(['/profil-admin']);
+        break;
+      default:
+        console.warn('Rôle non reconnu pour la navigation vers le profil :', userRole);
         this.router.navigate(['/login']);
     }
   }

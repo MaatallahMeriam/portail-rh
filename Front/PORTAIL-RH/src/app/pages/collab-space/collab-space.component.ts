@@ -1,24 +1,28 @@
 import { Component } from '@angular/core';
 import { SidebarComponent } from './components/sidebar-collab/sidebar.component';
-import { CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FeedComponent } from '../../shared/components/feed/feed.component';
-
-import {CardSliderComponent} from '../../shared/components/card-slider/card-slider.component';
 import { RightSidebarComponent } from '../../shared/components/right-sidebar/right-sidebar.component';
 import { HeaderComponent } from '../../shared/components/header/header.component';
-
 
 @Component({
   selector: 'app-collab-space',
   standalone: true,
-  imports: [HeaderComponent,SidebarComponent,
-      RightSidebarComponent,
-      CardSliderComponent,
-      FeedComponent],
+  imports: [
+    HeaderComponent,
+    SidebarComponent,
+    RightSidebarComponent,
+    FeedComponent
+  ],
   templateUrl: './collab-space.component.html',
   styleUrl: './collab-space.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class CollabSpaceComponent {
+  isSidebarCollapsed = false; // Track sidebar state
 
+  // Update state when sidebar emits a change
+  onSidebarStateChange(isCollapsed: boolean) {
+    this.isSidebarCollapsed = isCollapsed;
+  }
 }

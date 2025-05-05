@@ -18,7 +18,8 @@ import { MatMenuModule } from '@angular/material/menu';
 @Component({
   selector: 'app-gestion-conges',
   standalone: true,
-  imports: [MatMenuModule,
+  imports: [
+    MatMenuModule,
     CommonModule,
     NgxDatatableModule,
     FormsModule,
@@ -50,6 +51,7 @@ export class GestionCongesComponent implements OnInit {
   periodicite: 'MENSUELLE' | 'TRIMESTRIELLE' | 'SEMESTRIELLE' | 'ANNUELLE' | undefined = undefined;
   pasIncrementale: number | undefined = undefined;
   validite = '';
+  isSidebarCollapsed = false;
 
   carouselOptions = {
     loop: true,
@@ -347,5 +349,9 @@ export class GestionCongesComponent implements OnInit {
     } else {
       this.router.navigate(['/gestion-dossier']);
     }
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 }

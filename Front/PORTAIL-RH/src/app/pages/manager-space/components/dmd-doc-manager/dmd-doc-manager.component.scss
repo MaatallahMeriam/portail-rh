@@ -46,7 +46,7 @@ $transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     
     .datatable-header {
-      background: rgba($primary-color, 0.03);
+      background: white;
       border-bottom: 1px solid rgba($primary-color, 0.1);
       
       .datatable-header-cell {
@@ -56,23 +56,34 @@ $transition: all 0.3s ease;
         font-size: 14px;
       }
     }
-    .datatable-body-row{width: 100%}
+    .datatable-body-row {
+      width: 100%;
+    }
     .datatable-body {
-        .datatable-body-row {
-            border-bottom: 1px solid rgba(35, 0, 70, 0.05);
-            transition: all 0.3s ease;
+      .datatable-body-row {
+        border-bottom: 1px solid rgba(35, 0, 70, 0.05);
+        transition: all 0.3s ease;
 
-            &:hover {
-                background: rgba(35, 0, 70, 0.02);
-                transform: translateY(-1px);
-            }
-
-            .datatable-body-cell {
-                padding: 15px;
-                font-size: 14px;
-                color: #2c3e50;
-            }
+        &:hover {
+          background: rgba(35, 0, 70, 0.02);
+          transform: translateY(-1px);
         }
+
+        .datatable-body-cell {
+          padding: 15px;
+          font-size: 14px;
+          color: #2c3e50;
+        }
+      }
+    }
+    .datatable-footer {
+      background: rgba($primary-color, 0.03);
+      border-top: 1px solid rgba($primary-color, 0.1);
+      padding: 15px 20px;
+      font-size: 14px;
+      color: $primary-color;
+      display: flex;
+      align-items: center;
     }
   }
 }
@@ -143,13 +154,20 @@ $transition: all 0.3s ease;
 .feed {
   position: fixed;
   top: 70px;
-  left: 280px;
+  left: 260px;
   right: 250px;
   bottom: 0;
   overflow-y: auto;
   background: transparent;
-  max-width: 900px;
+  max-width: 1050px;
   padding: 20px;
+  transition: all 0.3s ease-in-out;
+
+  &.sidebar-collapsed {
+    left: 100px;
+    right: 250px;
+    max-width: 1200px;
+  }
 
   &::-webkit-scrollbar {
     display: none;
@@ -242,20 +260,24 @@ $transition: all 0.3s ease;
   border-radius: $border-radius;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
-.add-button{background: linear-gradient(45deg, #230046, #3a0073);
-    color: white;
-    border: none;
-    width: 25px;
-    height: 25px;
-    font-size: 15px;
-    margin-right: 30px;
-    cursor: pointer;
-    border-radius: 50%;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;}
+
+.add-button {
+  background: linear-gradient(45deg, #230046, #3a0073);
+  color: white;
+  border: none;
+  width: 25px;
+  height: 25px;
+  font-size: 15px;
+  margin-right: 30px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 // Cards
 .form-card, .history-card {
   background: $card-background;
@@ -263,12 +285,10 @@ $transition: all 0.3s ease;
   overflow: hidden;
 
   .card-header {
-    
-        display: flex;
-        gap: 15px;
-        margin-bottom: 25px;
-        align-items: center;
-      
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    align-items: center;
     padding: 20px;
     background: rgba($primary-color, 0.03);
     border-bottom: 1px solid rgba($primary-color, 0.1);
@@ -435,6 +455,26 @@ $transition: all 0.3s ease;
     left: 250px;
     right: 0;
     max-width: none;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 0;
+      max-width: 1200px;
+    }
+  }
+}
+
+@media (max-width: 1000px) {
+  .feed {
+    left: 250px;
+    right: 100px;
+    max-width: none;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 0;
+      max-width: 1200px;
+    }
   }
 }
 
@@ -442,6 +482,11 @@ $transition: all 0.3s ease;
   .feed {
     left: 0;
     padding: 10px;
+
+    &.sidebar-collapsed {
+      left: 0;
+      padding: 10px;
+    }
   }
 
   .container {
@@ -458,98 +503,103 @@ $transition: all 0.3s ease;
   }
 }
 
+@media screen and (max-width: 1470px)  {
+  .app-side-bar-manager {
+    width: 220px;
+  }
 
-@media screen and (max-width: 1470px) and (min-width: 1022px) {
-    .app-sidebar {
-        width: 220px; 
-    }
+  .app-right-sidebar {
+    width: 220px;
+  }
 
-    .app-right-sidebar {
-        width: 220px; 
-    }
+  .feed {
+    left: 270px;
+    right: 270px;
+    max-width: 980px;
 
-    .feed {
-        left: 270px; 
-        right: 270px; 
-        max-width: 980px; 
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 250px;
+      max-width: 1200px;
     }
+  }
 }
-
-
-
-
 
 @media screen and (max-width: 1024px) {
-    .app-sidebar {
-        width: 150px; 
-    }
+  .app-side-bar-manager {
+    width: 150px;
+  }
 
-    .app-right-sidebar {
-        display: none; 
-    }
+  .app-right-sidebar {
+    display: none;
+  }
 
-    .feed {
-        left: 200px; 
-        right: 0; 
-        max-width: calc(100% - 150px);
+  .feed {
+    left: 220px;
+    right: 200px;
+    max-width: calc(100% - 150px);
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 0;
+      max-width: 1200px;
     }
+  }
 }
-
-
-@media screen and (max-width: 1024px) {
-    .app-sidebar {
-        width: 200px; 
-    }
-
-    .app-right-sidebar {
-        display: none; 
-    }
-
-    .feed {
-        left: 250px; 
-        right: 250px; 
-        max-width: calc(100% - 150px);
-    }
-}
-
 
 @media screen and (max-width: 768px) {
-    
+  .app-right-sidebar {
+    width: 180px;
+  }
 
-    .app-right-sidebar {
-        width: 180px;
-    }
+  .feed {
+    left: 500px;
+    right: 250px;
+    max-width: calc(100% - 300px);
 
-    .feed {
-        left: 500px; 
-        right: 250px; 
-        max-width: calc(100% - 300px);
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 180px;
+      max-width: 1200px;
     }
+  }
 }
 
 @media screen and (max-width: 768px) and (min-width: 481px) {
-    .app-sidebar {
-        display: none; 
-    }
+  .app-side-bar-manager {
+    display: none;
+  }
 
-    .app-right-sidebar {
-        width: 200px; 
-    }
+  .app-right-sidebar {
+    width: 200px;
+  }
 
-    .feed {
-        left: 200px; 
-        right: 220px; 
-        max-width: calc(100% - 200px); 
+  .feed {
+    left: 200px;
+    right: 220px;
+    max-width: calc(100% - 200px);
+
+    &.sidebar-collapsed {
+      left: 0;
+      right: 200px;
+      max-width: 1200px;
     }
+  }
 }
 
 @media screen and (max-width: 480px) {
-    .app-right-sidebar {
-        display: none; 
-    }
+  .app-right-sidebar {
+    display: none;
+  }
 
-    .feed {
-        right: 0; 
-        width: 100%; 
+  .feed {
+    right: 120px;
+    width: 100%;
+
+    &.sidebar-collapsed {
+      left: 20px;
+      right: 250px;
+      width: 95%;
     }
+  }
 }

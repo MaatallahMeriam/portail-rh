@@ -21,7 +21,7 @@ public class TeletravailPlanning {
     private Long id;
 
     public enum Politique {
-        CHOIX_LIBRE, SEUIL_LIBRE, PLANNING_FIXE
+        CHOIX_LIBRE, SEUIL_LIBRE, PLANNING_FIXE,PLANNING_FIXE_JOURS_LIBRES
     }
 
     @Enumerated(EnumType.STRING)
@@ -38,7 +38,7 @@ public class TeletravailPlanning {
     @ElementCollection
     @CollectionTable(name = "teletravail_jours_fixes", joinColumns = @JoinColumn(name = "planning_id"))
     @Column(name = "jour")
-    private List<String> joursFixes = new ArrayList<>(); // Format: "2025-05-01"
+    private List<String> joursFixes = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "rh_id", nullable = false)

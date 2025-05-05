@@ -1,28 +1,21 @@
 <div class="collab-home">
-    <app-header></app-header>
+  <app-header></app-header>
 
-    <div class="main-content">
-        <app-sidebar-admin></app-sidebar-admin>
-        
-        <div class="feed">
+  <div class="main-content">
+    <app-sidebar-admin (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar-admin>
 
-
-
-            <div class="dashboard-container">
-                <div class="dashboard-row">
-                  <app-age-groups class="dashboard-widget wide"></app-age-groups>
-                  
-                  <app-birthday class="dashboard-widget"></app-birthday>
-                </div>
-                <div class="dashboard-row2">
-                  <app-absence-rate class="dashboard-widget"></app-absence-rate>
-                  <app-onsite-work class="dashboard-widget"></app-onsite-work>
-                  <app-turnover class="dashboard-widget"></app-turnover>
-                </div>
-              </div>
-
-              
-
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <div class="dashboard-container">
+        <div class="dashboard-row">
+          <app-age-groups class="dashboard-widget wide"></app-age-groups>
+          <app-birthday class="dashboard-widget"></app-birthday>
         </div>
+        <div class="dashboard-row2">
+          <app-absence-rate class="dashboard-widget"></app-absence-rate>
+          <app-onsite-work class="dashboard-widget"></app-onsite-work>
+          <app-turnover class="dashboard-widget"></app-turnover>
+        </div>
+      </div>
     </div>
+  </div>
 </div>

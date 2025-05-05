@@ -37,6 +37,12 @@ $transition: all 0.3s ease;
   &::-webkit-scrollbar {
     display: none;
   }
+  transition: all 0.3s ease-in-out; 
+}
+
+.feed.sidebar-collapsed {
+  left: 100px;
+  width: calc(100% - 150px);
 }
 
 .container {

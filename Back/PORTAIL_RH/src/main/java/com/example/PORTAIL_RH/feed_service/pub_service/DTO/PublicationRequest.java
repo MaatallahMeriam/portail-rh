@@ -22,4 +22,6 @@ public class PublicationRequest {
 
     // Spécifique à IdeeBoitePost
     private String idee;
+    private String image;
+    private String topic;
 }

@@ -33,6 +33,7 @@ export class DetailsMembreEqComponent implements OnInit {
   selectedDays: string[] = [];
   hasPlanning: boolean = false;
   loading: boolean = true;
+  isSidebarCollapsed: boolean = false;
 
   carouselOptions = {
     loop: true,
@@ -75,6 +76,10 @@ export class DetailsMembreEqComponent implements OnInit {
         this.router.navigate(['/list-member-manager']);
       }
     });
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 
   loadUserDetails(userId: number): void {
@@ -163,7 +168,6 @@ export class DetailsMembreEqComponent implements OnInit {
     const lastDayOfMonth = new Date(year, month + 1, 0);
     const today = new Date();
 
-    // Ajouter des jours de remplissage avant le début du mois
     const startDay = firstDayOfMonth.getDay();
     const offset = startDay === 0 ? 6 : startDay - 1;
     for (let i = offset; i > 0; i--) {
@@ -175,7 +179,6 @@ export class DetailsMembreEqComponent implements OnInit {
       });
     }
 
-    // Ajouter les jours du mois courant
     for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
       const date = new Date(year, month, day);
       calendarDays.push({
@@ -188,7 +191,6 @@ export class DetailsMembreEqComponent implements OnInit {
       });
     }
 
-    // Ajouter des jours de remplissage après la fin du mois
     const lastDay = lastDayOfMonth.getDay();
     const endOffset = lastDay === 0 ? 0 : 7 - lastDay;
     for (let i = 1; i <= endOffset; i++) {

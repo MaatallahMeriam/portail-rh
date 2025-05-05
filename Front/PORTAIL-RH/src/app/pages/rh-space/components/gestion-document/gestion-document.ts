@@ -40,6 +40,7 @@ export class GestionDocComponent {
   docCategorie: string = '';
   docFile: File | null = null;
   searchText: string = '';
+  isSidebarCollapsed = false;
 
   columns = [
     { prop: 'id', name: 'ID', width: 50 },
@@ -213,5 +214,9 @@ export class GestionDocComponent {
         });
       },
     });
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 }

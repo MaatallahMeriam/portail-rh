@@ -56,6 +56,7 @@ export class TraitDmdDetailsComponent implements OnInit {
   loading: boolean = false;
   private typeChangeSubject = new Subject<'logistique' | 'document'>();
   private userImageCache: Map<number, string> = new Map();
+  isSidebarCollapsed = false;
 
   constructor(
     private demandeService: DemandeService,
@@ -335,5 +336,9 @@ export class TraitDmdDetailsComponent implements OnInit {
   setActiveTab(tab: 'pending' | 'history'): void {
     this.activeTab = tab;
     this.loadDemandes();
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 }

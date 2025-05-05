@@ -69,6 +69,7 @@ export class SoldeCongesComponent implements OnInit {
     isGlobal: boolean;
   }[] = [];
   selectedCongeTypeId: number | null = null;
+  isSidebarCollapsed = false;
 
   customOptions: any = {
     loop: true,
@@ -411,5 +412,9 @@ export class SoldeCongesComponent implements OnInit {
 
   voirDetailsConges(user: UserDTO) {
     this.router.navigate([`/details-conges/${user.id}`]);
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 }

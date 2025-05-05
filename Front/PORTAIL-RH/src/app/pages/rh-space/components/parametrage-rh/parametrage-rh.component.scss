@@ -32,16 +32,23 @@
 }
 
 .feed {
-    position: fixed; 
-    top: 50px; 
-    left: 250px; 
-    right: 250px; 
-    bottom: 0; 
-    overflow-y: auto; 
-    max-width: 1200px;
-    padding: 20px 40px;
-    margin: 0 auto;
+    position: fixed;
+    top: 70px;
+    left: 260px;
+    right: 250px;
+    bottom: 0;
+    background: transparent;
+    max-width: 1000px;
+    padding: 20px;
+    transition: all 0.3s ease-in-out; 
 }
+
+.feed.sidebar-collapsed {
+    left: 100px;
+    right: 250px;
+    max-width: calc(100% - 350px); // Adjusts for collapsed sidebar (100px) and right sidebar (250px)
+}
+
 
 h2 { 
     color: #230046;
@@ -59,7 +66,7 @@ h2::after {
     left: 0;
     width: 110px;
     height: 6px;
-    background: linear-gradient(135deg, #230046, #FF6B00,#ff00ea);
+    background: linear-gradient(135deg, #230046, #FF6B00, #ff00ea);
     border-radius: 2px;
 }
 
@@ -71,7 +78,20 @@ h2::after {
     padding: 30px 0;
     margin-top: 20px;
     justify-items: start;
-    
+    margin-left: 45px;
+}
+
+.parametrage-container::-webkit-scrollbar {
+    display: none;
+}
+
+.parametrage-container::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+    border-radius: 5px;
+}
+
+.parametrage-container::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 /* Style amélioré pour les cards */
@@ -103,14 +123,12 @@ h2::after {
     opacity: 0;
     transition: opacity 0.3s ease;
     cursor: pointer;
-
 }
 
 .option-card:hover::before {
     opacity: 1;
     cursor: pointer;
-    background: linear-gradient(135deg, #230046, #FF6B00,#ff00ea);
-
+    background: linear-gradient(135deg, #230046, #FF6B00, #ff00ea);
 }
 
 .option-card img {
@@ -132,7 +150,6 @@ h2::after {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(35, 0, 70, 0.1);
     cursor: pointer;
-
 }
 
 .option-card:hover img {
@@ -153,29 +170,8 @@ h2::after {
     background: transparent;
 }
 
-
-@media (max-width: 1139px) {
-    .parametrage-container {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @media (max-width: 768px) {
-    .parametrage-container {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @media (max-width: 892px) {
-    .parametrage-container {
-      grid-template-columns: repeat(1, 1fr);
-    }
-  }
-  @media (max-width: 480px) {
-    .parametrage-container {
-      grid-template-columns: repeat(1, 1fr);
-    }
-  }
-  
-@media screen and (max-width: 1457px) {
+/* Responsive Adjustments */
+@media screen and (max-width: 1200px) {
     .app-sidebar {
         width: 200px; 
     }
@@ -185,14 +181,24 @@ h2::after {
     }
 
     .feed {
-        left: 250px; 
-        right: 300px; 
-        max-width: calc(100% - 150px);
+        left: 200px; 
+        right: 0; 
+        max-width: calc(100% - 200px);
+    }
+
+    .feed.sidebar-collapsed {
+        left: 100px;
+        right: 0;
+        max-width: calc(100% - 100px);
+    }
+
+    .parametrage-container {
+        grid-template-columns: repeat(2, minmax(280px, 1fr));
+        margin-left: 20px;
     }
 }
 
-
-@media screen and (max-width: 1300px) {
+@media screen and (max-width: 900px) {
     .app-sidebar {
         width: 200px; 
     }
@@ -202,51 +208,23 @@ h2::after {
     }
 
     .feed {
-        left: 250px; 
-        right: 300px; 
-        max-width: calc(100% - 150px);
+        left: 200px; 
+        right: 0; 
+        max-width: calc(100% - 200px);
+    }
+
+    .feed.sidebar-collapsed {
+        left: 100px;
+        right: 0;
+        max-width: calc(100% - 100px);
+    }
+
+    .parametrage-container {
+        grid-template-columns: repeat(1, minmax(280px, 1fr));
+        margin-left: 10px;
+        justify-items: center;
     }
 }
-
-
-
-@media screen and (max-width: 1139px) {
-    .app-sidebar {
-        width: 200px; 
-    }
-
-    .app-right-sidebar {
-        display: none; 
-    }
-
-    .feed {
-        left: 250px; 
-        right: 300px; 
-        max-width: calc(100% - 150px);
-    }
-}
-
-
-
-
-@media screen and (max-width: 1024px) {
-    .app-sidebar {
-        width: 200px; 
-    }
-
-    .app-right-sidebar {
-        display: none; 
-    }
-
-    .feed {
-        left: 220px; 
-        right: 250px; 
-        max-width: calc(100% - 150px);
-    }
-}
-
-
-
 
 @media screen and (max-width: 768px) {
     .app-sidebar {
@@ -254,28 +232,65 @@ h2::after {
     }
 
     .app-right-sidebar {
-        width: 180px;
+        display: none; 
     }
 
     .feed {
-        left: 200px; 
-        right: 250px; 
-        max-width: calc(100% - 180px);
+        left: 0; 
+        right: 0; 
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    .feed.sidebar-collapsed {
+        left: 0;
+        right: 0;
+        max-width: 100%;
+    }
+
+    .parametrage-container {
+        grid-template-columns: repeat(1, minmax(280px, 1fr));
+        margin-left: 0;
+        justify-items: center;
     }
 }
 
-
-
-
-
-
 @media screen and (max-width: 480px) {
+    .app-sidebar {
+        display: none; 
+    }
+
     .app-right-sidebar {
         display: none; 
     }
 
     .feed {
+        left: 0; 
         right: 0; 
-        width: 100%; 
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    .feed.sidebar-collapsed {
+        left: 0;
+        right: 0;
+        max-width: 100%;
+    }
+
+    .parametrage-container {
+        grid-template-columns: 1fr;
+        margin-left: 0;
+        padding: 20px 0;
+        justify-items: center;
+    }
+
+    .option-card {
+        max-width: 100%;
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 28px;
+        margin: 20px 0;
     }
 }

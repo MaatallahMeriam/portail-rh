@@ -36,13 +36,21 @@
 /* Zone principale */
 .feed {
   position: fixed;
-  top: 70px;
-  left: 300px;
+  top: 50px;
+  left: 280px;
   right: 250px;
   bottom: 0;
   overflow-y: auto;
   background: transparent;
-  max-width: 900px;
+  max-width: 950px;
+  padding: 20px;
+  transition: all 0.3s ease-in-out;
+
+  &.sidebar-collapsed {
+    left: 100px;
+    right: 150px;
+    max-width: 1150px;
+  }
 }
 
 /* Container principal */
@@ -440,9 +448,8 @@ input.error {
 .feed::-webkit-scrollbar-track {
   background: transparent;
 }
-
 /* Media Queries */
-@media screen and (max-width: 1300px) {
+@media (max-width: 1457px) {
   .app-sidebar {
     width: 200px;
   }
@@ -453,8 +460,35 @@ input.error {
 
   .feed {
     left: 250px;
-    right: 300px;
+    right: 250px;
     max-width: calc(100% - 150px);
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 250px;
+      max-width: 1100px;
+    }
+  }
+}
+/* Media Queries */
+@media screen and (max-width: 1300px) {
+  .app-sidebar {
+    width: 200px;
+  }
+
+  .app-right-sidebar {
+    display: none;
+  }
+  .feed {
+    left: 250px;
+    right: 250px;
+    max-width: calc(100% - 150px);
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 250px;
+      max-width: 1150px;
+    }
   }
 }
 
@@ -487,12 +521,18 @@ input.error {
     width: 180px;
   }
 
+ 
   .feed {
     left: 200px;
     right: 250px;
     max-width: calc(100% - 180px);
-  }
 
+    &.sidebar-collapsed {
+      left: 30px;
+      right: 200px;
+      max-width: 1100px;
+    }
+  }
   .history-header {
     flex-direction: column;
     gap: 15px;
@@ -546,7 +586,15 @@ input.error {
     left: 0;
     right: 0;
     width: 100%;
+    padding: 10px;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
   }
+
 
   .container {
     padding: 15px;

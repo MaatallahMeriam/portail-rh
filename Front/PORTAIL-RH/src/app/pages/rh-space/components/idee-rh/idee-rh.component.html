@@ -1,0 +1,131 @@
+<div class="collab-home">
+    <!-- Success Message Badge -->
+    <div class="success-message" *ngIf="successMessage">
+        {{ successMessage }}
+    </div>
+
+    <app-header></app-header>
+
+    <div class="main-content">
+        <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+        
+        <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+            <!-- Post Idea Section -->
+            <div class="post-idea-section">
+                <div class="welcome-container">
+                    <h2 class="welcome-message">Bonjour, avez-vous des idées à poser aujourd'hui?</h2>
+                    <div class="idea-icon">
+                        <mat-icon class="animated-icon">lightbulb</mat-icon>
+                    </div>
+                </div>
+                <div class="post-input-container">
+                    <textarea 
+                        class="post-input" 
+                        placeholder="Partagez votre idée ici..." 
+                        [(ngModel)]="newIdea" 
+                        #postInput 
+                        (input)="adjustTextareaHeight()"
+                    ></textarea>
+                    <button class="post-button" mat-button>
+                        <span class="post">Poster</span>
+                        <mat-icon class="post-icon">send</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <mat-icon>search</mat-icon>
+                <input 
+                    type="text" 
+                    placeholder="Rechercher ..." 
+                    [(ngModel)]="searchQuery" 
+                    (input)="onSearch()"
+                />
+            </div>
+
+            <!-- Idea Cards -->
+            <div class="idea-cards">
+                <div class="idea-card" *ngFor="let idea of filteredIdeas">
+                    <img [src]="idea.userPhoto || 'assets/icons/user-login-icon-14.png'" alt="User Photo" class="user-photo">
+                    <div class="card-content">
+                        <div class="card-actions" *ngIf="isAuthenticatedUser(idea)">
+                            <button mat-icon-button (click)="startEditing(idea)">
+                                <mat-icon class="icon">edit</mat-icon>
+                            </button>
+                            <button mat-icon-button (click)="deleteIdea(idea.id)">
+                                <mat-icon class="icon">delete</mat-icon>
+                            </button>
+                        </div>
+                        <h3>{{ idea.userNom }} {{ idea.userPrenom }}</h3>
+                        <p class="date">{{ idea.createdAt | date:'short' }}</p>
+                        <ng-container *ngIf="editingIdeaId !== idea.id; else editMode">
+                            <p class="idea-text">{{ idea.idee }}</p>
+                        </ng-container>
+                        <ng-template #editMode>
+                            <textarea 
+                                class="post-input edit-input" 
+                                [(ngModel)]="editedIdeaContent" 
+                                #editInput 
+                                (input)="adjustTextareaHeight()"
+                            ></textarea>
+                            <div class="edit-actions">
+                                <button mat-button (click)="saveEditedIdea()">Save</button>
+                                <button mat-button (click)="cancelEditing()">Cancel</button>
+                            </div>
+                        </ng-template>
+
+                        <!-- Like and Comment Section -->
+                        <div class="interaction-section">
+                            <div class="like-container">
+                                <mat-icon 
+                                    class="like-icon" 
+                                    [ngClass]="{'liked': isLikedByUser(idea.id)}"
+                                    (click)="toggleLike(idea.id)"
+                                >
+                                    favorite
+                                </mat-icon>
+                                <span class="like-count">{{ getLikeCount(idea.id) }}</span>
+                            </div>
+                            <div class="comment-container">
+                                <mat-icon 
+                                    class="comment-icon" 
+                                    (click)="toggleCommentSection(idea.id)"
+                                >
+                                    chat_bubble_outline
+                                </mat-icon>
+                                <span class="comment-count">{{ getCommentCount(idea.id) }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Comment Section -->
+                        <div class="comment-section" *ngIf="isCommentSectionOpen(idea.id)">
+                            <div class="comment-input-container">
+                                <textarea 
+                                    class="comment-input" 
+                                    id="comment-input-{{idea.id}}"
+                                    placeholder="Ajouter un commentaire..." 
+                                    [(ngModel)]="newComment[idea.id]" 
+                                    #commentInput 
+                                    (input)="adjustCommentTextareaHeight(idea.id)"
+                                ></textarea>
+                                <button class="comment-button" (click)="addComment(idea.id)">
+                                    <span>Commenter</span>
+                                </button>
+                            </div>
+                            <!-- Display Existing Comments -->
+                            <div class="comments-list">
+                                <div class="comment" *ngFor="let comment of getComments(idea.id)">
+                                    <p><strong>{{ comment.userNom }} {{ comment.userPrenom }}</strong> : {{ comment.content }}</p>
+                                    <small>{{ comment.createdAt | date:'short' }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <app-right-sidebar></app-right-sidebar>
+    </div>
+</div>

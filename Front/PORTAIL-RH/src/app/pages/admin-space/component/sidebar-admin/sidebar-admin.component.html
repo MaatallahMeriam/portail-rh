@@ -1,13 +1,38 @@
-<aside class="sidebar">
-    <a class="menu">☰ MENU</a>
-    <nav>
-        <a (click)="navigateTo('kpi-admin')" >DASHBOARD </a>
-        <a (click)="navigateTo('param-admin')" >PARAMETRAGES</a>
-
-        
-        <a href="#">CONSULTATION PROFILE</a>
-       
-    </nav>
-
+<aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
+    <div class="sidebar-header">
+        <div class="logo-container">
+          <span class="logo-text" *ngIf="!isSidebarCollapsed">Espace Admin</span>
+          <span class="logo-icon-text" *ngIf="isSidebarCollapsed">AD</span>
+        </div>
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        <span class="toggle-icon">{{ isSidebarCollapsed ? '☰' : '✕' }}</span>
+      </button>
+    </div>
+  
+    <div class="menu-label" *ngIf="!isSidebarCollapsed">MENU</div>
     
+    <nav class="sidebar-nav">
+      <div *ngFor="let item of menuItems" class="nav-item-container">
+        <div class="nav-item">
+          <a (click)="navigateTo(item.route)" class="nav-link">
+            <span class="icon-container">
+              <i class="bi bi-{{ item.icon }}"></i>
+            </span>
+            <span class="nav-text" *ngIf="!isSidebarCollapsed">{{ item.label }}</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+    
+    <div class="sidebar-footer" *ngIf="!isSidebarCollapsed">
+      <div class="user-info">
+        <div class="user-avatar">
+          <i class="bi bi-person-circle"></i>
+        </div>
+        <div class="user-details">
+          <span class="user-name">{{ getUserName() }}</span>
+          <a class="logout" (click)="logout()">Se déconnecter</a>
+        </div>
+      </div>
+    </div>
 </aside>

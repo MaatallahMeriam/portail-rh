@@ -46,7 +46,7 @@ $transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     
     .datatable-header {
-      background: rgba($primary-color, 0.03);
+      background: white;
       border-bottom: 1px solid rgba($primary-color, 0.1);
       
       .datatable-header-cell {
@@ -154,13 +154,20 @@ $transition: all 0.3s ease;
 .feed {
   position: fixed;
   top: 70px;
-  left: 280px;
+  left: 260px;
   right: 250px;
   bottom: 0;
   overflow-y: auto;
   background: transparent;
-  max-width: 900px;
+  max-width: 1050px;
   padding: 20px;
+  transition: all 0.3s ease-in-out;
+
+  &.sidebar-collapsed {
+    left: 100px;
+    right: 250px;
+    max-width: 1200px;
+  }
 
   &::-webkit-scrollbar {
     display: none;
@@ -448,6 +455,26 @@ $transition: all 0.3s ease;
     left: 250px;
     right: 0;
     max-width: none;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 0;
+      max-width: 1200px;
+    }
+  }
+}
+
+@media (max-width: 1000px) {
+  .feed {
+    left: 250px;
+    right: 100px;
+    max-width: none;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 0;
+      max-width: 1200px;
+    }
   }
 }
 
@@ -455,6 +482,11 @@ $transition: all 0.3s ease;
   .feed {
     left: 0;
     padding: 10px;
+
+    &.sidebar-collapsed {
+      left: 0;
+      padding: 10px;
+    }
   }
 
   .container {
@@ -471,7 +503,7 @@ $transition: all 0.3s ease;
   }
 }
 
-@media screen and (max-width: 1470px) and (min-width: 1022px) {
+@media screen and (max-width: 1470px)  {
   .app-sidebar {
     width: 220px;
   }
@@ -484,6 +516,12 @@ $transition: all 0.3s ease;
     left: 270px;
     right: 270px;
     max-width: 980px;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 220px;
+      max-width: 1200px;
+    }
   }
 }
 
@@ -498,24 +536,14 @@ $transition: all 0.3s ease;
 
   .feed {
     left: 200px;
-    right: 0;
+    right: 100px;
     max-width: calc(100% - 150px);
-  }
-}
 
-@media screen and (max-width: 1024px) {
-  .app-sidebar {
-    width: 200px;
-  }
-
-  .app-right-sidebar {
-    display: none;
-  }
-
-  .feed {
-    left: 250px;
-    right: 250px;
-    max-width: calc(100% - 150px);
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 0;
+      max-width: 1200px;
+    }
   }
 }
 
@@ -528,6 +556,12 @@ $transition: all 0.3s ease;
     left: 500px;
     right: 250px;
     max-width: calc(100% - 300px);
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 180px;
+      max-width: 1200px;
+    }
   }
 }
 
@@ -544,6 +578,12 @@ $transition: all 0.3s ease;
     left: 200px;
     right: 220px;
     max-width: calc(100% - 200px);
+
+    &.sidebar-collapsed {
+      left: 0;
+      right: 200px;
+      max-width: 1200px;
+    }
   }
 }
 
@@ -555,5 +595,10 @@ $transition: all 0.3s ease;
   .feed {
     right: 0;
     width: 100%;
+
+    &.sidebar-collapsed {
+      right: 0;
+      width: 100%;
+    }
   }
 }

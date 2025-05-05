@@ -37,13 +37,18 @@ export class ListPlanningsComponent implements OnInit {
   userPlannings: UserPlanning[] = [];
   currentMonth: Date = new Date();
   loading: boolean = false;
+  isSidebarCollapsed = false; // Track sidebar state
 
   constructor(
     private teletravailService: TeletravailService,
     private userService: UserService,
     private cdr: ChangeDetectorRef
   ) {}
-
+ // Handle sidebar state changes
+ onSidebarStateChange(isCollapsed: boolean) {
+  this.isSidebarCollapsed = isCollapsed;
+  this.cdr.markForCheck(); // Ensure change detection runs
+}
   ngOnInit(): void {
     this.loadUserPlannings();
   }

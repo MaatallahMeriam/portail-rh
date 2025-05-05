@@ -27,6 +27,7 @@ export class DetailsDossierComponent implements OnInit {
     { label: 'Historique Demandes', icon: 'assets/icons/conforme.png', route: '/dmd-user-list' },
     { label: 'Détails solde congés', icon: 'assets/icons/jour-de-conge.png', route: '/details-conges' },
   ];
+  isSidebarCollapsed = false;
 
   constructor(
     private router: Router,
@@ -80,5 +81,9 @@ export class DetailsDossierComponent implements OnInit {
         text: 'Utilisateur non chargé.',
       });
     }
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 }

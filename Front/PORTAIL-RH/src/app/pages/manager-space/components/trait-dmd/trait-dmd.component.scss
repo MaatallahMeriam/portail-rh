@@ -27,12 +27,19 @@ $transition: all 0.3s ease;
   position: fixed;
   top: 70px;
   left: 280px;
-  right: 50px;
+  right: 20px;
   bottom: 0;
   overflow-y: auto;
   background: transparent;
   max-width: none;
   padding: 20px;
+  transition: all 0.3s ease-in-out;
+
+  &.sidebar-collapsed {
+    left: 100px;
+    right: 20px;
+    max-width: 1400px;
+  }
 
   &::-webkit-scrollbar {
     display: none;
@@ -277,7 +284,6 @@ h3 {
   }
 }
 
-// Calendar Styles (inchangés)
 .calendar-card {
   padding: 15px;
   border-radius: $border-radius;
@@ -395,7 +401,6 @@ h3 {
   grid-template-rows: auto repeat(6, 70px);
 }
 
-/* Styles pour les onglets */
 .tabs {
   display: flex;
   gap: 10px;
@@ -424,7 +429,6 @@ h3 {
   }
 }
 
-/* Styles pour le statut dans la table d'historique */
 .status-pending {
   color: $warning-color;
   font-weight: 400;
@@ -440,20 +444,29 @@ h3 {
   font-weight: 400;
 }
 
-
 @media (max-width: 1200px) {
   .feed {
     left: 250px;
-    
     max-width: none;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 20px;
+      max-width: 1550px;
+    }
   }
 }
 
 @media (max-width: 768px) {
   .feed {
     left: 0;
-  }
 
+    &.sidebar-collapsed {
+      left: 20px;
+      right: 20px;
+      max-width: 1550px;
+    }
+  }
 
   .header-actions {
     flex-direction: column;
@@ -469,101 +482,97 @@ h3 {
 @media screen and (max-width: 1470px) and (min-width: 1022px) {
   .feed {
     left: 270px;
-    
+
+    &.sidebar-collapsed {
+      left: 100px;
+      
+      max-width: 1550px;
+    }
   }
 }
 
 @media screen and (max-width: 1024px) {
   .feed {
     left: 200px;
-    
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
   }
 }
 
-@media screen and (max-width: 768px) {
-  .feed {
-    left: 0;
-   
-    max-width: 100%;
-  }
-}
 
-@media screen and (max-width: 768px) and (min-width: 481px) {
-  .feed {
-    left: 0;
-    right: 0;
-    max-width: 100%;
-  }
-}
 
-@media screen and (max-width: 480px) {
-  .feed {
-    right: 0;
-    width: 100%;
-  }
-}
 
-/* Media Queries */
 @media (max-width: 1457px) {
-  .app-sidebar {
-      width: 200px;
+  .app-side-bar-manager{
+    width: 200px;
   }
 
-  
-
   .feed {
-      left: 250px;
-      
+    left: 250px;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 50px;
+      max-width: 1350px;
+    }
   }
 }
 
 @media (max-width: 1300px) {
-  .app-sidebar {
-      width: 200px;
+  .app-side-bar-manager{
+    width: 200px;
   }
-
-  
 
   .feed {
-      left: 250px;
-     
-  }
+    left: 250px;
 
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
+  }
 }
 
 @media (max-width: 768px) {
-  .app-sidebar {
-      display: none;
+  .app-side-bar-manager {
+    display: none;
   }
-
-  
 
   .feed {
-      left: 200px;
-      
+    left: 200px;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
   }
 
-
-
   .history-header {
-      flex-direction: column;
+    flex-direction: column;
   }
 
   .search {
-      width: 100%;
+    width: 100%;
   }
-
 }
 
 @media (max-width: 480px) {
-  
-
   .feed {
-      left: 0;
-      right: 0;
-      width: 100%;
-      padding: 10px;
-  }
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 10px;
 
-  
+    &.sidebar-collapsed {
+      left: 0px;
+      right: 50px;
+      max-width: 1200px;
+    }
+  }
 }

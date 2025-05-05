@@ -17,13 +17,20 @@
 .feed {
   position: fixed;
   top: 70px;
-  left: 280px;
+  left: 250px;
   right: 250px;
   bottom: 0;
   overflow-y: auto;
   background: transparent;
-  max-width: 900px;
+  max-width: 1050px;
   padding: 24px;
+  transition: all 0.3s ease-in-out;
+
+  &.sidebar-collapsed {
+    left: 80px;
+    right: 50px;
+    max-width: 1170px;
+  }
   
   &::-webkit-scrollbar {
     width: 6px;
@@ -34,7 +41,7 @@
   }
   
   &::-webkit-scrollbar-thumb {
-    background-color:transparent;
+    background-color: transparent;
     border-radius: 8px;
   }
 }
@@ -136,6 +143,7 @@
   border: 2px solid transparent;
   
   &:hover {
+    cursor: pointer;
     transform: translateY(-5px);
     box-shadow: 0 8px 25px rgba(35, 0, 70, 0.15);
     border-color: rgba(35, 0, 70, 0.1);
@@ -440,8 +448,14 @@
 
   .feed {
     left: 220px;
-    right: 20px;
-    max-width: calc(100% - 240px);
+    right: 80px;
+    max-width: calc(100% - 500px);
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 300px;
+      max-width: 1000px;
+    }
   }
 }
 
@@ -458,6 +472,12 @@
     left: 220px;
     right: 20px;
     max-width: calc(100% - 240px);
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 300px;
+      max-width: 1000px;
+    }
   }
 
   .teams-grid {
@@ -474,6 +494,12 @@
     left: 20px;
     right: 20px;
     max-width: 100%;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 250px;
+      max-width: 1000px;
+    }
   }
 
   .history-header {
@@ -489,7 +515,7 @@
   }
 
   .form-modal {
-    width: 95%;
+    width: 70%;
     padding: 24px;
   }
 }
@@ -499,8 +525,20 @@
     left: 10px;
     right: 10px;
     padding: 10px;
-  }
 
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
+  }
+  .teams-grid {
+    grid-template-columns: 0.3fr;
+  }
+  .form-modal {
+    width: 30%;
+    padding: 24px;
+  }
   .container {
     padding: 16px;
   }

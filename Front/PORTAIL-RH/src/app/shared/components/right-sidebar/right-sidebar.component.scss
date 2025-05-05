@@ -2,7 +2,7 @@
     position: fixed;
     right: 0;
     top: 65px;
-    width: 250px;
+    width: 200px;
     background: #817a90;
     color: white;
     padding: 20px;
@@ -75,38 +75,6 @@
     }
   }
   
-  .logout {
-    display: flex;
-    align-items: center;
-    margin-top: 170px;
-    margin-left: 60px;
-    background: transparent;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    position: fixed;
-    bottom: 10px;
-  }
-  
-  .logout button {
-    margin-top: 3px;
-    background: transparent;
-    border: 2px solid transparent;
-    border-color: #230046;
-    color: #230046;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-  }
-  
-  .logout button:hover {
-    border-color: #fff;
-    color: #ffff;
-    box-shadow: 0 0 8px rgba(53, 37, 135, 0.3);
-  }
   
   // Animation for the birthday message
   @keyframes fadeInScale {

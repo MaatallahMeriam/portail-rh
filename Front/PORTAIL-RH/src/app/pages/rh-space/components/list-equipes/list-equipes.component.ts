@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
 import { SidebarComponent } from '../sidebar-RH/sidebar.component';
 import { RightSidebarComponent } from '../../../../shared/components/right-sidebar/right-sidebar.component';
-import { AddTeamFormComponent } from './add-team-form/add-team-form.component'; // Import the child component
+import { AddTeamFormComponent } from './add-team-form/add-team-form.component';
 import { UserService, UserDTO } from '../../../../services/users.service';
 import { CreateEquipeRequest, EquipeDTO, EquipeService } from '../../../../services/equipe.service';
 
@@ -22,7 +22,7 @@ import { CreateEquipeRequest, EquipeDTO, EquipeService } from '../../../../servi
     HeaderComponent,
     SidebarComponent,
     RightSidebarComponent,
-    AddTeamFormComponent, // Add the child component
+    AddTeamFormComponent,
   ],
   templateUrl: './list-equipes.component.html',
   styleUrl: './list-equipes.component.scss'
@@ -38,6 +38,7 @@ export class ListEquipesComponent implements OnInit {
   editEquipeData: { id: number; nom: string; departement: string } = { id: 0, nom: '', departement: '' };
   searchText: string = '';
   managerSearchText: string = '';
+  isSidebarCollapsed = false;
 
   constructor(
     private equipeService: EquipeService,
@@ -82,7 +83,7 @@ export class ListEquipesComponent implements OnInit {
         this.activeUsers = users;
         this.filteredActiveUsers = [...users];
         if (this.activeUsers.length > 0) {
-          this.newEquipe.managerId = 0; // Initially no manager selected
+          this.newEquipe.managerId = 0;
           this.managerSearchText = '';
         }
       },
@@ -267,5 +268,9 @@ export class ListEquipesComponent implements OnInit {
         });
       }
     });
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 }

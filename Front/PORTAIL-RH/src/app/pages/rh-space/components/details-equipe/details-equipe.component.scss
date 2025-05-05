@@ -118,14 +118,21 @@
 
 .feed {
   position: fixed;
-  top: 70px;
+  top: 60px;
   left: 280px;
   right: 250px;
   bottom: 0;
   overflow-y: auto;
   background: transparent;
-  max-width: 900px;
+  max-width: 950px;
   padding: 20px;
+  transition: all 0.3s ease-in-out;
+
+  &.sidebar-collapsed {
+    left: 100px;
+    right: 100px;
+    max-width: 1140px;
+  }
 
   &::-webkit-scrollbar {
     display: none;
@@ -441,7 +448,7 @@
 }
 
 .search {
-  width: 100%; /* Adjusted to full width for consistency */
+  width: 100%;
   padding: 12px;
   border: 2px solid rgba(35, 0, 70, 0.1);
   border-radius: 8px;
@@ -580,6 +587,12 @@
     left: 250px;
     right: 300px;
     max-width: calc(100% - 150px);
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
   }
 }
 
@@ -596,6 +609,12 @@
     left: 250px;
     right: 250px;
     max-width: calc(100% - 150px);
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
   }
 }
 
@@ -612,6 +631,12 @@
     left: 200px;
     right: 250px;
     max-width: calc(100% - 180px);
+
+    &.sidebar-collapsed {
+      left: 0;
+      right: 180px;
+      max-width: 100%;
+    }
   }
 
   .filter-row {
@@ -628,5 +653,11 @@
     left: 0;
     right: 0;
     width: 100%;
+
+    &.sidebar-collapsed {
+      left: 0;
+      right: 0;
+      max-width: 100%;
+    }
   }
 }

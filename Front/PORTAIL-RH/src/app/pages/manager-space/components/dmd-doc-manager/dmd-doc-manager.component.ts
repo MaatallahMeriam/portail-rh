@@ -31,7 +31,8 @@ export class DmdDocManagerComponent implements OnInit {
   userId: number | null = null;
   isLoading: boolean = false;
   searchText: string = '';
-  isFormVisible: boolean = false; // New property to control form visibility
+  isFormVisible: boolean = false;
+  isSidebarCollapsed = false; // Track sidebar state
 
   columns = [
     { name: 'Type Document', prop: 'typeDocument', sortable: true, width: 200 },
@@ -54,10 +55,15 @@ export class DmdDocManagerComponent implements OnInit {
     this.loadHistory();
   }
 
+  // Handle sidebar state changes
+  onSidebarStateChange(isCollapsed: boolean) {
+    this.isSidebarCollapsed = isCollapsed;
+  }
+
   toggleForm(): void {
     this.isFormVisible = !this.isFormVisible;
     if (!this.isFormVisible) {
-      this.resetForm(); // Reset the form when hiding it
+      this.resetForm();
     }
   }
 
@@ -114,7 +120,7 @@ export class DmdDocManagerComponent implements OnInit {
       next: (response) => {
         this.showSuccess('Demande soumise avec succès !');
         this.resetForm();
-        this.isFormVisible = false; // Hide the form after submission
+        this.isFormVisible = false;
         this.loadHistory();
       },
       error: (error) => {
@@ -150,7 +156,7 @@ export class DmdDocManagerComponent implements OnInit {
     this.copies = 1;
     this.reason = '';
     this.comments = '';
-    this.isFormVisible = false; // Hide the form when resetting
+    this.isFormVisible = false;
   }
 
   private validateForm(): boolean {

@@ -26,12 +26,19 @@ $transition: all 0.3s ease;
 .feed {
   position: fixed;
   top: 70px;
-  left: 280px;
+  left: 260px;
   right: 250px;
   bottom: 0;
   background: transparent;
-  max-width: 900px;
+  max-width: 1000px;
   padding: 20px;
+  transition: all 0.3s ease-in-out;
+
+  &.sidebar-collapsed {
+    left: 100px;
+    right: 250px;
+    max-width: 1150px;
+  }
 
   &::-webkit-scrollbar {
     display: none;
@@ -40,8 +47,8 @@ $transition: all 0.3s ease;
 
 .container {
   max-width: 100%;
-  height: auto; /* Allow the container to grow with content */
-  min-height: 500px; /* Ensure a minimum height for visibility */
+  height: auto;
+  min-height: 500px;
   margin: 20px auto;
   margin-left: -10px;
   padding: 20px;
@@ -89,7 +96,7 @@ $transition: all 0.3s ease;
 
 .history-content {
   padding: 15px;
-  height: 400px; /* Increased height to show more rows */
+  height: 400px;
 }
 
 .search-bar {
@@ -155,7 +162,7 @@ $transition: all 0.3s ease;
         .datatable-body-cell {
           align-items: center;
           justify-content: center;
-          padding: 15px 12px; /* Increased padding for better spacing */
+          padding: 15px 12px;
           font-size: 15px;
           color: #2c3e50;
           white-space: nowrap;
@@ -180,11 +187,12 @@ $transition: all 0.3s ease;
   align-items: center;
   gap: 10px;
 }
+
 .profile-photo {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  object-fit: cover; /* Ensure the image scales properly */
+  object-fit: cover;
   border: 1px solid rgba($primary-color, 0.1);
 }
 
@@ -198,7 +206,6 @@ $transition: all 0.3s ease;
   }
 }
 
-// Status styles (copied from DmdLogManagerComponent)
 .status-container {
   display: flex;
   align-items: center;
@@ -232,158 +239,155 @@ $transition: all 0.3s ease;
     color: $error-color;
   }
 }
+@media screen and (max-width: 1300px) {
+    .app-sidebar {
+        width: 200px;
+    }
 
+    .app-right-sidebar {
+        display: none;
+    }
 
-@media (max-width: 1200px) {
-  .feed {
-    left: 250px;
-    right: 0;
-    max-width: none;
-  }
-}
+    .feed {
+        left: 300px;
+        right:300px;
+        max-width: calc(100% - 350px);
 
-@media screen and (max-width: 768px) {
-  .app-right-sidebar {
-    width: 180px;
-  }
+        &.sidebar-collapsed {
+          right: 350px;
+            left: 100px;
+            width: calc(100% - 200px);
+        }
+    }
 
-  .feed {
-    left: 500px;
-    right: 250px;
-    max-width: calc(100% - 300px);
-  }
-}
-@media (max-width: 768px) {
-  .feed {
-    left: 0;
-    padding: 10px;
-  }
-
-  .container{
-    padding: 15px;
-  }
-
-}
-
-@media screen and (max-width: 1470px) and (min-width: 1022px) {
-  .app-sidebar {
-    width: 220px;
-  }
-
-  .app-right-sidebar {
-    width: 220px;
-  }
-
-  .feed {
-    left: 270px;
-    right: 270px;
-    max-width: 980px;
-  }
+    .search-bar {
+        right: 10px;
+    }
 }
 
 @media screen and (max-width: 1024px) {
-  .app-sidebar {
-    width: 150px;
-  }
+    .app-sidebar {
+        width: 200px;
+    }
 
-  .app-right-sidebar {
-    display: none;
-  }
+    .app-right-sidebar {
+        display: none;
+    }
 
-  .feed {
-    left: 200px;
-    right: 0;
-    max-width: calc(100% - 150px);
-  }
-}
+    .feed {
+        left: 250px;
+        right: 250px;
+        max-width: calc(100% - 300px);
 
-
-@media screen and (max-width: 768px) and (min-width: 481px) {
-  .app-sidebar {
-    display: none;
-  }
-
-  .app-right-sidebar {
-    width: 200px;
-  }
-
-  .feed {
-    left: 200px;
-    right: 220px;
-    max-width: calc(100% - 200px);
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .app-right-sidebar {
-    display: none;
-  }
-
-  .feed {
-    right: 0;
-    width: 100%;
-  }
-
-}
-
-
-
-
-// Responsive Design
-@media (max-width: 1200px) {
-  .feed {
-    left: 250px;
-    right: 0;
-    max-width: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .feed {
-    left: 0;
-    padding: 10px;
-  }
-
-  .container {
-    padding: 10px;
-  }
-}
-
-@media screen and (max-width: 1470px) and (min-width: 1022px) {
-  .feed {
-    left: 270px;
-    right: 270px;
-    max-width: 900px;
-  }
-}
-
-@media screen and (max-width: 1024px) {
-  .feed {
-    left: 200px;
-    right: 0;
-    max-width: calc(100% - 150px);
-  }
+        &.sidebar-collapsed {
+            left: 100px;
+            width: calc(100% - 100px);
+        }
+    }
 }
 
 @media screen and (max-width: 768px) {
-  .feed {
-    left: 0;
-    right: 0;
-    max-width: 100%;
-  }
-}
+    .app-sidebar {
+        display: none;
+    }
 
-@media screen and (max-width: 768px) and (min-width: 481px) {
-  .feed {
-    left: 0;
-    right: 0;
-    max-width: 100%;
-  }
+    .app-right-sidebar {
+        width: 180px;
+        display: block;
+    }
+
+    .feed {
+        left: 0;
+        right: 180px;
+        max-width: calc(100% - 180px);
+
+        &.sidebar-collapsed {
+            left:20px;
+            right: 350px;
+            max-width: calc(100% - 300px);
+        }
+    }
+
+    .search-bar {
+        width: 120px;
+    }
 }
 
 @media screen and (max-width: 480px) {
-  .feed {
-    right: 0;
-    width: 100%;
-  }
+    .app-right-sidebar {
+        display: none;
+    }
+
+    .feed {
+        left: 0;
+        right: 0;
+        max-width: 100%;
+        padding: 10px;
+
+        &.sidebar-collapsed {
+            left: 0;
+            right: 0;
+            max-width: 100%;
+        }
+    }
+
+    .search-bar {
+        width: 100px;
+        top: 10px;
+        right: 10px;
+    }
+
+    .post-input-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .post-button {
+        width: 100%;
+    }
+
+    .idea-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .user-photo {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .welcome-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .idea-icon {
+        margin-top: 5px;
+    }
+
+    .card-actions {
+        position: static;
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .edit-actions {
+        flex-direction: column;
+    }
+
+    .edit-actions button {
+        width: 100%;
+    }
+
+    .success-message {
+        top: 60px;
+        font-size: 0.8rem;
+        padding: 8px 15px;
+    }
+
+    .interaction-section {
+        justify-content: center;
+    }
 }

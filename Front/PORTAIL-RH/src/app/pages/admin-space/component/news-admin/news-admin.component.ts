@@ -12,26 +12,28 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { SidebarAdminComponent } from '../sidebar-admin/sidebar-admin.component';
+
 @Component({
   selector: 'app-news-admin',
   standalone: true,
-  imports: [CommonModule,
-      CarouselModule,
-      MatCardModule,
-      FormsModule,
-      SidebarAdminComponent,
-      HeaderComponent,
-      RightSidebarComponent,
-      NgxDatatableModule,
-      MatButtonModule,
-      MatIconModule,],
+  imports: [
+    CommonModule,
+    CarouselModule,
+    MatCardModule,
+    FormsModule,
+    SidebarAdminComponent,
+    HeaderComponent,
+    RightSidebarComponent,
+    NgxDatatableModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
   templateUrl: './news-admin.component.html',
   styleUrl: './news-admin.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-
 })
 export class NewsAdminComponent {
-News: NewsDTO[] = [];
+  News: NewsDTO[] = [];
   filteredNews: NewsDTO[] = [];
   selectedNews: NewsDTO | null = null;
   showForm = false;
@@ -41,6 +43,7 @@ News: NewsDTO[] = [];
   description: string = '';
   imageFile: File | null = null;
   searchText: string = '';
+  isSidebarCollapsed: boolean = false;
 
   private backendBaseUrl = 'http://localhost:8080';
 
@@ -65,7 +68,6 @@ News: NewsDTO[] = [];
   };
 
   columns = [
-    { prop: 'id', name: 'ID news', width: 100 },
     { prop: 'titre', name: 'Titre', width: 200 },
     { prop: 'description', name: 'Description', width: 300 },
     { prop: 'createdAt', name: 'Date Création', width: 150 },
@@ -76,6 +78,10 @@ News: NewsDTO[] = [];
     private authService: AuthService
   ) {
     this.loadNews();
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 
   getImageUrl(imagePath: string): string {

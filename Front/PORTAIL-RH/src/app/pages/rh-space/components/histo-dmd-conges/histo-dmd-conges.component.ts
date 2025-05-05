@@ -8,7 +8,7 @@ import { CarouselModule } from 'ngx-owl-carousel-o';
 import { MatCardModule } from '@angular/material/card';
 import { NgxDatatableModule, ColumnMode } from '@swimlane/ngx-datatable';
 import { DemandeService, ManagerCongesDemandeDTO } from '../../../../services/demande.service';
-import { UserService, UserDTO } from '../../../../services/users.service'; // Import UserService
+import { UserService, UserDTO } from '../../../../services/users.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
@@ -34,12 +34,13 @@ export class HistoDmdCongesComponent {
   totalDemandes: number = 0;
   searchQuery: string = '';
   columns: any[] = [];
-  public ColumnMode = ColumnMode; // Expose ColumnMode to the template
-  private userImageCache: Map<number, string> = new Map(); // Cache for user images
+  public ColumnMode = ColumnMode;
+  private userImageCache: Map<number, string> = new Map();
+  isSidebarCollapsed = false;
 
   constructor(
     private demandeService: DemandeService,
-    private userService: UserService, // Inject UserService
+    private userService: UserService,
     private sanitizer: DomSanitizer
   ) {}
 
@@ -98,7 +99,6 @@ export class HistoDmdCongesComponent {
         this.demandes = data;
         this.filteredDemandes = [...this.demandes];
         this.totalDemandes = this.demandes.length;
-        // Preload user images into the cache
         this.preloadUserImages();
       },
       error: (error) => {
@@ -108,7 +108,6 @@ export class HistoDmdCongesComponent {
   }
 
   private preloadUserImages(): void {
-    // Get unique user IDs from demandes
     const userIds = [...new Set(this.demandes.map(d => d.userId))];
     userIds.forEach(userId => {
       if (!this.userImageCache.has(userId)) {
@@ -119,7 +118,7 @@ export class HistoDmdCongesComponent {
           },
           error: (error) => {
             console.error(`Erreur lors du chargement de l'image de l'utilisateur ${userId}:`, error);
-            this.userImageCache.set(userId, 'assets/icons/user-login-icon-14.png'); // Fallback on error
+            this.userImageCache.set(userId, 'assets/icons/user-login-icon-14.png');
           },
         });
       }
@@ -159,15 +158,14 @@ export class HistoDmdCongesComponent {
     });
   }
 
-  // Add methods for status styling
   getStatusColor(status: string): string {
     switch ((status || '').toUpperCase()) {
       case 'EN_ATTENTE':
-        return '#ED6C02'; // $warning-color
+        return '#ED6C02';
       case 'VALIDEE':
-        return '#2E7D32'; // $success-color
+        return '#2E7D32';
       case 'REFUSEE':
-        return '#D32F2F'; // $error-color
+        return '#D32F2F';
       default:
         return '#666666';
     }
@@ -175,5 +173,9 @@ export class HistoDmdCongesComponent {
 
   getStatusClass(status: string): string {
     return `status-${(status || 'inconnu').toLowerCase().replace('_', '-')}`;
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 }

@@ -2,7 +2,6 @@ import { SidebarAdminComponent } from "../sidebar-admin/sidebar-admin.component"
 import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
 import { RightSidebarComponent } from '../../../../shared/components/right-sidebar/right-sidebar.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,15 +10,17 @@ import { FileService } from '../../../../services/file.service';
 import { MatIconModule } from '@angular/material/icon';
 import html2canvas from 'html2canvas';
 import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-info-user-admin',
   standalone: true,
-  imports: [SidebarAdminComponent,
-     CommonModule,
-        FormsModule,
-        HeaderComponent,
-        RightSidebarComponent,
-        MatIconModule
+  imports: [
+    SidebarAdminComponent,
+    CommonModule,
+    FormsModule,
+    HeaderComponent,
+    RightSidebarComponent,
+    MatIconModule
   ],
   templateUrl: './info-user-admin.component.html',
   styleUrl: './info-user-admin.component.scss'
@@ -31,6 +32,7 @@ export class InfoUserAdminComponent implements OnInit {
   showBadgeMenu = false;
   editingField: keyof UserDTO | null = null;
   editingValue: string = '';
+  isSidebarCollapsed: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -46,6 +48,10 @@ export class InfoUserAdminComponent implements OnInit {
         this.loadUserDetails(this.userId);
       }
     });
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 
   loadUserDetails(userId: number): void {
@@ -223,4 +229,3 @@ export class InfoUserAdminComponent implements OnInit {
     this.router.navigate(['/users']);
   }
 }
-

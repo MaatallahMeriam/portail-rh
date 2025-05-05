@@ -32,6 +32,7 @@ export class InfosUserComponent implements OnInit {
   showBadgeMenu = false;
   editingField: keyof UserDTO | null = null;
   editingValue: string = '';
+  isSidebarCollapsed = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -48,7 +49,9 @@ export class InfosUserComponent implements OnInit {
       }
     });
   }
-
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
+  }
   loadUserDetails(userId: number): void {
     this.userService.getUserById(userId).subscribe({
       next: (user: UserDTO) => {

@@ -52,6 +52,7 @@ export class DmdCongesComponentRH implements OnInit {
   searchText: string = '';
   userCongesList: UserCongesDTO[] = [];
   validatedDemandes: DemandeDTO[] = [];
+  isSidebarCollapsed = false;
 
   currentDate: Date = new Date();
   currentMonth: string;
@@ -94,7 +95,6 @@ export class DmdCongesComponentRH implements OnInit {
     private cdr: ChangeDetectorRef,
     private dialog: MatDialog
   ) {
-    // Initialize current month and year based on the actual current date
     this.currentMonth = this.currentDate.toLocaleString('default', { month: 'long' }).toUpperCase();
     this.currentYear = this.currentDate.getFullYear();
     this.generateCalendar();
@@ -106,7 +106,6 @@ export class DmdCongesComponentRH implements OnInit {
     this.fetchValidatedDemandes();
   }
 
-  // Fetch validated leave requests (statut = VALIDEE)
   private fetchValidatedDemandes(): void {
     this.userId = this.authService.getUserIdFromToken();
     if (!this.userId) {
@@ -120,7 +119,7 @@ export class DmdCongesComponentRH implements OnInit {
     this.demandeService.getDemandesByUserIdAndType(this.userId, 'CONGES').subscribe({
       next: (demandes) => {
         this.validatedDemandes = demandes.filter((d) => d.statut.toUpperCase() === 'VALIDEE');
-        this.generateCalendar(); // Regenerate calendar to reflect leave dates
+        this.generateCalendar();
         this.cdr.markForCheck();
       },
       error: (error) => {
@@ -133,27 +132,23 @@ export class DmdCongesComponentRH implements OnInit {
     });
   }
 
-  // Generate calendar for the current month
   private generateCalendar(): void {
     this.calendarDays = [];
     const firstDayOfMonth = new Date(this.currentYear, this.currentDate.getMonth(), 1);
     const lastDayOfMonth = new Date(this.currentYear, this.currentDate.getMonth() + 1, 0);
-    const startingDay = firstDayOfMonth.getDay(); // 0 = Sunday, 6 = Saturday
+    const startingDay = firstDayOfMonth.getDay();
     const totalDays = lastDayOfMonth.getDate();
 
-    // Add filler days before the first day of the month
     for (let i = 0; i < startingDay; i++) {
       const fillerDate = new Date(this.currentYear, this.currentDate.getMonth(), 0 - (startingDay - i - 1));
       this.calendarDays.push({ date: fillerDate, isCurrentMonth: false });
     }
 
-    // Add days of the current month
     for (let day = 1; day <= totalDays; day++) {
       const date = new Date(this.currentYear, this.currentDate.getMonth(), day);
       this.calendarDays.push({ date, isCurrentMonth: true });
     }
 
-    // Add filler days after the last day to complete the grid
     const remainingDays = (7 - (this.calendarDays.length % 7)) % 7;
     for (let i = 1; i <= remainingDays; i++) {
       const fillerDate = new Date(this.currentYear, this.currentDate.getMonth() + 1, i);
@@ -163,9 +158,8 @@ export class DmdCongesComponentRH implements OnInit {
     this.cdr.markForCheck();
   }
 
-  // Check if a date is today (based on the actual current date)
   isToday(date: Date): boolean {
-    const today = new Date(); // Use the actual current date
+    const today = new Date();
     return (
       date.getDate() === today.getDate() &&
       date.getMonth() === today.getMonth() &&
@@ -173,17 +167,14 @@ export class DmdCongesComponentRH implements OnInit {
     );
   }
 
-  // Get the leave type for a specific date (if it falls within a validated leave range)
   getLeaveTypeForDate(date: Date): string | null {
     for (const demande of this.validatedDemandes) {
       const startDate = new Date(demande.dateDebut!);
       const endDate = new Date(demande.dateFin!);
-      // Normalize dates to remove time component
       startDate.setHours(0, 0, 0, 0);
       endDate.setHours(0, 0, 0, 0);
       date.setHours(0, 0, 0, 0);
 
-      // Check if the date is within [startDate, endDate]
       if (date >= startDate && date <= endDate) {
         const leave = this.leaveBalances.find((l) => l.id === demande.userCongesId);
         return leave ? leave.color : null;
@@ -192,7 +183,6 @@ export class DmdCongesComponentRH implements OnInit {
     return null;
   }
 
-  // Navigate to the previous month
   previousMonth(): void {
     this.currentDate.setMonth(this.currentDate.getMonth() - 1);
     this.currentMonth = this.currentDate.toLocaleString('default', { month: 'long' }).toUpperCase();
@@ -200,7 +190,6 @@ export class DmdCongesComponentRH implements OnInit {
     this.generateCalendar();
   }
 
-  // Navigate to the next month
   nextMonth(): void {
     this.currentDate.setMonth(this.currentDate.getMonth() + 1);
     this.currentMonth = this.currentDate.toLocaleString('default', { month: 'long' }).toUpperCase();
@@ -371,5 +360,10 @@ export class DmdCongesComponentRH implements OnInit {
   private getColorClass(index: number): string {
     const colors = ['leave-paid', 'leave-authorization', 'leave-other'];
     return colors[index % colors.length];
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
+    this.cdr.markForCheck();
   }
 }

@@ -1,480 +1,505 @@
 /* Styles de base */
 .collab-home {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-  
-  .main-content {
-    display: flex;
-    flex: 1;
-    overflow: hidden; 
-  }
-  
-  .app-sidebar, .app-right-sidebar {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    z-index: 100; 
-  }
-  
-  .app-sidebar {
-    left: 0;
-    width: 250px; 
-    background: #f4f4f4;
-  }
-  
-  .app-right-sidebar {
-    right: 0;
-    width: 250px; 
-    background: #f4f4f4;
-  }
-  
-  .feed {
-    position: fixed;
-    top: 70px;
-    left: 300px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.app-sidebar, .app-right-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.app-sidebar {
+  left: 0;
+  width: 250px;
+  background: #f4f4f4;
+}
+
+.app-right-sidebar {
+  right: 0;
+  width: 250px;
+  background: #f4f4f4;
+}
+
+.feed {
+  position: fixed;
+  top: 70px;
+  left: 300px;
+  right: 250px;
+  bottom: 0;
+  overflow-y: auto;
+  background: transparent;
+  max-width: 950px;
+  transition: all 0.3s ease-in-out;
+
+  &.sidebar-collapsed {
+    left: 70px;
     right: 250px;
-    bottom: 0;
-    overflow-y: auto;
-    background: transparent;
+    max-width: calc(100% - 320px);
+  }
+}
+
+.feed::-webkit-scrollbar {
+  display: none;
+}
+
+/* Container principal */
+.container {
+  max-width: 1200px;
+  margin: 5px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 16px;
+}
+
+/* Titre principal */
+h2 {
+  color: #230046;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  position: relative;
+  padding-bottom: 15px;
+  margin-top: -10px;
+}
+
+/* Styles du carrousel */
+.slider-container {
+  margin: 30px 0;
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(35, 0, 70, 0.15);
+}
+
+.slide-content {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.slide-img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 15px;
+  transition: transform 0.3s ease;
+}
+
+.image-description {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(35, 0, 70, 0.9), transparent);
+  padding: 20px;
+  color: white;
+  border-radius: 0 0 15px 15px;
+}
+
+.image-description .title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.image-description .description {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* Section historique */
+.history {
+  margin-top: 40px;
+}
+
+.history h3 {
+  color: #230046;
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* En-tête de la section historique */
+.history-header {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  align-items: center;
+}
+
+.search {
+  flex: 1;
+  padding: 12px 20px;
+  border: 2px solid rgba(35, 0, 70, 0.1);
+  border-radius: 10px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.search:focus {
+  border-color: #230046;
+  box-shadow: 0 0 0 3px rgba(35, 0, 70, 0.1);
+  outline: none;
+}
+
+.add-button {
+  background: linear-gradient(45deg, #230046, #3a0073);
+  color: white;
+  border: none;
+  width: 35px;
+  height: 35px;
+  font-size: 20px;
+  margin-right: 20px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(35, 0, 70, 0.2);
+}
+
+/* Conteneur du tableau */
+.history-table-container {
+  min-height: 400px;
+  position: relative;
+  border-radius: 15px;
+  background: white;
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+  overflow: hidden;
+}
+
+/* Styles pour ngx-datatable */
+:host ::ng-deep {
+  .ngx-datatable.material {
+    background: #ffffff;
+    border-radius: 12px;
     max-width: 900px;
+
+    .datatable-header {
+      background: #ffffff;
+      padding: 15px 0;
+      max-width: 900px;
+
+      .datatable-header-cell {
+        color: #230046;
+        font-weight: 600;
+        font-size: 15px;
+        height: fit-content;
+        padding: 15px;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        margin-bottom: 200px;
+        margin-top: -20px;
+      }
+    }
+
+    .datatable-body {
+      .datatable-body-row {
+        border-bottom: 3px solid rgba(35, 0, 70, 0.02);
+        transition: all 0.3s ease;
+
+        .datatable-body-cell {
+          padding: 15px;
+          font-size: 14px;
+          color: #2c3e50;
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
   }
-  
-  .feed::-webkit-scrollbar {
-    display: none;
-  }
-  
-  /* Container principal */
-  .container {
-    max-width: 1200px;
-    margin: 5px auto;
-    padding: 30px;
-    background-color:#ffffff;
-    border-radius: 16px;
-  }
-  
-  /* Titre principal */
+}
+
+/* Menu d'actions */
+.actions-cell {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-button:hover {
+  background-color: rgba(35, 0, 70, 0.05);
+}
+
+.dropdown-menu {
+  position: fixed;
+  margin-top: 15px;
+  margin-left: -150px;
+  margin-right: 70px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+  z-index: 9999;
+  padding: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.dropdown-menu button {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #2c3e50;
+  font-size: 14px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+  background-color: rgba(35, 0, 70, 0.05);
+  color: #230046;
+}
+
+.dropdown-menu button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #2c3e50;
+}
+
+/* Formulaire */
+.form-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 1000;
+
   h2 {
     color: #230046;
     font-size: 28px;
     font-weight: 600;
-    margin-bottom: 25px;
-    position: relative;
-    padding-bottom: 15px;
-    margin-top: -10px;
-  }
-  
-  /* Styles du carrousel */
-  .slider-container {
-    margin: 30px 0;
-    position: relative;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 8px 25px rgba(35, 0, 70, 0.15);
-  }
-  
-  .slide-content {
-    position: relative;
-    border-radius: 15px;
-    overflow: hidden;
-  }
-  
-  .slide-img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    border-radius: 15px;
-    transition: transform 0.3s ease;
-  }
-  
-  .image-description {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(to top, rgba(35, 0, 70, 0.9), transparent);
-    padding: 20px;
-    color: white;
-    border-radius: 0 0 15px 15px;
-  }
-  
-  .image-description .title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 8px;
-  }
-  
-  .image-description .description {
-    font-size: 14px;
-    opacity: 0.9;
-  }
-  
-  /* Section historique */
-  .history {
-    margin-top: 40px;
-  }
-  
-  .history h3 {
-    color: #230046;
-    font-size: 24px;
+    text-align: center;
     margin-bottom: 20px;
-    font-weight: 600;
   }
-  
-  /* En-tête de la section historique */
-  .history-header {
+
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      color: #230046;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid rgba(35, 0, 70, 0.1);
+      border-radius: 10px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+
+      &:focus {
+        border-color: #230046;
+        box-shadow: 0 0 0 3px rgba(35, 0, 70, 0.1);
+        outline: none;
+      }
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+  }
+
+  .form-actions {
     display: flex;
     gap: 15px;
-    margin-bottom: 25px;
-    align-items: center;
+    justify-content: flex-end;
+    margin-top: 30px;
   }
-  
-  .search {
-    flex: 1;
-    padding: 12px 20px;
-    border: 2px solid rgba(35, 0, 70, 0.1);
-    border-radius: 10px;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    background: white;
+}
+
+.submit-button,
+.cancel-button {
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.submit-button {
+  background: #230046;
+  color: white;
+}
+
+.submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.2);
+}
+
+.cancel-button {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.cancel-button:hover {
+  background: #eee;
+}
+
+/* Media Queries */
+@media (max-width: 1457px) {
+  .app-sidebar {
+    width: 200px;
   }
-  
-  .search:focus {
-    border-color: #230046;
-    box-shadow: 0 0 0 3px rgba(35, 0, 70, 0.1);
-    outline: none;
+
+  .app-right-sidebar {
+    display: none;
   }
-  
-  
-  .add-button {
-    background: linear-gradient(45deg, #230046, #3a0073);
-    color: white;
-    border: none;
-    width: 35px;
-    height: 35px;
-    font-size: 20px;
-    margin-right: 20px;
-    cursor: pointer;
-    border-radius: 50%;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .add-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(35, 0, 70, 0.2);
-  }
-  
-  /* Conteneur du tableau */
-  .history-table-container {
-    min-height: 400px;
-    position: relative;
-    border-radius: 15px;
-    background: white;
-    box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
-    overflow: hidden;
-  }
-  
-  /* Styles pour ngx-datatable */
-  :host ::ng-deep {
-    .ngx-datatable.material {
-      background: #ffffff;
-      border-radius: 12px;
-      max-width: 900px;
-  
-      .datatable-header {
-        background: #ffffff;
-        padding: 15px 0;
-        max-width: 900px;
-  
-        .datatable-header-cell {
-          color: #230046;
-          font-weight: 600;
-          font-size: 15px;
-          height: fit-content;
-          padding: 15px;
-          border-right: 1px solid rgba(255, 255, 255, 0.1);
-          display: flex; 
-          
-          margin-bottom: 200px;
-          margin-top: -20px;
-         
-        }
-      }
-  
-      .datatable-body {
-        .datatable-body-row {
-          border-bottom: 3px solid rgba(35, 0, 70, 0.02);
-          transition: all 0.3s ease;
-  
-          .datatable-body-cell {
-            padding: 15px;
-            font-size: 14px;
-            color: #2c3e50;
-            display: flex;
-            align-items: center;
-          }
-        }
-      }
+
+  .feed {
+    left: 250px;
+    right: 300px;
+    max-width: calc(100% - 150px);
+
+    &.sidebar-collapsed {
+      left: 70px;
+      right: 300px;
+      max-width: calc(100% - 370px);
     }
   }
-  
-  /* Menu d'actions */
-  .actions-cell {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+}
+
+@media (max-width: 1300px) {
+  .app-sidebar {
+    width: 200px;
   }
-  
-  .menu-button {
-    background: none;
-    border: none;
-    padding: 8px;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+  .app-right-sidebar {
+    display: none;
   }
-  
-  .menu-button:hover {
-    background-color: rgba(35, 0, 70, 0.05);
+
+  .feed {
+    left: 250px;
+    right: 300px;
+    max-width: calc(100% - 150px);
+
+    &.sidebar-collapsed {
+      left: 70px;
+      right: 300px;
+      max-width: calc(100% - 370px);
+    }
   }
-  
-  .dropdown-menu {
-    position: fixed;
-    margin-top: 15px;
-    margin-left: -150px;
-    margin-right: 70px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);;
-    min-width: 180px;
-    z-index: 9999;
-    padding: 8px;
-    border: 1px solid #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .app-sidebar {
+    display: none;
   }
-  
-  .dropdown-menu button {
-    width: 100%;
-    padding: 10px 12px;
-    border: none;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #2c3e50;
-    font-size: 14px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    cursor: pointer;
+
+  .app-right-sidebar {
+    width: 180px;
   }
-  
-  .dropdown-menu button:hover {
-    background-color: rgba(35, 0, 70, 0.05);
-    color: #230046;;
+
+  .feed {
+    left: 200px;
+    right: 250px;
+    max-width: calc(100% - 180px);
+
+    &.sidebar-collapsed {
+      left: 70px;
+      right: 250px;
+      max-width: calc(100% - 320px);
+    }
   }
-  
-  .dropdown-menu button mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    color: #2c3e50;
+
+  .container {
+    padding: 15px;
   }
-  /* Formulaire */
+
+  .slide-img {
+    height: 200px;
+  }
+
   .form-container {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #ffffff;
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);;
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    z-index: 1000;
-  
-    h2 {
-      color: #230046;;
-      font-size: 28px;
-      font-weight: 600;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-  
-    .form-group {
-        margin-bottom: 20px;
-  
-        label {
-            display: block;
-            color: #230046;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-  
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid rgba(35, 0, 70, 0.1);
-            border-radius: 10px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-  
-            &:focus {
-                border-color: #230046;
-                box-shadow: 0 0 0 3px rgba(35, 0, 70, 0.1);
-                outline: none;
-            }
-        }
-  
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-    }
-  
-    .form-actions {
-        display: flex;
-        gap: 15px;
-        justify-content: flex-end;
-        margin-top: 30px;
-    }
-  
-  
-    
+    width: 95%;
+    padding: 20px;
   }
-  
-  
-  .submit-button,
-  .cancel-button {
-    padding: 12px 24px;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .app-right-sidebar {
+    display: none;
   }
-  
-  .submit-button {
-    background: #230046;
-    color: white;
-  }
-  
-  .submit-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(35, 0, 70, 0.2);
-  }
-  
-  .cancel-button {
-    background: #f5f5f5;
-    color: #666;
-  }
-  
-  .cancel-button:hover {
-    background: #eee;
-  }
-  
-  /* Media Queries */
-  @media (max-width: 1457px) {
-    .app-sidebar {
-        width: 200px;
-    }
-  
-    .app-right-sidebar {
-        display: none;
-    }
-  
-    .feed {
-        left: 250px;
-        right: 300px;
-        max-width: calc(100% - 150px);
+
+  .feed {
+    left: 0;
+    right: 0;
+    width: 100%;
+
+    &.sidebar-collapsed {
+      left: 70px;
+      right: 0;
+      max-width: calc(100% - 70px);
     }
   }
-  
-  @media (max-width: 1300px) {
-    .app-sidebar {
-        width: 200px;
-    }
-  
-    .app-right-sidebar {
-        display: none;
-    }
-  
-    .feed {
-        left: 250px;
-        right: 300px;
-        max-width: calc(100% - 150px);
+
+  .history-header {
+    flex-direction: column;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .add-button {
+    align-self: flex-end;
+  }
+
+  .form-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
     }
   }
-  
-  @media (max-width: 768px) {
-    .app-sidebar {
-        display: none;
-    }
-  
-    .app-right-sidebar {
-        width: 180px;
-    }
-  
-    .feed {
-        left: 200px;
-        right: 250px;
-        max-width: calc(100% - 180px);
-    }
-  
-    .container {
-        padding: 15px;
-    }
-  
-    .slide-img {
-        height: 200px;
-    }
-  
-    .form-container {
-        width: 95%;
-        padding: 20px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .app-right-sidebar {
-        display: none;
-    }
-  
-    .feed {
-        left: 0;
-        right: 0;
-        width: 100%;
-    }
-  
-    .history-header {
-        flex-direction: column;
-    }
-  
-    .search {
-        width: 100%;
-    }
-  
-    .add-button {
-        align-self: flex-end;
-    }
-  
-    .form-actions {
-        flex-direction: column;
-  
-        button {
-            width: 100%;
-        }
-    }
-  }
+}

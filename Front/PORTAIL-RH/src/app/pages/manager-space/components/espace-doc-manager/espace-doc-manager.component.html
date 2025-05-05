@@ -1,0 +1,54 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
+
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <main class="content">
+        <div class="container">
+          <h2 class="title">Bibliothèque de Documents</h2>
+
+          <div class="history-header">
+            <select
+              class="category-filter"
+              [(ngModel)]="selectedCategory"
+              (ngModelChange)="filterDocumentsByCategory()"
+            >
+              <option value="">Toutes les catégories</option>
+              <option *ngFor="let category of uniqueCategories" [value]="category">
+                {{ category }}
+              </option>
+            </select>
+          </div>
+
+          <div class="category-sections">
+            <div *ngFor="let category of filteredCategories" class="category-section">
+              <h3 class="category-title">Document {{ category.name }} :</h3>
+              <div class="document-grid">
+                <div *ngFor="let document of category.documents" class="document-card">
+                  <div class="document-icon">
+                    <mat-icon>description</mat-icon>
+                  </div>
+                  <div class="document-info">
+                    <h3 class="document-name">{{ document.name }}</h3>
+                    <p class="document-description">{{ document.description || 'Aucune description' }}</p>
+                    <span class="document-category">Catégorie : {{ document.categorie }}</span>
+                  </div>
+                  <div class="document-actions">
+                    <button mat-icon-button (click)="downloadDocument(document.id)">
+                      <mat-icon>download</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="filteredCategories.length === 0" class="no-documents">
+              Aucun document trouvé.
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>

@@ -68,7 +68,6 @@ public class PublicationServiceImpl implements PublicationService {
         dto.setUserId(reaction.getUser().getId());
         dto.setUserNom(reaction.getUser().getNom());
         dto.setPublicationId(reaction.getPublication().getId());
-        dto.setType(reaction.getType());
         return dto;
     }
     @Override
@@ -331,7 +330,6 @@ public class PublicationServiceImpl implements PublicationService {
         Reaction reaction = new Reaction();
         reaction.setUser(user);
         reaction.setPublication(publication);
-        reaction.setType(reactionRequest.getType());
 
         Reaction savedReaction = reactionRepository.save(reaction);
         user.addReaction(savedReaction);

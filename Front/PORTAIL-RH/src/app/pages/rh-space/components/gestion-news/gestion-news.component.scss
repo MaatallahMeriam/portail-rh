@@ -39,11 +39,18 @@
   bottom: 0;
   overflow-y: auto;
   background: transparent;
-  max-width: 900px;
-}
+  max-width: 950px;
+  transition: all 0.3s ease-in-out;
 
-.feed::-webkit-scrollbar {
-  display: none;
+  &.sidebar-collapsed {
+    left: 100px;
+    right: 100px;
+    max-width: 1200px;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Container principal */
@@ -231,7 +238,7 @@ h2::after {
     }
 
     .datatable-footer {
-      background: rgba(35, 0, 70, 0.03);
+      background: white;
       border-top: 1px solid rgba(35, 0, 70, 0.1);
       padding: 15px 20px;
       font-size: 14px;
@@ -445,6 +452,12 @@ h2::after {
     left: 250px;
     right: 300px;
     max-width: calc(100% - 150px);
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 250px;
+      max-width: 1000px;
+    }
   }
 }
 
@@ -461,6 +474,12 @@ h2::after {
     left: 250px;
     right: 300px;
     max-width: calc(100% - 150px);
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 250px;
+      max-width: 1000px;
+    }
   }
 }
 
@@ -477,6 +496,12 @@ h2::after {
     left: 200px;
     right: 250px;
     max-width: calc(100% - 180px);
+
+    &.sidebar-collapsed {
+      left: 50px;
+      right: 250px;
+      max-width: 1100px;
+    }
   }
 
   .container {
@@ -502,6 +527,12 @@ h2::after {
     left: 0;
     right: 0;
     width: 100%;
+
+    &.sidebar-collapsed {
+      left: 0;
+      right: 0;
+      max-width: 100%;
+    }
   }
 
   .history-header {

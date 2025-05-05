@@ -16,7 +16,8 @@ public class UsersDTO {
     private String poste;
     private String departement;
     private String image;
-    private String numero; // New phone number field
+    private String numero; // Phone number field
+    private String adresse; // New address field
     private Role role;
     private Long equipeId;
     private Long dossierId;

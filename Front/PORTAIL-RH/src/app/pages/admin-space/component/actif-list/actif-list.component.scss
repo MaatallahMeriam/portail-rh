@@ -42,7 +42,14 @@
   bottom: 0;
   overflow-y: auto;
   background: transparent;
-  max-width: 900px;
+  max-width: 950px;
+  transition: all 0.3s ease-in-out;
+
+  &.sidebar-collapsed {
+    left: 70px;
+    right: 250px;
+    max-width: calc(100% - 320px);
+  }
 }
 
 /* Container principal */
@@ -154,8 +161,7 @@
         height: fit-content;
         padding: 15px;
         border-right: 1px solid rgba(255, 255, 255, 0.1);
-        display: flex; 
-        
+        display: flex;
         margin-bottom: 200px;
         margin-top: -20px;
       }
@@ -279,10 +285,10 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   width: 90%;
   max-width: 600px;
-  max-height: 90vh; /* Ajusté pour mieux s'adapter aux petits écrans */
+  max-height: 90vh;
   overflow-y: auto;
   z-index: 1000;
-  box-sizing: border-box; /* Assure que le padding est inclus dans la largeur/hauteur */
+  box-sizing: border-box;
 
   .close-button {
     position: absolute;
@@ -327,7 +333,7 @@
 .form-section {
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Réduit pour les petits écrans */
+  gap: 20px;
 }
 
 .form-section h1 {
@@ -360,7 +366,7 @@ input, select {
   font-size: 14px;
   transition: all 0.3s ease;
   background-color: #ffffff;
-  width: 100%; /* Assure que les champs prennent toute la largeur disponible */
+  width: 100%;
   box-sizing: border-box;
 }
 
@@ -379,7 +385,7 @@ input.error {
   display: flex;
   justify-content: flex-end;
   gap: 15px;
-  margin-top: 20px; /* Réduit pour les petits écrans */
+  margin-top: 20px;
 }
 
 .submit-button,
@@ -455,6 +461,12 @@ input.error {
     left: 250px;
     right: 300px;
     max-width: calc(100% - 150px);
+
+    &.sidebar-collapsed {
+      left: 70px;
+      right: 300px;
+      max-width: calc(100% - 370px);
+    }
   }
 }
 
@@ -471,6 +483,12 @@ input.error {
     left: 250px;
     right: 250px;
     max-width: calc(100% - 150px);
+
+    &.sidebar-collapsed {
+      left: 70px;
+      right: 250px;
+      max-width: calc(100% - 320px);
+    }
   }
 
   .container {
@@ -491,6 +509,12 @@ input.error {
     left: 200px;
     right: 250px;
     max-width: calc(100% - 180px);
+
+    &.sidebar-collapsed {
+      left: 70px;
+      right: 250px;
+      max-width: calc(100% - 320px);
+    }
   }
 
   .history-header {
@@ -504,31 +528,31 @@ input.error {
 
   .form-container {
     padding: 20px;
-    width: 95%; /* Ajuste la largeur pour mieux s'adapter */
-    max-height: 85vh; /* Réduit la hauteur maximale */
-    border-radius: 12px; /* Réduit légèrement le border-radius */
+    width: 95%;
+    max-height: 85vh;
+    border-radius: 12px;
   }
 
   .form-section h1 {
-    font-size: 24px; /* Réduit la taille du titre */
+    font-size: 24px;
   }
 
   input, select {
-    font-size: 13px; /* Réduit la taille de la police pour les champs */
-    padding: 10px; /* Réduit le padding */
+    font-size: 13px;
+    padding: 10px;
   }
 
   label {
-    font-size: 14px; /* Réduit la taille des labels */
+    font-size: 14px;
   }
 
   .form-actions {
-    gap: 10px; /* Réduit l'espacement entre les boutons */
+    gap: 10px;
   }
 
   .submit-button, .cancel-button {
-    padding: 10px 20px; /* Réduit le padding des boutons */
-    font-size: 14px; /* Réduit la taille de la police des boutons */
+    padding: 10px 20px;
+    font-size: 14px;
   }
 
   .close-button {
@@ -546,6 +570,12 @@ input.error {
     left: 0;
     right: 0;
     width: 100%;
+
+    &.sidebar-collapsed {
+      left: 70px;
+      right: 0;
+      max-width: calc(100% - 70px);
+    }
   }
 
   .container {
@@ -559,21 +589,21 @@ input.error {
 
   .form-container {
     padding: 15px;
-    width: 100%; /* Prend toute la largeur */
-    height: 100vh; /* Prend toute la hauteur de l'écran */
-    max-height: none; /* Supprime la limite de hauteur */
+    width: 100%;
+    height: 100vh;
+    max-height: none;
     top: 0;
     left: 0;
-    transform: none; /* Supprime la transformation pour couvrir l'écran */
-    border-radius: 0; /* Supprime le border-radius pour un look plein écran */
+    transform: none;
+    border-radius: 0;
   }
 
   .form-section {
-    gap: 15px; /* Réduit encore l'espacement */
+    gap: 15px;
   }
 
   .form-section h1 {
-    font-size: 20px; /* Réduit encore la taille du titre */
+    font-size: 20px;
   }
 
   input, select {
@@ -586,12 +616,12 @@ input.error {
   }
 
   .form-actions {
-    flex-direction: column; /* Passe les boutons en colonne */
+    flex-direction: column;
     gap: 10px;
   }
 
   .submit-button, .cancel-button {
-    width: 100%; /* Les boutons prennent toute la largeur */
+    width: 100%;
     padding: 10px;
     font-size: 13px;
   }

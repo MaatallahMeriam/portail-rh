@@ -2,9 +2,9 @@
     <app-header></app-header>
 
     <div class="main-content">
-        <app-sidebar></app-sidebar>
-        
-        <div class="feed">
+        <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+
+        <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
             <h2>Espace Paramétrage : </h2>
             <div class="parametrage-container">
                 <div class="option-card" *ngFor="let option of options" (click)="navigateTo(option.route)">

@@ -11,4 +11,5 @@ public class TeamMemberDTO {
     private String departement;
     private String image;
     private String mail;
+    private String numero; // Added to support phone number
 }

@@ -8,7 +8,7 @@ import { CarouselModule } from 'ngx-owl-carousel-o';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatRadioModule } from '@angular/material/radio'; // Added for radio buttons
+import { MatRadioModule } from '@angular/material/radio';
 import { CreateEquipeRequest, EquipeDTO, EquipeService } from '../../../../services/equipe.service';
 import { UserService, UserDTO } from '../../../../services/users.service';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
@@ -25,7 +25,7 @@ import Swal from 'sweetalert2';
     CarouselModule,
     MatCardModule,
     MatCheckboxModule,
-    MatRadioModule, // Added for radio buttons
+    MatRadioModule,
     FormsModule,
     SidebarComponent,
     HeaderComponent,
@@ -52,7 +52,8 @@ export class DetailsEquipeComponent implements OnInit {
   selectedUserIds: number[] = [];
   managerSearchText: string = '';
   showManagerMenu: boolean = false;
-  selectedManagerId: number | null = null; // Added to track selected manager
+  selectedManagerId: number | null = null;
+  isSidebarCollapsed = false;
 
   columns = [
     { name: 'User', width: 200 },
@@ -306,5 +307,9 @@ export class DetailsEquipeComponent implements OnInit {
     if (!target.closest('.manager-menu') && !target.closest('.menu-button')) {
       this.showManagerMenu = false;
     }
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 }

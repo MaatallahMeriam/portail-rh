@@ -2,17 +2,16 @@
   <app-header></app-header>
 
   <div class="main-content">
-    <app-side-bar-manager></app-side-bar-manager>
+    <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
 
-    <div class="feed">
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
-        <!-- Chargement -->
         <div class="loading-spinner" *ngIf="loading">
           <span>Chargement...</span>
         </div>
 
-        <!-- Carte de l'utilisateur -->
         <div class="user-card" *ngIf="!loading && user">
+          <h3>Détails Membre :</h3>
           <div class="user-info">
             <div class="profile-photo" [style.backgroundImage]="getBackgroundImage(user)"></div>
             <div class="user-details">
@@ -20,11 +19,11 @@
               <p class="poste">{{ user.poste }}</p>
               <p class="contact-info"><strong>Numéro :</strong> {{ user.numero }}</p>
               <p class="contact-info"><strong>Email :</strong> {{ user.mail }}</p>
+              <p class="contact-info"><strong>Adresse :</strong> {{ user.adresse }}</p>
             </div>
           </div>
         </div>
 
-        <!-- Carrousel des congés -->
         <div class="conges-slider-container" *ngIf="!loading">
           <h2 class="section-title">Congés Associés</h2>
           <owl-carousel-o [options]="carouselOptions" *ngIf="userConges.length > 0">
@@ -45,7 +44,6 @@
           </p>
         </div>
 
-        <!-- Calendrier de télétravail -->
         <div class="teletravail-section" *ngIf="!loading">
           <h2 class="section-title">Planning de Télétravail - {{ currentMonth | date: 'MMMM yyyy' }}</h2>
           <div class="calendar-card" *ngIf="hasPlanning; else noPlanning">
@@ -75,6 +73,5 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>

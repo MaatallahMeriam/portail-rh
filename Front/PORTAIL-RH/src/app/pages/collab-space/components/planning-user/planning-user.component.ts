@@ -41,6 +41,7 @@ export class PlanningUserComponent implements OnInit {
   selectedDays: string[] = [];
   isValidated: boolean = false;
   validatedMonth: string | null = null;
+  isSidebarCollapsed = false;
 
   constructor(
     private teletravailService: TeletravailService,
@@ -50,6 +51,11 @@ export class PlanningUserComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserPlanning();
+  }
+
+  onSidebarStateChange(isCollapsed: boolean) {
+    this.isSidebarCollapsed = isCollapsed;
+    this.cdr.markForCheck();
   }
 
   loadUserPlanning(): void {
@@ -154,6 +160,11 @@ export class PlanningUserComponent implements OnInit {
 
     const dateString = this.formatDate(date);
     const nombreJoursMax = this.userPlanning.planning.nombreJoursMax;
+    const politique = this.userPlanning.planning.politique;
+
+    if (politique === 'PLANNING_FIXE' || politique === 'PLANNING_FIXE_JOURS_LIBRES') {
+      return this.userPlanning.planning.joursFixes.includes(dateString);
+    }
 
     if (nombreJoursMax && this.selectedDays.length >= nombreJoursMax && !this.selectedDays.includes(dateString)) {
       return false;

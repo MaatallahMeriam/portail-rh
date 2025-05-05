@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip'; // Ajout pour matTooltip
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { SidebarComponent } from '../sidebar-collab/sidebar.component';
 import { RightSidebarComponent } from '../../../../shared/components/right-sidebar/right-sidebar.component';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
@@ -18,7 +18,7 @@ import Swal from 'sweetalert2';
     CommonModule,
     FormsModule,
     MatIconModule,
-    MatTooltipModule, // Ajout pour matTooltip
+    MatTooltipModule,
     HeaderComponent,
     SidebarComponent,
     RightSidebarComponent,
@@ -38,6 +38,7 @@ export class DmdDocCollab implements OnInit {
   isLoading: boolean = false;
   searchText: string = '';
   isFormVisible: boolean = false;
+  isSidebarCollapsed = false; // Track sidebar state
 
   columns = [
     { name: 'Type Document', prop: 'typeDocument', sortable: true, width: 200 },
@@ -58,6 +59,11 @@ export class DmdDocCollab implements OnInit {
       return;
     }
     this.loadHistory();
+  }
+
+  // Handle sidebar state changes
+  onSidebarStateChange(isCollapsed: boolean) {
+    this.isSidebarCollapsed = isCollapsed;
   }
 
   toggleForm(): void {

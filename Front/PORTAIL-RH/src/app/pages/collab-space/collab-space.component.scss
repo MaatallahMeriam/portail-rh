@@ -16,7 +16,6 @@
     top: 0;
     bottom: 0;
     z-index: 100; 
-    
 }
 
 .app-sidebar {
@@ -34,12 +33,19 @@
 .feed {
     position: fixed; 
     top: 70px; 
-    left: 350px; 
+    left: 250px; 
     right: 250px; 
     bottom: 0; 
     overflow-y: auto; 
-    max-width: 800px; 
+    max-width: 1050px; 
     background: #fff;
+    transition: all 0.3s ease-in-out; // Smooth transition for changes
+}
+
+.feed.sidebar-collapsed {
+    left: 100px; 
+    right: 250px; 
+    max-width: 1200px; 
 }
 
 .feed::-webkit-scrollbar {
@@ -54,6 +60,7 @@
 .feed::-webkit-scrollbar-track {
     background: transparent;
 }
+
 @media screen and (max-width: 1300px) {
     .app-sidebar {
         width: 200px; 
@@ -64,18 +71,16 @@
     }
 
     .feed {
-        left: 250px; 
-        right: 300px; 
-        max-width: calc(100% - 150px);
+        left: 200px; 
+        right: 0; 
+        max-width: calc(100% - 200px);
+    }
+
+    .feed.sidebar-collapsed {
+        left: 100px; 
+        max-width: calc(100% - 100px);
     }
 }
-
-
-
-
-
-
-
 
 @media screen and (max-width: 1024px) {
     .app-sidebar {
@@ -87,18 +92,20 @@
     }
 
     .feed {
-        left: 250px; 
-        right: 250px; 
-        max-width: calc(100% - 150px);
+        left: 200px; 
+        right: 0; 
+        max-width: calc(100% - 200px);
+    }
+
+    .feed.sidebar-collapsed {
+        left: 100px; 
+        max-width: calc(100% - 100px);
     }
 }
 
-
-
-
 @media screen and (max-width: 768px) {
     .app-sidebar {
-        display: none; 
+        display: block; // Sidebar is now controlled by its own component
     }
 
     .app-right-sidebar {
@@ -106,16 +113,17 @@
     }
 
     .feed {
-        left: 200px; 
-        right: 250px; 
-        max-width: calc(100% - 180px);
+        left: 0px; 
+        right: 80px; 
+        max-width: calc(100% - 220px);
+    }
+
+    .feed.sidebar-collapsed {
+        left: 0px; 
+        right: 80px; 
+        max-width: calc(100% - 220px);
     }
 }
-
-
-
-
-
 
 @media screen and (max-width: 480px) {
     .app-right-sidebar {
@@ -123,7 +131,14 @@
     }
 
     .feed {
+        left: 150px; 
+        right: 200px; 
+        max-width: calc(100% - 200px); 
+    }
+
+    .feed.sidebar-collapsed {
+        left: 100px; 
         right: 0; 
-        width: 100%; 
+        max-width: calc(100% - 100px);
     }
 }

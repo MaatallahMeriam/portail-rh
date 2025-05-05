@@ -9,11 +9,11 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@Table(name = "reactions")
+@Table(
+        name = "reactions",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "publication_id"})
+)
 public class Reaction {
-    public enum ReactionType {
-        LIKE, DISLIKE, LOVE, ANGRY, WOW
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,11 +25,4 @@ public class Reaction {
     @ManyToOne
     @JoinColumn(name = "publication_id", nullable = false)
     private Publication publication;
-
-    @Enumerated(EnumType.STRING)
-    private ReactionType type;
-
-
-
 }
-

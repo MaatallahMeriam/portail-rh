@@ -19,4 +19,10 @@ import { TurnoverComponent } from "./widgets/turnover/turnover.component"
   styleUrl: './kpi.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class KPIComponent {}
+export class KPIComponent {
+  isSidebarCollapsed: boolean = false;
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
+  }
+}

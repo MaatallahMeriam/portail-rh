@@ -1,120 +1,111 @@
 <div class="collab-home">
-    <app-header></app-header>
-  
-    <div class="main-content">
-      <app-sidebar-admin></app-sidebar-admin>
-  
-      <div class="feed">
-        <div class="container">
-          
-            <!-- Section des fichiers -->
-            <div class="files-section">
-              <h2>Dossier Mrs/Mr : {{ user?.prenom }} {{ user?.nom }} </h2>
-              <div class="files-grid">
-                <!-- CV -->
-                <div class="file-card">
-                  <div class="actions">
-                    <button class="menu-button" (click)="toggleMenu('cv')">⋮</button>
-                    <div class="dropdown-menu" *ngIf="selectedFileType === 'cv'">
-                      <button (click)="attachFile('cv')">Joindre file</button>
-                      <button (click)="deleteFile('cv')">Supprimer file</button>
-                    </div>
-                  </div>
-                  <div class="file-icon-container">
-                    <img src="/assets/icons/donnees-dutilisateur.png" alt="CV Icon" class="file-icon" />
-                  </div>
-                  <div class="file-info">
-                    <h3>CV</h3>
-                    <p class="file-description">Curriculum Vitae</p>
-                    <button (click)="downloadFile('cv')" class="download-button">
-                      <img src="/assets/icons/telecharger.png" alt="Download CV" class="download-icon" />
-                      <span>Télécharger</span>
-                    </button>
-                  </div>
-                  <!-- Form for CV -->
-                  <div class="attach-form" *ngIf="showAttachForm === 'cv'">
-                    <h4>Joindre CV</h4>
-                    <input type="file" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" />
-                    <div class="form-buttons">
-                      <button class="submit-button" (click)="submitFile('cv')">Submit</button>
-                      <button class="cancel-button" (click)="cancelAttach()">Annuler</button>
-                    </div>
-                  </div>
-                </div>
-  
-                <!-- Diplôme -->
-                <div class="file-card">
-                  <div class="actions">
-                    <button class="menu-button" (click)="toggleMenu('diplome')">⋮</button>
-                    <div class="dropdown-menu" *ngIf="selectedFileType === 'diplome'">
-                      <button (click)="attachFile('diplome')">Joindre file</button>
-                      <button (click)="deleteFile('diplome')">Supprimer file</button>
-                    </div>
-                  </div>
-                  <div class="file-icon-container">
-                    <img src="/assets/icons/donnees-dutilisateur.png" alt="Diplôme Icon" class="file-icon" />
-                  </div>
-                  <div class="file-info">
-                    <h3>Diplôme</h3>
-                    <p class="file-description">Diplôme académique</p>
-                    <button (click)="downloadFile('diplome')" class="download-button">
-                      <img src="/assets/icons/telecharger.png" alt="Download Diplôme" class="download-icon" />
-                      <span>Télécharger</span>
-                    </button>
-                  </div>
-                  <!-- Form for Diplôme -->
-                  <div class="attach-form" *ngIf="showAttachForm === 'diplome'">
-                    <h4>Joindre Diplôme</h4>
-                    <input type="file" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" />
-                    <div class="form-buttons">
-                      <button class="submit-button" (click)="submitFile('diplome')">Submit</button>
-                      <button class="cancel-button" (click)="cancelAttach()">Annuler</button>
-                    </div>
-                  </div>
-                </div>
-  
-                <!-- Contrat -->
-                <div class="file-card">
-                  <div class="actions">
-                    <button class="menu-button" (click)="toggleMenu('contrat')">⋮</button>
-                    <div class="dropdown-menu" *ngIf="selectedFileType === 'contrat'">
-                      <button (click)="attachFile('contrat')">Joindre file</button>
-                      <button (click)="deleteFile('contrat')">Supprimer file</button>
-                    </div>
-                  </div>
-                  <div class="file-icon-container">
-                    <img src="/assets/icons/donnees-dutilisateur.png" alt="Contrat Icon" class="file-icon" />
-                  </div>
-                  <div class="file-info">
-                    <h3>Contrat</h3>
-                    <p class="file-description">Contrat de travail</p>
-                    <button (click)="downloadFile('contrat')" class="download-button">
-                      <img src="/assets/icons/telecharger.png" alt="Download Contrat" class="download-icon" />
-                      <span>Télécharger</span>
-                    </button>
-                  </div>
-                  <!-- Form for Contrat -->
-                  <div class="attach-form" *ngIf="showAttachForm === 'contrat'">
-                    <h4>Joindre Contrat</h4>
-                    <input type="file" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" />
-                    <div class="form-buttons">
-                      <button class="submit-button" (click)="submitFile('contrat')">Submit</button>
-                      <button class="cancel-button" (click)="cancelAttach()">Annuler</button>
-                    </div>
-                  </div>
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-sidebar-admin (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar-admin>
+
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <div class="container">
+        <!-- Section des fichiers -->
+        <div class="files-section">
+          <h2>Dossier Mrs/Mr : {{ user?.prenom }} {{ user?.nom }} </h2>
+          <div class="files-grid">
+            <!-- CV -->
+            <div class="file-card">
+              <div class="actions">
+                <button class="menu-button" (click)="toggleMenu('cv')">⋮</button>
+                <div class="dropdown-menu" *ngIf="selectedFileType === 'cv'">
+                  <button (click)="attachFile('cv')">Joindre file</button>
+                  <button (click)="deleteFile('cv')">Supprimer file</button>
                 </div>
               </div>
-            
-            
-            
-            
-            
-            
-            
+              <div class="file-icon-container">
+                <img src="/assets/icons/donnees-dutilisateur.png" alt="CV Icon" class="file-icon" />
+              </div>
+              <div class="file-info">
+                <h3>CV</h3>
+                <p class="file-description">Curriculum Vitae</p>
+                <button (click)="downloadFile('cv')" class="download-button">
+                  <img src="/assets/icons/telecharger.png" alt="Download CV" class="download-icon" />
+                  <span>Télécharger</span>
+                </button>
+              </div>
+              <!-- Form for CV -->
+              <div class="attach-form" *ngIf="showAttachForm === 'cv'">
+                <h4>Joindre CV</h4>
+                <input type="file" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" />
+                <div class="form-buttons">
+                  <button class="submit-button" (click)="submitFile('cv')">Submit</button>
+                  <button class="cancel-button" (click)="cancelAttach()">Annuler</button>
+                </div>
+              </div>
             </div>
+
+            <!-- Diplôme -->
+            <div class="file-card">
+              <div class="actions">
+                <button class="menu-button" (click)="toggleMenu('diplome')">⋮</button>
+                <div class="dropdown-menu" *ngIf="selectedFileType === 'diplome'">
+                  <button (click)="attachFile('diplome')">Joindre file</button>
+                  <button (click)="deleteFile('diplome')">Supprimer file</button>
+                </div>
+              </div>
+              <div class="file-icon-container">
+                <img src="/assets/icons/donnees-dutilisateur.png" alt="Diplôme Icon" class="file-icon" />
+              </div>
+              <div class="file-info">
+                <h3>Diplôme</h3>
+                <p class="file-description">Diplôme académique</p>
+                <button (click)="downloadFile('diplome')" class="download-button">
+                  <img src="/assets/icons/telecharger.png" alt="Download Diplôme" class="download-icon" />
+                  <span>Télécharger</span>
+                </button>
+              </div>
+              <!-- Form for Diplôme -->
+              <div class="attach-form" *ngIf="showAttachForm === 'diplome'">
+                <h4>Joindre Diplôme</h4>
+                <input type="file" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" />
+                <div class="form-buttons">
+                  <button class="submit-button" (click)="submitFile('diplome')">Submit</button>
+                  <button class="cancel-button" (click)="cancelAttach()">Annuler</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contrat -->
+            <div class="file-card">
+              <div class="actions">
+                <button class="menu-button" (click)="toggleMenu('contrat')">⋮</button>
+                <div class="dropdown-menu" *ngIf="selectedFileType === 'contrat'">
+                  <button (click)="attachFile('contrat')">Joindre file</button>
+                  <button (click)="deleteFile('contrat')">Supprimer file</button>
+                </div>
+              </div>
+              <div class="file-icon-container">
+                <img src="/assets/icons/donnees-dutilisateur.png" alt="Contrat Icon" class="file-icon" />
+              </div>
+              <div class="file-info">
+                <h3>Contrat</h3>
+                <p class="file-description">Contrat de travail</p>
+                <button (click)="downloadFile('contrat')" class="download-button">
+                  <img src="/assets/icons/telecharger.png" alt="Download Contrat" class="download-icon" />
+                  <span>Télécharger</span>
+                </button>
+              </div>
+              <!-- Form for Contrat -->
+              <div class="attach-form" *ngIf="showAttachForm === 'contrat'">
+                <h4>Joindre Contrat</h4>
+                <input type="file" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" />
+                <div class="form-buttons">
+                  <button class="submit-button" (click)="submitFile('contrat')">Submit</button>
+                  <button class="cancel-button" (click)="cancelAttach()">Annuler</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-  
-        <app-right-sidebar></app-right-sidebar>
       </div>
+
+      <app-right-sidebar></app-right-sidebar>
     </div>
   </div>

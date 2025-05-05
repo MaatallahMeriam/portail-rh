@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { DetailsUserAdminComponent } from './pages/admin-space/component/details-user-admin/details-user-admin.component';
+import { GestionProfileAdminComponent } from './pages/admin-space/component/gestion-profile-admin/gestion-profile-admin.component';
 
 import { DetailsEquipeComponent } from './pages/rh-space/components/details-equipe/details-equipe.component';
 import { LoginComponent } from './shared/components/login/login.component';
@@ -31,9 +32,18 @@ import { PlanningTtComponent } from './pages/rh-space/components/planning-tt/pla
 import { PlanningUserComponent } from './pages/collab-space/components/planning-user/planning-user.component';
 import { ListPlanningsComponent } from './pages/rh-space/components/list-plannings/list-plannings.component';
 import { DetailsMembreEqComponent } from './pages/manager-space/components/details-membre-eq/details-membre-eq.component';
+import { GestionProfileComponent } from './pages/collab-space/components/gestion-profile/gestion-profile.component';
+import { ProfilManagerComponent } from './pages/manager-space/components/profil-manager/profil-manager.component';
+import { ListMemberCollabComponent } from './pages/collab-space/components/list-member-collab/list-member-collab.component';
+import { ListMemberRhComponent } from './pages/rh-space/components/list-member-rh/list-member-rh.component';
+import { EspaceDocCollabComponent } from './pages/collab-space/components/espace-doc-collab/espace-doc-collab.component';
+import { IdeeCollabComponent } from './pages/collab-space/components/idee-collab/idee-collab.component';
 
+import { EspaceDocManagerComponent } from './pages/manager-space/components/espace-doc-manager/espace-doc-manager.component';
+import { IdeeManagerComponent } from './pages/manager-space/components/idee-manager/idee-manager.component';
+import { IdeeRhComponent } from './pages/rh-space/components/idee-rh/idee-rh.component';
 
-
+import { ProfilRhComponent } from './pages/rh-space/components/profil-rh/profil-rh.component';
 
 import { DossierUserComponent } from './pages/rh-space/components/dossier-user/dossier-user.component';
 import { InfosUserComponent } from './pages/rh-space/components/infos-user/infos-user.component';
@@ -53,6 +63,17 @@ import { TraitDmdDetailsComponent } from './pages/rh-space/components/trait-dmd-
 import { PlanningManagerComponent } from './pages/manager-space/components/planning-manager/planning-manager.component';
 
 export const routes: Routes = [
+    {path:'profil-rh',component:ProfilRhComponent},
+    {path:'profil-manager',component:ProfilManagerComponent},
+    {path:'membre-rh',component:ListMemberRhComponent},
+    {path : 'membre-collab',component:ListMemberCollabComponent},
+    {path:'doc-collab',component:EspaceDocCollabComponent},
+    {path:'doc-manager',component:EspaceDocManagerComponent},
+    {path:'idee-collab',component:IdeeCollabComponent},
+    {path:'profil-admin',component:GestionProfileAdminComponent},
+
+    {path:'idee-rh',component:IdeeRhComponent},
+    {path:'idee-manager',component:IdeeManagerComponent},
   {path:'planning-manager',component:PlanningManagerComponent},
   {path:'histo-dmd',component:HistoDmdCongesComponent},
   {path:'valide-dmd',component:TraitDmdDetailsComponent},
@@ -67,6 +88,7 @@ export const routes: Routes = [
   {path : 'planning-user', component:PlanningUserComponent},
   {path:'list-plannings', component:ListPlanningsComponent},
   {path:'membre-equipe',component:DetailsMembreEqComponent},
+  {path:'profile-collab',component:GestionProfileComponent},
 
   {path:'trait-dmd',component:TraitDmdComponent},
   {path:'trait-dmd-rh',component:TraitDmdRhComponent},

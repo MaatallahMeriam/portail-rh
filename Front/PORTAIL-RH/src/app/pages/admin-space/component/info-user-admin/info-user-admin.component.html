@@ -1,155 +1,154 @@
 <div class="collab-home">
-    <app-header></app-header>
-  
-    <div class="main-content">
-      <app-sidebar-admin></app-sidebar-admin>
-  
-      <div class="feed">
-        <div class="container">
-          <!-- Section Badge -->
-          <div class="badge-section">
-            <div class="professional-badge">
-              <div class="badge-header">
-                <img src="assets/images/logo.PNG" alt="Logo" class="company-logo"/>
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-sidebar-admin (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar-admin>
+
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <div class="container">
+        <!-- Section Badge -->
+        <div class="badge-section">
+          <div class="professional-badge">
+            <div class="badge-header">
+              <img src="assets/images/logo.PNG" alt="Logo" class="company-logo"/>
+            </div>
+            <div class="badge-content">
+              <div class="badge-photo">
+                <img [src]="user?.image || '/assets/icons/user-login-icon-14.png'" [alt]="user?.prenom + ' ' + user?.nom" class="user-photo"/>
               </div>
-              <div class="badge-content">
-                <div class="badge-photo">
-                  <img [src]="user?.image || '/assets/icons/user-login-icon-14.png'" [alt]="user?.prenom + ' ' + user?.nom" class="user-photo"/>
-                </div>
-                <div class="badge-info">
-                  <h3>{{ user?.prenom }} {{ user?.nom }}</h3>
-                  <p class="position">Poste : {{ user?.poste }}</p>
-                  <p class="department">Département : {{ user?.departement }}</p>
-                  <p class="email">Contact : {{ user?.mail }} • {{ user?.numero }}</p>
-                </div>
+              <div class="badge-info">
+                <h3>{{ user?.prenom }} {{ user?.nom }}</h3>
+                <p class="position">Poste : {{ user?.poste }}</p>
+                <p class="department">Département : {{ user?.departement }}</p>
+                <p class="email">Contact : {{ user?.mail }} • {{ user?.numero }}</p>
               </div>
-              <div class="badge-actions">
-                <button class="menu-button" (click)="toggleBadgeMenu()">
-                  <mat-icon>more_vert</mat-icon>
+            </div>
+            <div class="badge-actions">
+              <button class="menu-button" (click)="toggleBadgeMenu()">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <div class="dropdown-menu" [ngClass]="{'visible': showBadgeMenu}" *ngIf="showBadgeMenu">
+                <button (click)="exportBadge()">
+                  <mat-icon>file_download</mat-icon>
+                  Exporter le badge
                 </button>
-                <div class="dropdown-menu" [ngClass]="{'visible': showBadgeMenu}" *ngIf="showBadgeMenu">
-                  <button (click)="exportBadge()">
-                    <mat-icon>file_download</mat-icon>
-                    Exporter le badge
-                  </button>
-                </div>
               </div>
             </div>
           </div>
-  
-          <!-- Section Informations -->
-          <div class="user-details-section">
-            <h2>Informations personnelles</h2>
-            <div class="details-grid">
-              <div class="detail-group">
-                <label>Nom d'utilisateur</label>
-                <div class="detail-value">
-                  <span>{{ user?.userName }}</span>
-                  <button class="edit-button" (click)="editField('userName')">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </div>
+        </div>
+
+        <!-- Section Informations -->
+        <div class="user-details-section">
+          <h2>Informations personnelles</h2>
+          <div class="details-grid">
+            <div class="detail-group">
+              <label>Nom d'utilisateur</label>
+              <div class="detail-value">
+                <span>{{ user?.userName }}</span>
+                <button class="edit-button" (click)="editField('userName')">
+                  <mat-icon>edit</mat-icon>
+                </button>
               </div>
-  
-              <div class="detail-group">
-                <label>Nom</label>
-                <div class="detail-value">
-                  <span>{{ user?.nom }}</span>
-                  <button class="edit-button" (click)="editField('nom')">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </div>
+            </div>
+
+            <div class="detail-group">
+              <label>Nom</label>
+              <div class="detail-value">
+                <span>{{ user?.nom }}</span>
+                <button class="edit-button" (click)="editField('nom')">
+                  <mat-icon>edit</mat-icon>
+                </button>
               </div>
-  
-              <div class="detail-group">
-                <label>Prénom</label>
-                <div class="detail-value">
-                  <span>{{ user?.prenom }}</span>
-                  <button class="edit-button" (click)="editField('prenom')">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </div>
+            </div>
+
+            <div class="detail-group">
+              <label>Prénom</label>
+              <div class="detail-value">
+                <span>{{ user?.prenom }}</span>
+                <button class="edit-button" (click)="editField('prenom')">
+                  <mat-icon>edit</mat-icon>
+                </button>
               </div>
-  
-              <div class="detail-group">
-                <label>Email</label>
-                <div class="detail-value">
-                  <span>{{ user?.mail }}</span>
-                  <button class="edit-button" (click)="editField('mail')">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </div>
+            </div>
+
+            <div class="detail-group">
+              <label>Email</label>
+              <div class="detail-value">
+                <span>{{ user?.mail }}</span>
+                <button class="edit-button" (click)="editField('mail')">
+                  <mat-icon>edit</mat-icon>
+                </button>
               </div>
-  
-              <div class="detail-group">
-                <label>Département</label>
-                <div class="detail-value">
-                  <span>{{ user?.departement }}</span>
-                  <button class="edit-button" (click)="editField('departement')">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </div>
+            </div>
+
+            <div class="detail-group">
+              <label>Département</label>
+              <div class="detail-value">
+                <span>{{ user?.departement }}</span>
+                <button class="edit-button" (click)="editField('departement')">
+                  <mat-icon>edit</mat-icon>
+                </button>
               </div>
-  
-              <div class="detail-group">
-                <label>Poste</label>
-                <div class="detail-value">
-                  <span>{{ user?.poste }}</span>
-                  <button class="edit-button" (click)="editField('poste')">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </div>
+            </div>
+
+            <div class="detail-group">
+              <label>Poste</label>
+              <div class="detail-value">
+                <span>{{ user?.poste }}</span>
+                <button class="edit-button" (click)="editField('poste')">
+                  <mat-icon>edit</mat-icon>
+                </button>
               </div>
-  
-              <div class="detail-group">
-                <label>Rôle</label>
-                <div class="detail-value">
-                  <span>{{ user?.role }}</span>
-                  <button class="edit-button" (click)="editField('role')">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </div>
+            </div>
+
+            <div class="detail-group">
+              <label>Rôle</label>
+              <div class="detail-value">
+                <span>{{ user?.role }}</span>
+                <button class="edit-button" (click)="editField('role')">
+                  <mat-icon>edit</mat-icon>
+                </button>
               </div>
-  
-              <!-- Added Fields -->
-              <div class="detail-group">
-                <label>Date de naissance</label>
-                <div class="detail-value">
-                  <span>{{ user?.dateNaissance }}</span>
-                  <button class="edit-button" (click)="editField('dateNaissance')">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </div>
+            </div>
+
+            <!-- Added Fields -->
+            <div class="detail-group">
+              <label>Date de naissance</label>
+              <div class="detail-value">
+                <span>{{ user?.dateNaissance }}</span>
+                <button class="edit-button" (click)="editField('dateNaissance')">
+                  <mat-icon>edit</mat-icon>
+                </button>
               </div>
-  
-              <div class="detail-group">
-                <label>Numéro de téléphone</label>
-                <div class="detail-value">
-                  <span>{{ user?.numero }}</span>
-                  <button class="edit-button" (click)="editField('numero')">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </div>
+            </div>
+
+            <div class="detail-group">
+              <label>Numéro de téléphone</label>
+              <div class="detail-value">
+                <span>{{ user?.numero }}</span>
+                <button class="edit-button" (click)="editField('numero')">
+                  <mat-icon>edit</mat-icon>
+                </button>
               </div>
-  
-              <div class="detail-group">
-                <label>Statut</label>
-                <div class="detail-value">
-                  <span>{{ user?.active ? 'Actif' : 'Inactif' }}</span>
-                  <button class="edit-button" (click)="editField('active')">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </div>
+            </div>
+
+            <div class="detail-group">
+              <label>Statut</label>
+              <div class="detail-value">
+                <span>{{ user?.active ? 'Actif' : 'Inactif' }}</span>
+                <button class="edit-button" (click)="editField('active')">
+                  <mat-icon>edit</mat-icon>
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-  
-      <app-right-sidebar></app-right-sidebar>
     </div>
+
+    <app-right-sidebar></app-right-sidebar>
   </div>
-  
+
   <!-- Modal d'édition -->
   <div class="edit-modal" *ngIf="editingField">
     <div class="modal-content">

@@ -23,6 +23,7 @@ export interface RegisterResponse {
   role: string;
   message: string;
 }
+
 export interface UserDTO {
   showDropdown: any;
   id: number;
@@ -30,7 +31,7 @@ export interface UserDTO {
   nom: string;
   prenom: string;
   mail: string;
-  dateNaissance: string; // Changed from string (ISO date) to string (formatted date)
+  dateNaissance: string;
   age: number;
   poste: string;
   departement: string;
@@ -39,7 +40,9 @@ export interface UserDTO {
   dossierId?: number;
   active: boolean;
   numero: string;
+  adresse: string;
   checked?: boolean;
+  equipeId?: number;
 }
 
 export interface UserCongesDTO {
@@ -79,7 +82,7 @@ export class UserService {
       })
     );
   }
-  
+
   uploadDossierFiles(userId: number, cv: File | null, contrat: File | null, diplome: File | null): Observable<any> {
     const formData = new FormData();
     if (cv) formData.append('cv', cv);
@@ -98,15 +101,15 @@ export class UserService {
     );
   }
 
-  uploadUserImage(userId: number, image: File): Observable<string> {
+  uploadProfilePhoto(userId: number, image: File): Observable<UserDTO> {
     const formData = new FormData();
     formData.append('image', image);
-    return this.http.post<string>(`${this.apiUrl}/users/${userId}/upload-image`, formData).pipe(
+    return this.http.post<UserDTO>(`${this.apiUrl}/users/${userId}/profile-photo`, formData).pipe(
       catchError((error) => {
         Swal.fire({
           icon: 'error',
           title: 'Erreur',
-          text: 'Erreur lors de l\'upload de l\'image.',
+          text: 'Erreur lors de l\'upload de la photo de profil.',
         });
         return throwError(error);
       })
@@ -194,6 +197,7 @@ export class UserService {
       })
     );
   }
+
   activateUser(userId: number): Observable<UserDTO> {
     return this.http.put<UserDTO>(`${this.apiUrl}/users/${userId}/activate`, {}).pipe(
       catchError((error) => {
@@ -206,6 +210,7 @@ export class UserService {
       })
     );
   }
+
   deactivateUser(userId: number): Observable<UserDTO> {
     return this.http.put<UserDTO>(`${this.apiUrl}/users/${userId}/deactivate`, {}).pipe(
       catchError((error) => {
@@ -228,7 +233,8 @@ export class UserService {
           id: currentUser.id,
           age: currentUser.age,
           dossierId: currentUser.dossierId,
-          active: currentUser.active
+          active: currentUser.active,
+          image: updateData.image !== undefined ? updateData.image : currentUser.image
         };
         return this.http.put<UserDTO>(`${this.apiUrl}/users/${userId}`, updatedUser);
       }),

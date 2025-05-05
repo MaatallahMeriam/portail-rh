@@ -41,6 +41,7 @@ export class PlanningManagerComponent implements OnInit {
   selectedDays: string[] = [];
   isValidated: boolean = false;
   validatedMonth: string | null = null;
+  isSidebarCollapsed = false; // Track sidebar state
 
   constructor(
     private teletravailService: TeletravailService,
@@ -50,6 +51,12 @@ export class PlanningManagerComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserPlanning();
+  }
+
+  // Handle sidebar state changes
+  onSidebarStateChange(isCollapsed: boolean) {
+    this.isSidebarCollapsed = isCollapsed;
+    this.cdr.markForCheck(); // Ensure change detection runs
   }
 
   loadUserPlanning(): void {

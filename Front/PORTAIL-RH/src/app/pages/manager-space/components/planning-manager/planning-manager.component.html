@@ -2,56 +2,64 @@
     <app-header></app-header>
   
     <div class="main-content">
-        <app-side-bar-manager></app-side-bar-manager>
+        <app-side-bar-manager  (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
         
-        <div class="feed">
-            <main class="content">
-                <h2>Planning TT du mois {{ currentMonth | date: 'MMMM yyyy' }} :</h2>
-
-                <!-- Message si aucun planning n'existe -->
-                <div class="no-planning" *ngIf="!userPlanning">
-                    <h3>Aucun planning de télétravail n'est disponible pour ce mois.</h3>
-                </div>
-
-                <!-- Calendrier pour sélectionner ou afficher les jours -->
-                <div class="calendar-card" *ngIf="userPlanning">
-                    <div class="calendar-header">
-                        <span class="month-year">Vos jours de télétravail</span>
-                        <span class="max-days-badge" *ngIf="userPlanning.planning?.nombreJoursMax">
-                            <mat-icon>event</mat-icon> Max {{ userPlanning.planning?.nombreJoursMax }} jours
-                        </span>
-                    </div>
-                    <div class="calendar-grid">
-                        <div class="day-label" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">{{ day }}</div>
-                        <div
-                            class="calendar-day"
-                            *ngFor="let day of calendarDays"
-                            [ngClass]="{
-                                'filler': !day.isCurrentMonth,
-                                'today': day.isToday && !isSelectedDay(day.date),
-                                'selected': isSelectedDay(day.date),
-                                'disabled': (!isDaySelectable(day.date) && !isSelectedDay(day.date)) || (isValidated && !isSelectedDay(day.date))
-                            }"
-                            (click)="toggleDay(day.date)"
-                        >
-                            {{ day.date.getDate() }}
+            <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+                <main class="content">
+                    <h2>Planning Télétravail :</h2>
+    
+                    <!-- Badge for Current Month -->
+                    <div class="month-badge">
+                        <div class="badge-content">
+                            <span class="month-text">{{ currentMonth | date: 'MMMM' }}</span>
+                            <span class="year-text">{{ currentMonth | date: 'yyyy' }}</span>
                         </div>
                     </div>
-
-                    <!-- Bouton Valider -->
-                    <div *ngIf="!isValidated">
-                        <button
-                            class="add-button save-button"
-                            (click)="validateSelection()"
-                            [disabled]="selectedDays.length === 0"
-                        >
-                            Valider
-                        </button>
+    
+                    <!-- Message si aucun planning n'existe -->
+                    <div class="no-planning" *ngIf="!userPlanning">
+                        <h3>Aucun planning de télétravail n'est disponible pour ce mois.</h3>
+                    </div>
+                    <div class="planning-exists">
+                        <h3>Votre PLANNING TT pour ce mois :</h3>
+    
+                    <!-- Calendrier pour sélectionner ou afficher les jours -->
+                    <div class="calendar-card" *ngIf="userPlanning">
+                        <div class="calendar-header">
+                            <span class="max-days-badge" *ngIf="userPlanning.planning?.nombreJoursMax">
+                                <mat-icon>event</mat-icon> Max {{ userPlanning.planning?.nombreJoursMax }} jours
+                            </span>
+                        </div>
+                        <div class="calendar-grid">
+                            <div class="day-label" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">{{ day }}</div>
+                            <div
+                                class="calendar-day"
+                                *ngFor="let day of calendarDays"
+                                [ngClass]="{
+                                    'filler': !day.isCurrentMonth,
+                                    'today': day.isToday && !isSelectedDay(day.date),
+                                    'selected': isSelectedDay(day.date),
+                                    'disabled': (!isDaySelectable(day.date) && !isSelectedDay(day.date)) || (isValidated && !isSelectedDay(day.date))
+                                }"
+                                (click)="toggleDay(day.date)"
+                            >
+                                {{ day.date.getDate() }}
+                            </div>
+                        </div>
+    
+                        <!-- Bouton Valider -->
+                        <div *ngIf="!isValidated">
+                            <button
+                                class="add-button save-button"
+                                (click)="validateSelection()"
+                                [disabled]="selectedDays.length === 0"
+                            >
+                                Valider
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </main>
+                </main>
+            </div>
         </div>
-
-        
     </div>
-</div>

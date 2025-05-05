@@ -3,6 +3,7 @@ package com.example.PORTAIL_RH.user_service.user_service.Entity;
 import com.example.PORTAIL_RH.user_service.conges_service.Entity.UserConges;
 import com.example.PORTAIL_RH.request_service.Entity.Demande;
 import com.example.PORTAIL_RH.feed_service.pub_service.Entity.Publication;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Comment;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Reaction;
 import com.example.PORTAIL_RH.user_service.dossier_service.Entity.DossierUser;
 import com.example.PORTAIL_RH.user_service.equipe_service.Entity.Equipe;
@@ -41,7 +42,8 @@ public class Users {
     private String poste;
     private String departement;
     private String image;
-    private String numero; // New phone number field
+    private String numero; // Phone number field
+    private String adresse; // New address field
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean active = true;
@@ -63,12 +65,14 @@ public class Users {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Demande> demandes = new ArrayList<>();
 
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Publication> publications = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reaction> reactions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "dossier_id", referencedColumnName = "id")
@@ -87,9 +91,11 @@ public class Users {
             dossier.setUser(this);
         }
     }
+
     public void updateProfilePhoto(String imagePath) {
         this.image = imagePath;
     }
+
     public void addEquipeGeree(Equipe equipe) {
         equipesGerees.add(equipe);
         equipe.setManager(this);
@@ -99,8 +105,6 @@ public class Users {
         equipesGerees.remove(equipe);
         equipe.setManager(null);
     }
-
-
 
     public void addDemande(Demande demande) {
         demandes.add(demande);
@@ -130,5 +134,15 @@ public class Users {
     public void removeReaction(Reaction reaction) {
         reactions.remove(reaction);
         reaction.setUser(null);
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setUser(this);
+    }
+
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+        comment.setUser(null);
     }
 }

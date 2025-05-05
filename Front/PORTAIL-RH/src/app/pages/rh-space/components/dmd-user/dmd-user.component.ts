@@ -49,6 +49,7 @@ export class DmdUserComponent implements OnInit {
   filteredDemandes: DemandeRow[] = [];
   columns: any[] = [];
   totalDemandes: number = 0;
+  isSidebarCollapsed = false;
 
   // Filter properties
   typeFilter: string = 'Tous';
@@ -137,5 +138,9 @@ export class DmdUserComponent implements OnInit {
     this.typeFilter = 'Tous';
     this.statutFilter = 'Tous';
     this.applyFilters();
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 }

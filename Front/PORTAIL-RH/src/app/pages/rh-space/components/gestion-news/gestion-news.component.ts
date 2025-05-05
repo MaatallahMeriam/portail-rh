@@ -27,7 +27,7 @@ import { MatIconModule } from '@angular/material/icon';
     NgxDatatableModule,
     MatButtonModule,
     MatIconModule,
-],
+  ],
   templateUrl: './gestion-news.component.html',
   styleUrls: ['./gestion-news.component.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -43,6 +43,7 @@ export class GestionNewsComponent {
   description: string = '';
   imageFile: File | null = null;
   searchText: string = '';
+  isSidebarCollapsed = false;
 
   private backendBaseUrl = 'http://localhost:8080';
 
@@ -233,5 +234,9 @@ export class GestionNewsComponent {
     this.editingNews = null;
     this.searchText = '';
     this.filteredNews = [...this.News];
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 }

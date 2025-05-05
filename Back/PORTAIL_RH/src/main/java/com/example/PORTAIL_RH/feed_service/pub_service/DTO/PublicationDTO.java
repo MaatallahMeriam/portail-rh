@@ -11,7 +11,9 @@ public class PublicationDTO {
     private Long id;
     private PublicationType type;
     private Long userId;
-    private String userNom; // Limité aux détails de l'utilisateur
+    private String userNom;
+    private String userPrenom;
+    private String userPhoto;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Date createdAt;
 
@@ -26,4 +28,7 @@ public class PublicationDTO {
 
     // Spécifique à IdeeBoitePost
     private String idee;
+    private String image;
+    private String topic;
+    private Double averageRating; // Average rating for IdeeBoitePost
 }

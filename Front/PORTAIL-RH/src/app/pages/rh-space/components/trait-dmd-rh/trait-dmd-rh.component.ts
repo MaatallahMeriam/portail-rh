@@ -24,9 +24,13 @@ constructor(private router: Router) {}
     { label: 'Traitement Des Demandes', icon: 'assets/icons/validation.png', route: '/valide-dmd' },
     
   ];
+  isSidebarCollapsed = false;
 
   navigateTo(route: string) {
     console.log('Navigation vers :', route);
     this.router.navigate([route]);
+  }
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 }

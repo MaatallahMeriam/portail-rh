@@ -2,8 +2,8 @@
     <app-header></app-header>
   
     <div class="main-content">
-        <app-sidebar></app-sidebar>
-        <div class="feed">
+        <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+        <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
             <main class="content">
                 <div class="leave-balance">
                     <h2>Solde de congés :</h2>
@@ -15,7 +15,6 @@
                             <ng-container *ngFor="let leave of leaveBalances">
                                 <ng-template carouselSlide>
                                     <mat-card class="leave-card" [ngClass]="leave.color">
-                                        
                                         <mat-card-content class="content-card">
                                             <p><strong>Nom :</strong> {{ leave.type }}</p>
                                             <p><strong>Solde :</strong> {{ leave.balance }}</p>
@@ -34,9 +33,9 @@
                         <h3>Calendrier :</h3>
                         <mat-card class="calendar-card">
                           <div class="calendar-header">
-                            <button class="nav-button" (click)="previousMonth()">&lt;</button>
+                            <button class="nav-button" (click)="previousMonth()"><</button>
                             <span class="month-year">{{ currentMonth }} {{ currentYear }}</span>
-                            <button class="nav-button" (click)="nextMonth()">&gt;</button>
+                            <button class="nav-button" (click)="nextMonth()">></button>
                           </div>
                           <div class="calendar-grid">
                             <div class="day-label" *ngFor="let day of daysOfWeek">{{ day }}</div>
@@ -119,7 +118,6 @@
                                     </ng-template>
                                 </ngx-datatable-column>
 
-                                <!-- Custom Footer -->
                                 <ngx-datatable-footer>
                                     <ng-template
                                         ngx-datatable-footer-template

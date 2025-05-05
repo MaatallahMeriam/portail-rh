@@ -2,9 +2,9 @@
   <app-header></app-header>
 
   <div class="main-content">
-    <app-sidebar></app-sidebar>
+    <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
 
-    <div class="feed">
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
         <h2 class="title">Liste Equipes</h2>
 
@@ -23,16 +23,12 @@
 
         <!-- Grid des équipes -->
         <div class="teams-grid" *ngIf="filteredEquipes.length > 0">
-          <div class="team-card" *ngFor="let equipe of filteredEquipes">
-            <div class="actions-menu">
+          <div class="team-card" *ngFor="let equipe of filteredEquipes" (click)="viewDetails(equipe.id)">
+            <div class="actions-menu" (click)="$event.stopPropagation()">
               <button class="menu-button" (click)="toggleDropdown(equipe)">
                 <mat-icon class="icon">more_vert</mat-icon>
               </button>
               <div class="dropdown-menu" *ngIf="equipe.showDropdown">
-                <div class="dropdown-item" (click)="viewDetails(equipe.id)">
-                  <mat-icon>visibility</mat-icon>
-                  <span>Détails</span>
-                </div>
                 <div class="dropdown-item" (click)="editEquipe(equipe)">
                   <mat-icon>edit</mat-icon>
                   <span>Modifier</span>

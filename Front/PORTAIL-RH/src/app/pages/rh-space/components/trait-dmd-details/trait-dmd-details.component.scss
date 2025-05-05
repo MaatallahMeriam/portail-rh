@@ -33,6 +33,13 @@ $transition: all 0.3s ease;
   background: transparent;
   max-width: none;
   padding: 20px;
+  transition: all 0.3s ease-in-out;
+
+  &.sidebar-collapsed {
+    left: 100px;
+    right: 30px;
+    max-width: 1550px;
+  }
 
   &::-webkit-scrollbar {
     display: none;
@@ -229,7 +236,6 @@ $transition: all 0.3s ease;
 
 .action-buttons {
   margin-left: -55px;
-
   display: flex;
   gap: 15px;
   align-items: center;
@@ -367,20 +373,29 @@ $transition: all 0.3s ease;
   font-weight: 400;
 }
 
-
 @media (max-width: 1200px) {
   .feed {
     left: 250px;
-    
     max-width: none;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 50px;
+      max-width: 1350px;
+    }
   }
 }
 
 @media (max-width: 768px) {
   .feed {
     left: 0;
-  }
 
+    &.sidebar-collapsed {
+      left: 0;
+      right: 0;
+      max-width: 100%;
+    }
+  }
 
   .header-actions {
     flex-direction: column;
@@ -396,22 +411,38 @@ $transition: all 0.3s ease;
 @media screen and (max-width: 1470px) and (min-width: 1022px) {
   .feed {
     left: 270px;
-    
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
   }
 }
 
 @media screen and (max-width: 1024px) {
   .feed {
     left: 200px;
-    
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
   }
 }
 
 @media screen and (max-width: 768px) {
   .feed {
     left: 0;
-   
+    right: 0;
     max-width: 100%;
+
+    &.sidebar-collapsed {
+      left: 0;
+      right: 0;
+      max-width: 100%;
+    }
   }
 }
 
@@ -420,6 +451,12 @@ $transition: all 0.3s ease;
     left: 0;
     right: 0;
     max-width: 100%;
+
+    &.sidebar-collapsed {
+      left: 0;
+      right: 0;
+      max-width: 100%;
+    }
   }
 }
 
@@ -427,70 +464,83 @@ $transition: all 0.3s ease;
   .feed {
     right: 0;
     width: 100%;
+
+    &.sidebar-collapsed {
+      left: 0;
+      right: 0;
+      max-width: 100%;
+    }
   }
 }
 
 /* Media Queries */
 @media (max-width: 1457px) {
   .app-sidebar {
-      width: 200px;
+    width: 200px;
   }
 
-  
-
   .feed {
-      left: 250px;
-      
+    left: 250px;
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
   }
 }
 
 @media (max-width: 1300px) {
   .app-sidebar {
-      width: 200px;
+    width: 200px;
   }
-
-  
 
   .feed {
-      left: 250px;
-     
-  }
+    left: 250px;
 
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 100px;
+      max-width: 1200px;
+    }
+  }
 }
 
 @media (max-width: 768px) {
   .app-sidebar {
-      display: none;
+    display: none;
   }
-
-  
 
   .feed {
-      left: 200px;
-      
+    left: 200px;
+
+    &.sidebar-collapsed {
+      left: 0;
+      right: 0;
+      max-width: 100%;
+    }
   }
 
-
-
   .history-header {
-      flex-direction: column;
+    flex-direction: column;
   }
 
   .search {
-      width: 100%;
+    width: 100%;
   }
-
 }
 
 @media (max-width: 480px) {
-  
-
   .feed {
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 10px;
+
+    &.sidebar-collapsed {
       left: 0;
       right: 0;
-      width: 100%;
-      padding: 10px;
+      max-width: 100%;
+    }
   }
-
-  
 }

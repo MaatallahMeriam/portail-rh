@@ -2,14 +2,20 @@
     <app-header></app-header>
 
     <div class="main-content">
-        <app-side-bar-manager></app-side-bar-manager>
+        <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
 
-        <div class="feed">
+        <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
             <div class="container">
                 <div class="header">
                     <h2 class="title">Demande Logistiques</h2>
                     <div class="header-actions">
-                        <button class="refresh-button" (click)="loadHistory()" [disabled]="isLoading">
+                        <button 
+                            class="refresh-button" 
+                            (click)="loadHistory(); resetForm()" 
+                            [disabled]="isLoading"
+                            matTooltip="Actualiser et réinitialiser le formulaire"
+                            matTooltipPosition="above"
+                        >
                             <mat-icon>refresh</mat-icon>
                         </button>
                     </div>
@@ -122,8 +128,6 @@
                                     [scrollbarV]="false"
                                     [sorts]="[{ prop: 'dateEmission', dir: 'desc' }]"
                                 >
-                                    
-
                                     <ngx-datatable-column name="Type Composant" prop="composant" [sortable]="true" [width]="250">
                                         <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
                                             <div class="component-type">
@@ -134,8 +138,6 @@
                                             </div>
                                         </ng-template>
                                     </ngx-datatable-column>
-
-                                    
 
                                     <ngx-datatable-column name="Statut Demande" prop="statut" [sortable]="true" [width]="260">
                                         <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
@@ -160,7 +162,6 @@
                 </div>
             </div>
 
-            <app-right-side-manager></app-right-side-manager>
-        </div>
+            <app-right-side-manager></app-right-side-manager>        </div>
     </div>
 </div>

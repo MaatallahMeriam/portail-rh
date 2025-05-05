@@ -2,9 +2,9 @@
   <app-header></app-header>
 
   <div class="main-content">
-    <app-sidebar></app-sidebar>
+    <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
 
-    <div class="feed">
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
         <div class="header">
           <h2>Liste des Demandes de {{ user ? user.nom + ' ' + user.prenom : 'Utilisateur' }} :</h2>

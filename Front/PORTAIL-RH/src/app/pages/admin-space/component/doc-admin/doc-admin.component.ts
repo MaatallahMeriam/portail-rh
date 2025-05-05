@@ -9,34 +9,37 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-doc-admin',
   standalone: true,
-  imports: [CommonModule,
-      FormsModule,
-      SidebarAdminComponent,
-      HeaderComponent,
-      RightSidebarComponent,
-      NgxDatatableModule,
-      MatButtonModule,
-      MatIconModule,],
+  imports: [
+    CommonModule,
+    FormsModule,
+    SidebarAdminComponent,
+    HeaderComponent,
+    RightSidebarComponent,
+    NgxDatatableModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
   templateUrl: './doc-admin.component.html',
   styleUrl: './doc-admin.component.scss'
 })
 export class DocAdminComponent {
-documents: DocumentDTO[] = [];
+  documents: DocumentDTO[] = [];
   filteredDocuments: DocumentDTO[] = [];
   selectedDocument: DocumentDTO | null = null;
   showForm = false;
   isEditing = false;
   editingDocument: DocumentDTO | null = null;
-
   docName: string = '';
   docType: string = '';
   docDescription: string = '';
   docCategorie: string = '';
   docFile: File | null = null;
   searchText: string = '';
+  isSidebarCollapsed: boolean = false;
 
   columns = [
     { prop: 'id', name: 'ID', width: 50 },
@@ -47,6 +50,10 @@ documents: DocumentDTO[] = [];
 
   constructor(private documentService: DocumentService) {
     this.loadDocuments();
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 
   loadDocuments() {

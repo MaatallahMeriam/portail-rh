@@ -2,16 +2,14 @@
   <app-header></app-header>
 
   <div class="main-content">
-    <app-side-bar-manager></app-side-bar-manager>
+    <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
     
-    <div class="feed">
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
         <div class="header">
           <h2 class="title">Demandes Congés des membres</h2>
-          <!-- Bouton "Enregistrer" supprimé -->
         </div>
 
-        <!-- Ajout des onglets -->
         <div class="tabs">
           <button 
             class="tab-button" 
@@ -27,7 +25,6 @@
           </button>
         </div>
 
-        <!-- Vue des demandes en attente -->
         <section class="history-section" *ngIf="activeTab === 'pending'">
           <div class="history-content">
             <ngx-datatable
@@ -116,7 +113,6 @@
           </div>
         </section>
 
-        <!-- Vue de l'historique (inchangée) -->
         <section class="history-section" *ngIf="activeTab === 'history'">
           <div class="history-content">
             <ngx-datatable
@@ -190,7 +186,6 @@
           </div>
         </section>
 
-        <!-- Calendrier visible uniquement dans l'onglet "Demandes en attente" -->
         <div class="container2" *ngIf="activeTab === 'pending'">
           <h3>Calendrier :</h3>
           <div class="calendar-card">
@@ -224,8 +219,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Boîte de dialogue supprimée -->
       </div>
     </div>
   </div>

@@ -10,28 +10,31 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { SidebarAdminComponent } from '../sidebar-admin/sidebar-admin.component';
+
 @Component({
   selector: 'app-actif-list',
   standalone: true,
   imports: [CommonModule,
-      FormsModule,
-      SidebarAdminComponent,
-      HeaderComponent,
-      RightSidebarComponent,
-      NgxDatatableModule,
-      MatButtonModule,
-      MatIconModule,],
+    FormsModule,
+    SidebarAdminComponent,
+    HeaderComponent,
+    RightSidebarComponent,
+    NgxDatatableModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
   templateUrl: './actif-list.component.html',
   styleUrl: './actif-list.component.scss'
 })
 export class ActifListComponent {
-showFirstForm = false;
+  showFirstForm = false;
   showFileUploadForm = false;
   selectedUser: UserDTO | null = null;
   users: UserDTO[] = [];
   filteredUsers: UserDTO[] = [];
   searchText: string = '';
   showMenu = false;
+  isSidebarCollapsed: boolean = false;
 
   userName: string = '';
   nom: string = '';
@@ -60,26 +63,23 @@ showFirstForm = false;
     { prop: 'role', name: 'Rôle', width: 100 },
     { name: 'Actions', sortable: false, width: 50 },
   ];
-$event: any;
 
   constructor(private userService: UserService, private router: Router) {
     this.loadUsers();
   }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
+  }
+
   getDropdownTopPosition(event: any): number {
-    // You can adjust this calculation based on your layout
-    // This helps position the dropdown relative to the viewport
-    const buttonHeight = 40; // Approximate height of your button
+    const buttonHeight = 40;
     return buttonHeight;
   }
   
   toggleMenu(row: any, event: Event): void {
-    // Prevent the event from bubbling up to the row
     event.stopPropagation();
-    
-    // Toggle the selected user
     this.selectedUser = this.selectedUser === row ? null : row;
-    
-    // Add a click outside handler to close the menu
     if (this.selectedUser) {
       setTimeout(() => {
         const closeMenuHandler = (e: any) => {
@@ -93,46 +93,33 @@ $event: any;
     }
   }
   
-  
+  ngOnInit() {
+    document.addEventListener('click', (event) => {
+      if (this.selectedUser && event.target) {
+        const target = event.target as HTMLElement;
+        if (!target.closest('.dropdown-menu') && !target.closest('.menu-button')) {
+          this.selectedUser = null;
+        }
+      }
+    });
+  }
 
-
-
-  // In your ngOnInit method
-ngOnInit() {
-  // Add this to your existing ngOnInit
-  document.addEventListener('click', (event) => {
-    // Fix: Add null check for event.target
-    if (this.selectedUser && event.target) {
+  onRowClick(event: any) {
+    if (event.target) {
       const target = event.target as HTMLElement;
-      if (!target.closest('.dropdown-menu') && !target.closest('.menu-button')) {
-        this.selectedUser = null;
+      if (target.closest('.dropdown-menu') || target.closest('.menu-button')) {
+        event.stopPropagation();
       }
     }
-  });
-}
+  }
 
-// In your onRowClick method
-onRowClick(event: any) {
-  // Fix: Add null check for event.target
-  if (event.target) {
+  @HostListener('document:click', ['$event'])
+  closeMenu(event: Event) {
     const target = event.target as HTMLElement;
-    if (target.closest('.dropdown-menu') || target.closest('.menu-button')) {
-      event.stopPropagation();
+    if (!target.closest('.menu-button') && !target.closest('.dropdown-menu')) {
+      this.selectedUser = null;
     }
   }
-}
-
-// You already have a closeMenu method with proper typing, but let's make sure it's consistent
-@HostListener('document:click', ['$event'])
-closeMenu(event: Event) {
-  const target = event.target as HTMLElement;
-  if (!target.closest('.menu-button') && !target.closest('.dropdown-menu')) {
-    this.selectedUser = null;
-  }
-}
-
-
-
 
   get passwordMismatch(): boolean {
     return this.password !== this.confirmPassword && this.confirmPassword.length > 0;
@@ -167,7 +154,6 @@ closeMenu(event: Event) {
         (user.role?.toLowerCase().includes(search) || '')
     );
   }
-
 
   toggleForm() {
     this.showFirstForm = !this.showFirstForm;
@@ -390,7 +376,4 @@ closeMenu(event: Event) {
       }
     });
   }
-
-
-  
 }

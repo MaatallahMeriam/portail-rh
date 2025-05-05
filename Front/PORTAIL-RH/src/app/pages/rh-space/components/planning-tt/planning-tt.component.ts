@@ -10,7 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router'; // Ajout de l'import pour RouterModule
+import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../../shared/services/auth.service';
 import { TeletravailService, TeletravailPlanningDTO, UserTeletravailDTO } from '../../../../services/teletravail.service';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
@@ -32,7 +32,7 @@ import Swal from 'sweetalert2';
     MatDialogModule,
     MatIconModule,
     FormsModule,
-    RouterModule // Ajout de RouterModule dans les imports
+    RouterModule
   ],
   templateUrl: './planning-tt.component.html',
   styleUrl: './planning-tt.component.scss',
@@ -50,6 +50,7 @@ export class PlanningTtComponent implements OnInit {
   currentMonth: Date = new Date();
   calendarDays: { date: Date; isCurrentMonth: boolean; isToday: boolean }[] = [];
   selectedDays: string[] = [];
+  isSidebarCollapsed = false;
 
   constructor(
     private teletravailService: TeletravailService,
@@ -59,6 +60,11 @@ export class PlanningTtComponent implements OnInit {
 
   ngOnInit(): void {
     this.checkExistingPlanning();
+  }
+
+  onSidebarStateChange(isCollapsed: boolean) {
+    this.isSidebarCollapsed = isCollapsed;
+    this.cdr.markForCheck();
   }
 
   getCurrentMonth(): string {
@@ -104,7 +110,6 @@ export class PlanningTtComponent implements OnInit {
     const lastDayOfMonth = new Date(year, month + 1, 0);
     const today = new Date();
 
-    // Ajouter des jours de remplissage avant le début du mois
     const startDay = firstDayOfMonth.getDay();
     const offset = startDay === 0 ? 6 : startDay - 1;
     for (let i = offset; i > 0; i--) {
@@ -116,7 +121,6 @@ export class PlanningTtComponent implements OnInit {
       });
     }
 
-    // Ajouter les jours du mois courant
     for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
       const date = new Date(year, month, day);
       this.calendarDays.push({
@@ -129,7 +133,6 @@ export class PlanningTtComponent implements OnInit {
       });
     }
 
-    // Ajouter des jours de remplissage après la fin du mois
     const lastDay = lastDayOfMonth.getDay();
     const endOffset = lastDay === 0 ? 0 : 7 - lastDay;
     for (let i = 1; i <= endOffset; i++) {
@@ -142,8 +145,26 @@ export class PlanningTtComponent implements OnInit {
     }
   }
 
+  isDaySelectable(date: Date): boolean {
+    if (this.existingPlanning || !this.isCurrentMonth(date)) {
+      return false;
+    }
+
+    if (this.planning.politique === 'PLANNING_FIXE') {
+      const dateString = this.formatDate(date);
+      const maxDays = this.planning.nombreJoursMax || Infinity;
+      return this.selectedDays.length < maxDays || this.selectedDays.includes(dateString);
+    }
+
+    if (this.planning.politique === 'PLANNING_FIXE_JOURS_LIBRES') {
+      return true; // Pas de limite de jours pour PLANNING_FIXE_JOURS_LIBRES
+    }
+
+    return false;
+  }
+
   toggleDay(date: Date): void {
-    if (this.existingPlanning || this.planning.politique !== 'PLANNING_FIXE' || !this.isCurrentMonth(date)) {
+    if (!this.isDaySelectable(date)) {
       return;
     }
 
@@ -194,7 +215,7 @@ export class PlanningTtComponent implements OnInit {
         return false;
       }
     }
-    if (this.planning.politique === 'PLANNING_FIXE') {
+    if (this.planning.politique === 'PLANNING_FIXE' || this.planning.politique === 'PLANNING_FIXE_JOURS_LIBRES') {
       if (this.planning.joursFixes.length === 0) {
         return false;
       }

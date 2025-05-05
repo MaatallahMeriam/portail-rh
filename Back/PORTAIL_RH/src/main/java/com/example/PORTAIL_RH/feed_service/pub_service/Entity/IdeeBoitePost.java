@@ -1,7 +1,7 @@
 package com.example.PORTAIL_RH.feed_service.pub_service.Entity;
+
 import jakarta.persistence.*;
 import lombok.*;
-
 
 @Setter
 @Getter
@@ -10,6 +10,13 @@ import lombok.*;
 @PrimaryKeyJoinColumn(name = "publication_id")
 public class IdeeBoitePost extends Publication {
 
+    @Column(name = "idee", nullable = false)
     private String idee;
-}
 
+    @Column(name = "image")
+    private String image;
+
+
+    @Column(name = "topic", nullable = false)
+    private String topic;
+}

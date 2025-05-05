@@ -46,6 +46,7 @@ export class GestionDossierComponent {
   poste: string = '';
   departement: string = '';
   role: string = '';
+  isSidebarCollapsed = false;
 
   cvFile: File | null = null;
   diplomeFile: File | null = null;
@@ -74,7 +75,9 @@ $event: any;
     const buttonHeight = 40; // Approximate height of your button
     return buttonHeight;
   }
-  
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
+  }
   toggleMenu(row: any, event: Event): void {
     // Prevent the event from bubbling up to the row
     event.stopPropagation();

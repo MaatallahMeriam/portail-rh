@@ -14,6 +14,16 @@ $error-color: #D32F2F;
   padding: 20px;
   overflow-y: auto;
   background-color: white;
+  position: relative;
+}
+
+.planning-exists {
+  max-width: 800px;
+  margin-left: 200px;
+  padding: 20px;
+  background: white;
+  border-radius: $border-radius;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 h2 {
@@ -33,17 +43,18 @@ h2::after {
   left: 0;
   width: 80px;
   height: 4px;
-  background: linear-gradient(90deg, #230046, #FF6B00);
+  background: linear-gradient(90deg, #230046, #c1006a);
   border-radius: 2px;
 }
 
 h3 {
   color: #230046;
+  margin-left: 30px;
 }
 
 .no-planning {
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 800px;
+  margin-left: 150px;
   padding: 20px;
   background: white;
   border-radius: $border-radius;
@@ -52,11 +63,10 @@ h3 {
 
 .calendar-card {
   max-width: 800px;
-  margin-left: 150px;
-  padding: 20px; /* Légère augmentation du padding pour plus d'espace */
+  padding: 20px;
   border-radius: $border-radius;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background: #F4F3F6;
+  background: #fdfcfc;
   margin-bottom: 20px;
 }
 
@@ -64,10 +74,10 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 15px; /* Légère augmentation pour espacer l'en-tête et la grille */
+  margin-bottom: 15px;
 
   .month-year {
-    font-size: 18px; /* Légère augmentation de la taille de la police */
+    font-size: 18px;
     font-weight: 500;
     color: $primary-color;
     text-transform: uppercase;
@@ -79,9 +89,9 @@ h3 {
     gap: 5px;
     background: $primary-color;
     color: white;
-    padding: 6px 12px; /* Légère augmentation */
+    padding: 6px 12px;
     border-radius: 12px;
-    font-size: 14px; /* Légère augmentation */
+    font-size: 14px;
     font-weight: 500;
   }
 }
@@ -89,24 +99,24 @@ h3 {
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px; /* Augmentation du gap pour plus d'espace entre les jours */
+  gap: 8px;
   text-align: center;
 }
 
 .day-label {
-  font-size: 16px; /* Augmentation de la taille de la police */
+  font-size: 16px;
   font-weight: 500;
   color: $primary-color;
-  padding: 8px 0; /* Augmentation du padding pour plus de hauteur */
+  padding: 8px 0;
 }
 
 .calendar-day {
-  width: 40px; /* Augmentation de la largeur pour garder les proportions */
-  height: 40px; /* Augmentation de la hauteur pour agrandir le calendrier */
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px; /* Augmentation de la taille de la police pour les jours */
+  font-size: 15px;
   color: #2c3e50;
   border-radius: 50%;
   transition: $transition;
@@ -126,11 +136,11 @@ h3 {
   &.selected {
     background: linear-gradient(135deg, $primary-color, #3a0073);
     color: #fff;
-    opacity: 1 !important; /* Assure que les jours sélectionnés restent visibles */
+    opacity: 1 !important;
   }
 
   &.disabled {
-    color: #ccc;
+    color: #000000;
     cursor: not-allowed;
     background: none !important;
     opacity: 0.5;
@@ -143,7 +153,7 @@ h3 {
 
 .save-button {
   width: auto;
-  padding: 12px 24px; /* Légère augmentation pour harmoniser avec le calendrier */
+  padding: 12px 24px;
   font-size: 16px;
   border-radius: 8px;
   background: linear-gradient(45deg, $primary-color, #3a0073);
@@ -155,7 +165,8 @@ h3 {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 25px; /* Légère augmentation pour espacer */
+  margin-top: 25px;
+  margin-left: 30px;
 
   &:hover {
     transform: scale(1.05);
@@ -183,7 +194,7 @@ h3 {
   padding: 0;
 }
 
-.app-sidebar {
+.app-side-bar-manager  {
   position: fixed;
   left: 0;
   top: 70px;
@@ -194,51 +205,228 @@ h3 {
 }
 
 .feed {
-   position: fixed; 
-    top: 70px; 
-    left: 350px; 
-    right: 250px; 
-    bottom: 0; 
-    overflow-y: auto; 
-    max-width: 800px; 
-    background: #fff;
+  position: fixed;
+  top: 70px;
+  bottom: 0;
+  left: 250px;
+  width: calc(100% - 250px);
+  overflow-y: auto;
+  background: #fff;
+  transition: all 0.3s ease-in-out; 
+}
+
+.feed.sidebar-collapsed {
+  left: 100px;
+  width: calc(100% - 100px);
 }
 
 .feed::-webkit-scrollbar {
   display: none;
 }
-/* Ajustements responsifs */ 
-@media (max-width: 1200px) 
-{ .feed 
-  { left: 250px; right: 0; 
-  max-width: none; } } 
+
+// Styles for the animated month badge
+.month-badge {
+  position: absolute;
+  top: 20px;
+  right: 45px;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+
+  .badge-content {
+    width: 100%;
+    height: 100%;
+    background: #c1006a;
+    border-radius: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    animation: pulse 2s infinite ease-in-out;
+    transition: $transition;
+
+    &:hover {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .month-text {
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .year-text {
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+}
+
+// Keyframes for the pulsing animation
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Ajustements responsifs */
+@media (max-width: 1200px) {
+  .feed {
+    left: 250px;
+    width: calc(100% - 250px);
+    max-width: none;
+  }
+
+  .feed.sidebar-collapsed {
+    left: 100px;
+    width: calc(100% - 100px);
+  }
+
+  .month-badge {
+    width: 100px;
+    height: 100px;
+
+    .badge-content {
+      .month-text {
+        font-size: 18px;
+      }
+
+      .year-text {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+ 
+.planning-exists {
+  left: 0 px;
+  max-width: 100%;
+  margin-left: -50px;
+}
+  .feed {
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
+  .feed.sidebar-collapsed {
+    left: 0;
+    width: 100%;
+  }
+
+  .month-badge {
+    width: 60px;
+    height: 60px;
+    top: 5px;
+    right: 5px;
+
+    .badge-content {
+      .month-text {
+        font-size: 14px;
+      }
+
+      .year-text {
+        font-size: 10px;
+      }
+    }
+  }
+
+  .no-planning,
+  .calendar-card {
+    margin-left: -10 px;
+  }
+}
+
+@media screen and (max-width: 1473px) {
+  .app-side-bar-manager  {
+    width: 220px;
+  }
+
+  .feed {
+    left: 240px;
+    width: calc(100% - 220px);
+  }
+
+  .feed.sidebar-collapsed {
+    left: 100px;
+    width: calc(100% - 100px);
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .app-side-bar-manager  {
+    width: 200px;
+  }
+
+  .feed {
+    left: 200px;
+    width: calc(100% - 200px);
+  }
+
+  .feed.sidebar-collapsed {
+    left: 100px;
+    width: calc(100% - 100px);
+  }
+}
 
 
-@media (max-width: 768px) 
-{ .feed 
-  { left: 20px; 
-    padding: 10px; } } 
+@media screen and (max-width: 480px) {
+  .app-right-sidebar {
+    display: none;
+  }
 
+  .feed {
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+  .planning-exists {
+    left: 0 px;
+    max-width: 100%;
+    margin-left: -50px;
+  }
+  .feed.sidebar-collapsed {
+    left: 0;
+    width: 100%;
+  }
 
-@media screen and (max-width: 1473px) 
-{ .app-sidebar { width: 220px; } 
+  .month-badge {
+    width: 60px;
+    height: 60px;
+    top: 5px;
+    right: 5px;
 
-.feed { left: 240px; 
-  width: calc(100% - 220px); } 
-} 
-@media screen and (max-width: 1024px) { 
-  .app-sidebar { width: 200px; } 
-  .feed { left: 200px; 
-    width: calc(100% - 200px); } 
-  } 
-@media screen and (max-width: 768px) and (min-width: 481px) { 
-    .app-sidebar { display: none; } 
-    .app-right-sidebar { width: 200px; } 
-    .feed { top:80px; 
-      left: 200px; 
-      right: 220px; 
-      max-width: calc(100% - 150px); } } 
-@media screen and (max-width: 480px) 
-{ .app-right-sidebar { display: none; } 
-.feed { right: 0; width: 100%; } 
+    .badge-content {
+      .month-text {
+        font-size: 14px;
+      }
+
+      .year-text {
+        font-size: 10px;
+      }
+    }
+  }
+
+  .no-planning,
+  .calendar-card {
+    margin-left: 10px;
+  }
 }

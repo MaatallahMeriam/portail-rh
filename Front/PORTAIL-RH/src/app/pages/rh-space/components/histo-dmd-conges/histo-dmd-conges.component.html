@@ -2,9 +2,9 @@
   <app-header></app-header>
 
   <div class="main-content">
-    <app-sidebar></app-sidebar>
+    <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
 
-    <div class="feed">
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
         <div class="header">
           <h2 class="title">Historique Demandes Congés</h2>
@@ -33,7 +33,7 @@
               [scrollbarV]="true"
             >
               <!-- Collaborateur Cell Template -->
-              <ngx-datatable-column name="Collaborateur" prop="nom" [width]="200">
+              <ngx-datatable-column name="Collaborateur" prop="nom" [width]="100">
                 <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
                   <div class="collaborateur-cell">
                     <img
@@ -44,24 +44,24 @@
                     <span>{{ value }} {{ row.prenom }}</span>
                   </div>
                 </ng-template>
-              </ngx-datatable-column>ss
+              </ngx-datatable-column>
 
               <!-- Nom Congé Column -->
-              <ngx-datatable-column name="Nom Congé" prop="congeNom" [width]="150">
+              <ngx-datatable-column name="Nom Congé" prop="congeNom" [width]="100">
                 <ng-template let-value="value" ngx-datatable-cell-template>
                   <span>{{ value }}</span>
                 </ng-template>
               </ngx-datatable-column>
 
               <!-- Date Début Column -->
-              <ngx-datatable-column name="Date Début" prop="dateDebut" [width]="120">
+              <ngx-datatable-column name="Date Début" prop="dateDebut" [width]="80">
                 <ng-template let-value="value" ngx-datatable-cell-template>
                   <span>{{ formatDate(value) }}</span>
                 </ng-template>
               </ngx-datatable-column>
 
               <!-- Date Fin Column -->
-              <ngx-datatable-column name="Date Fin" prop="dateFin" [width]="120">
+              <ngx-datatable-column name="Date Fin" prop="dateFin" [width]="80">
                 <ng-template let-value="value" ngx-datatable-cell-template>
                   <span>{{ formatDate(value) }}</span>
                 </ng-template>

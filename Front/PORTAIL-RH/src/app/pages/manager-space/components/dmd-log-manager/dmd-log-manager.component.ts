@@ -33,6 +33,7 @@ export class DmdLogManagerComponent implements OnInit {
   isLoading: boolean = false;
   searchText: string = '';
   isFormVisible: boolean = false;
+  isSidebarCollapsed = false; // Track sidebar state
 
   columns = [
     { name: 'ID Demande', prop: 'id', sortable: true, width: 150 },
@@ -54,6 +55,11 @@ export class DmdLogManagerComponent implements OnInit {
       return;
     }
     this.loadHistory();
+  }
+
+  // Handle sidebar state changes
+  onSidebarStateChange(isCollapsed: boolean) {
+    this.isSidebarCollapsed = isCollapsed;
   }
 
   toggleForm(): void {

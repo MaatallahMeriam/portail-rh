@@ -397,8 +397,14 @@
   right: 250px;
   bottom: 0;
   overflow-y: auto;
-  max-width: 800px;
+  max-width: 850px;
   background: #fff;
+  transition: all 0.3s ease-in-out;
+
+    &.sidebar-collapsed {
+        left: 100px;
+        max-width: calc(100% - 400px);
+    }
 }
 
 .feed::-webkit-scrollbar {

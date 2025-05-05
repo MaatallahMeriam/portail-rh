@@ -2,9 +2,10 @@
   <app-header></app-header>
 
   <div class="main-content">
-    <app-sidebar></app-sidebar>
-
-    <div class="feed">
+    <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+        
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+        
       <div class="container">
         <!-- Section Badge -->
         <div class="badge-section">

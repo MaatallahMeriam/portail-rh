@@ -7,7 +7,7 @@ import { AuthService } from '../shared/services/auth.service';
 
 export interface TeletravailPlanningDTO {
   id?: number;
-  politique: 'CHOIX_LIBRE' | 'SEUIL_LIBRE' | 'PLANNING_FIXE';
+  politique: 'CHOIX_LIBRE' | 'SEUIL_LIBRE' | 'PLANNING_FIXE' | 'PLANNING_FIXE_JOURS_LIBRES';
   nombreJoursMax?: number;
   mois: string; // Format: "2025-05"
   joursFixes: string[];

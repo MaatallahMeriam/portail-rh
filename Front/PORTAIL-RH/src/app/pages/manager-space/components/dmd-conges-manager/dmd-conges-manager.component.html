@@ -2,9 +2,9 @@
     <app-header></app-header>
   
     <div class="main-content">
-        <app-side-bar-manager></app-side-bar-manager>
+        <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
         
-        <div class="feed">
+        <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
             <main class="content">
                 <div class="leave-balance">
                     <h2>Solde de congés :</h2>
@@ -35,9 +35,9 @@
                         <h3>Calendrier :</h3>
                         <mat-card class="calendar-card">
                           <div class="calendar-header">
-                            <button class="nav-button" (click)="previousMonth()">&lt;</button>
+                            <button class="nav-button" (click)="previousMonth()"><</button>
                             <span class="month-year">{{ currentMonth }} {{ currentYear }}</span>
-                            <button class="nav-button" (click)="nextMonth()">&gt;</button>
+                            <button class="nav-button" (click)="nextMonth()">></button>
                           </div>
                           <div class="calendar-grid">
                             <div class="day-label" *ngFor="let day of daysOfWeek">{{ day }}</div>
@@ -75,7 +75,7 @@
                             <button class="add-button" (click)="openRequestDialog()">+</button>
                         </div>
                         <div class="history-table-container">
-                            <ngx-datatable
+                            <ngx-datatable 
                                 class="material full-width-table"
                                 [rows]="filteredDemandes"
                                 [columns]="columns"

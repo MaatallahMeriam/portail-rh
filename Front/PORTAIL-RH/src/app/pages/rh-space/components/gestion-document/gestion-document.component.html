@@ -2,9 +2,9 @@
   <app-header></app-header>
 
   <div class="main-content">
-    <app-sidebar></app-sidebar>
+    <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
 
-    <div class="feed">
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
         <h2 class="title">Liste des documents</h2>
 
@@ -35,7 +35,7 @@
               </button>
               <div class="dropdown-menu" *ngIf="selectedDocument === document">
                 <button mat-button (click)="deleteDocument(document)">
-                  <mat-icon >delete</mat-icon>
+                  <mat-icon>delete</mat-icon>
                   Supprimer
                 </button>
                 <button mat-button (click)="editDocument(document)">
@@ -101,14 +101,12 @@
 
             <div class="form-actions">
               <button
-                
                 type="submit"
                 class="submit-button"
               >
                 {{ isEditing ? 'Modifier' : 'Soumettre' }}
               </button>
               <button
-                
                 type="button"
                 class="cancel-button"
                 (click)="toggleForm()"

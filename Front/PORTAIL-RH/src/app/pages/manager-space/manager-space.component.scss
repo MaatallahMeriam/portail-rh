@@ -5,7 +5,7 @@
     height: 100vh;
 }
 
-.main-content {
+.main-content { 
     display: flex;
     flex: 1;
     overflow: hidden; 
@@ -34,12 +34,19 @@
 .feed {
     position: fixed; 
     top: 70px; 
-    left: 350px; 
+    left: 250px; 
     right: 250px; 
     bottom: 0; 
     overflow-y: auto; 
-    max-width: 800px; 
+    max-width: 1050px; 
     background: #fff;
+    transition: all 0.3s ease-in-out;
+
+    &.sidebar-collapsed {
+        left: 100px;
+        right: 100px;
+        max-width: 1200px;
+    }
 }
 
 .feed::-webkit-scrollbar {
@@ -54,76 +61,87 @@
 .feed::-webkit-scrollbar-track {
     background: transparent;
 }
+
+
+
 @media screen and (max-width: 1300px) {
-    .app-side-bar-manager {
+    .app-sidebar {
         width: 200px; 
     }
 
-    .app-right-sidebar {
+    .app-right-side-manager {
         display: none; 
-    }
-
-    .feed {
-        left: 250px; 
-        right: 300px; 
-        max-width: calc(100% - 150px);
-    }
-}
-
-
-
-
-
-
-
-
-@media screen and (max-width: 1024px) {
-    .app-side-bar-manager {
-        width: 200px; 
-    }
-
-    .app-right-sidebar {
-        display: none; 
-    }
-
-    .feed {
-        left: 250px; 
-        right: 250px; 
-        max-width: calc(100% - 150px);
-    }
-}
-
-
-
-
-@media screen and (max-width: 768px) {
-    .app-side-bar-manager{
-        display: none; 
-    }
-
-    .app-right-sidebar {
-        width: 180px;
     }
 
     .feed {
         left: 200px; 
-        right: 250px; 
-        max-width: calc(100% - 180px);
+        right: 0; 
+        max-width: calc(100% - 200px);
+    }
+
+    .feed.sidebar-collapsed {
+        left: 100px; 
+        max-width: calc(100% - 100px);
     }
 }
 
+@media screen and (max-width: 1024px) {
+    .app-sidebar {
+        width: 200px; 
+    }
 
-
-
-
-
-@media screen and (max-width: 480px) {
-    .app-right-sidebar {
+    .app-right-side-manager {
         display: none; 
     }
 
     .feed {
+        left: 200px; 
         right: 0; 
-        width: 100%; 
+        max-width: calc(100% - 200px);
+    }
+
+    .feed.sidebar-collapsed {
+        left: 100px; 
+        max-width: calc(100% - 100px);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .app-sidebar {
+        display: block; // Sidebar is now controlled by its own component
+    }
+
+    .app-right-side-manager {
+        width: 180px;
+    }
+
+    .feed {
+        left: 0px; 
+        right: 80px; 
+        max-width: calc(100% - 220px);
+    }
+
+    .feed.sidebar-collapsed {
+        left: 0px; 
+        right: 80px; 
+        max-width: calc(100% - 220px);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .app-right-side-manager {
+        display: none; 
+    }
+
+    .feed {
+        left: 150px; 
+        right: 200px; 
+        max-width: calc(100% - 200px); 
+    }
+
+    .feed.sidebar-collapsed {
+        left: 100px; 
+        right: 0; 
+        max-width: calc(100% - 100px);
     }
 }

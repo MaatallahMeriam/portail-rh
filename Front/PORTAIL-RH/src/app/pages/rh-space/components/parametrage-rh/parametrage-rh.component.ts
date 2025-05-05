@@ -23,10 +23,13 @@ export class ParametrageRhComponent {
     { label: 'Gestion des News', icon: 'assets/icons/post.png', route: '/news-list' },
     { label: 'Gestion Planning TT', icon: 'assets/icons/calendar.png', route: '/planning-rh' },
   ];
+  isSidebarCollapsed = false;
 
   navigateTo(route: string) {
     console.log('Navigation vers :', route);
     this.router.navigate([route]);
   }
-
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
+  }
 }

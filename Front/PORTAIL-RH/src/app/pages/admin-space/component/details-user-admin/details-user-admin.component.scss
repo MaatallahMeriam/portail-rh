@@ -4,22 +4,22 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-}
-
-.main-content {
+  }
+  
+  .main-content {
     display: flex;
     flex: 1;
-    overflow: hidden; 
-}
-
-.app-sidebar, .app-right-sidebar {
+    overflow: hidden;
+  }
+  
+  .app-sidebar, .app-right-sidebar {
     position: fixed;
     top: 0;
     bottom: 0;
-    z-index: 100; 
-}
-
-.title {
+    z-index: 100;
+  }
+  
+  .title {
     color: #230046;
     font-size: 32px;
     font-weight: 600;
@@ -27,57 +27,64 @@
     margin-left: 10px;
     position: relative;
     padding-bottom: 15px;
-}
+  }
   
-.title::after {
+  .title::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
     width: 80px;
     height: 4px;
-    background: linear-gradient(135deg, #230046, #FF6B00,#ff00ea);
+    background: linear-gradient(135deg, #230046, #FF6B00, #ff00ea);
     border-radius: 2px;
-}
+  }
   
-.app-sidebar {
+  .app-sidebar {
     left: 0;
-    width: 250px; 
+    width: 250px;
     background: #f4f4f4;
-}
-
-.app-right-sidebar {
+  }
+  
+  .app-right-sidebar {
     right: 0;
-    width: 250px; 
+    width: 250px;
     background: #f4f4f4;
-}
-
-.feed {
-    position: fixed; 
-    top: 70px; 
-    left: 350px; 
-    right: 250px; 
-    bottom: 0; 
-    overflow-y: auto; 
-    max-width: 800px; 
+  }
+  
+  .feed {
+    position: fixed;
+    top: 70px;
+    left: 350px;
+    right: 250px;
+    bottom: 0;
+    overflow-y: auto;
+    max-width: 800px;
     background: transparent;
-}
-
-.feed::-webkit-scrollbar {
+    transition: all 0.3s ease-in-out;
+  
+    &.sidebar-collapsed {
+      left: 70px;
+      right: 250px;
+      max-width: calc(100% - 320px);
+    }
+  }
+  
+  .feed::-webkit-scrollbar {
     display: none;
-}
-
-.feed::-webkit-scrollbar-thumb {
+  }
+  
+  .feed::-webkit-scrollbar-thumb {
     background-color: #aaa;
     border-radius: 5px;
-}
-
-.feed::-webkit-scrollbar-track {
+  }
+  
+  .feed::-webkit-scrollbar-track {
     background: transparent;
-}
-
-/* Nouveau style amélioré pour le conteneur de paramétrage */
-.parametrage-container {
+  }
+  
+  /* Nouveau style amélioré pour le conteneur de paramétrage */
+  .parametrage-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 30px;
@@ -88,14 +95,13 @@
     margin-top: 5px;
     margin-left: 20px;
     margin-right: 20px;
-
     height: auto;
-    max-width:900px;
+    max-width: 900px;
     min-height: 450px;
     box-shadow: 0 10px 30px rgba(35, 0, 70, 0.1);
-}
+  }
   
-.option-card {
+  .option-card {
     margin-top: 100px;
     display: flex;
     flex-direction: column;
@@ -111,31 +117,31 @@
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-}
-
-.option-card::before {
+  }
+  
+  .option-card::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(100deg, #230046,#bb0274);
+    background: linear-gradient(100deg, #230046, #bb0274);
     opacity: 0;
     transition: opacity 0.4s ease;
     z-index: 1;
-}
-
-.option-card img {
+  }
+  
+  .option-card img {
     width: 60px;
     height: 60px;
     margin-bottom: 15px;
     position: relative;
     z-index: 2;
     transition: transform 0.4s ease;
-}
-
-.option-card span {
+  }
+  
+  .option-card span {
     font-size: 16px;
     font-weight: 600;
     color: #230046;
@@ -143,115 +149,141 @@
     position: relative;
     z-index: 2;
     transition: color 0.4s ease;
-}
-
-.option-card:hover {
+  }
+  
+  .option-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 30px rgba(35, 0, 70, 0.2);
     border-color: transparent;
-}
-
-.option-card:hover::before {
+  }
+  
+  .option-card:hover::before {
     opacity: 1;
-}
-
-.option-card:hover span {
+  }
+  
+  .option-card:hover span {
     color: white;
-}
-
-.option-card:hover img {
+  }
+  
+  .option-card:hover img {
     transform: scale(1.1);
     filter: brightness(0) invert(1);
-}
-
-/* Media Queries existants */
-@media (max-width: 1457px) {
+  }
+  
+  /* Media Queries existants */
+  @media (max-width: 1457px) {
     .app-sidebar {
-        width: 200px; 
+      width: 200px;
     }
-
+  
     .app-right-sidebar {
-        display: none; 
+      display: none;
     }
-
+  
     .feed {
-        left: 250px; 
-        right: 300px; 
-        max-width: calc(100% - 150px);
+      left: 250px;
+      right: 300px;
+      max-width: calc(100% - 150px);
+  
+      &.sidebar-collapsed {
+        left: 70px;
+        right: 300px;
+        max-width: calc(100% - 370px);
+      }
     }
-}
-
-@media (max-width: 1300px) {
+  }
+  
+  @media (max-width: 1300px) {
     .app-sidebar {
-        width: 200px; 
+      width: 200px;
     }
-
+  
     .app-right-sidebar {
-        display: none; 
+      display: none;
     }
-
+  
     .feed {
-        left: 250px; 
-        right: 300px; 
-        max-width: calc(100% - 150px);
+      left: 250px;
+      right: 300px;
+      max-width: calc(100% - 150px);
+  
+      &.sidebar-collapsed {
+        left: 70px;
+        right: 300px;
+        max-width: calc(100% - 370px);
+      }
     }
-}
-
-@media (max-width: 1139px) {
+  }
+  
+  @media (max-width: 1139px) {
     .parametrage-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
     }
-    
+  
     .option-card {
-        width: 160px;
-        height: 160px;
+      width: 160px;
+      height: 160px;
     }
-}
-
-@media (max-width: 892px) {
+  }
+  
+  @media (max-width: 892px) {
     .parametrage-container {
-        grid-template-columns: repeat(1, 1fr);
+      grid-template-columns: repeat(1, 1fr);
     }
-    
+  
     .option-card {
-        width: 200px;
-        height: 200px;
+      width: 200px;
+      height: 200px;
     }
-}
-
-@media (max-width: 768px) {
+  }
+  
+  @media (max-width: 768px) {
     .app-sidebar {
-        display: none; 
+      display: none;
     }
-
+  
     .app-right-sidebar {
-        width: 180px;
+      width: 180px;
     }
-
+  
     .feed {
-        left: 200px; 
-        right: 250px; 
-        max-width: calc(100% - 180px);
+      left: 200px;
+      right: 250px;
+      max-width: calc(100% - 180px);
+  
+      &.sidebar-collapsed {
+        left: 70px;
+        right: 250px;
+        max-width: calc(100% - 320px);
+      }
     }
-}
-
-@media (max-width: 480px) {
+  }
+  
+  @media (max-width: 480px) {
     .app-right-sidebar {
-        display: none; 
+      display: none;
     }
-
+  
     .feed {
-        right: 0; 
-        width: 100%; 
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-width: none;
+  
+      &.sidebar-collapsed {
+        left: 70px;
+        right: 0;
+        max-width: calc(100% - 70px);
+      }
     }
-    
+  
     .parametrage-container {
-        padding: 15px;
+      padding: 15px;
     }
-    
+  
     .option-card {
-        width: 160px;
-        height: 160px;
+      width: 160px;
+      height: 160px;
     }
-}
+  }

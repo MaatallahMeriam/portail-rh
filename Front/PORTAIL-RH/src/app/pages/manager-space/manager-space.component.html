@@ -2,10 +2,9 @@
     <app-header></app-header>
 
     <div class="main-content">
-        <app-side-bar-manager></app-side-bar-manager>
+        <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
         
-        <div class="feed">
-            <app-card-slider></app-card-slider>
+        <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
             <app-feed></app-feed>
         </div>
 

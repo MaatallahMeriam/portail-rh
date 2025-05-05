@@ -14,16 +14,18 @@ $error-color: #D32F2F;
   padding: 20px;
   overflow-y: auto;
   background-color: white;
-  position: relative; // Add position relative to allow absolute positioning of the badge
+  position: relative;
 }
-.planning-exists{
+
+.planning-exists {
   max-width: 800px;
-  margin-left: 150px;
+  margin-left: 200px;
   padding: 20px;
   background: white;
   border-radius: $border-radius;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
+
 h2 {
   margin-left: 30px;
   color: #230046;
@@ -52,7 +54,7 @@ h3 {
 
 .no-planning {
   max-width: 800px;
-  margin-left: 150px;
+  margin-left: 200px;
   padding: 20px;
   background: white;
   border-radius: $border-radius;
@@ -61,7 +63,6 @@ h3 {
 
 .calendar-card {
   max-width: 800px;
-  
   padding: 20px;
   border-radius: $border-radius;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -211,6 +212,12 @@ h3 {
   width: calc(100% - 250px);
   overflow-y: auto;
   background: #fff;
+  transition: all 0.3s ease-in-out; 
+}
+
+.feed.sidebar-collapsed {
+  left: 100px;
+  width: calc(100% - 100px);
 }
 
 .feed::-webkit-scrollbar {
@@ -282,8 +289,13 @@ h3 {
 @media (max-width: 1200px) {
   .feed {
     left: 250px;
-    right: 0;
+    width: calc(100% - 250px);
     max-width: none;
+  }
+
+  .feed.sidebar-collapsed {
+    left: 100px;
+    width: calc(100% - 100px);
   }
 
   .month-badge {
@@ -303,31 +315,43 @@ h3 {
 }
 
 @media (max-width: 768px) {
+ 
+.planning-exists {
+  left: 0 px;
+  max-width: 100%;
+  margin-left: -50px;
+}
   .feed {
-    left: 20px;
-    padding: 10px;
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
+  .feed.sidebar-collapsed {
+    left: 0;
+    width: 100%;
   }
 
   .month-badge {
-    width: 80px;
-    height: 80px;
-    top: 10px;
-    right: 10px;
+    width: 60px;
+    height: 60px;
+    top: 5px;
+    right: 5px;
 
     .badge-content {
       .month-text {
-        font-size: 16px;
+        font-size: 14px;
       }
 
       .year-text {
-        font-size: 12px;
+        font-size: 10px;
       }
     }
   }
 
   .no-planning,
   .calendar-card {
-    margin-left: 20px;
+    margin-left: -10 px;
   }
 }
 
@@ -340,6 +364,11 @@ h3 {
     left: 240px;
     width: calc(100% - 220px);
   }
+
+  .feed.sidebar-collapsed {
+    left: 100px;
+    width: calc(100% - 100px);
+  }
 }
 
 @media screen and (max-width: 1024px) {
@@ -351,24 +380,13 @@ h3 {
     left: 200px;
     width: calc(100% - 200px);
   }
-}
 
-@media screen and (max-width: 768px) and (min-width: 481px) {
-  .app-sidebar {
-    display: none;
-  }
-
-  .app-right-sidebar {
-    width: 200px;
-  }
-
-  .feed {
-    top: 80px;
-    left: 200px;
-    right: 220px;
-    max-width: calc(100% - 150px);
+  .feed.sidebar-collapsed {
+    left: 100px;
+    width: calc(100% - 100px);
   }
 }
+
 
 @media screen and (max-width: 480px) {
   .app-right-sidebar {
@@ -376,7 +394,17 @@ h3 {
   }
 
   .feed {
+    left: 0;
     right: 0;
+    width: 100%;
+  }
+  .planning-exists {
+    left: 0 px;
+    max-width: 100%;
+    margin-left: -50px;
+  }
+  .feed.sidebar-collapsed {
+    left: 0;
     width: 100%;
   }
 

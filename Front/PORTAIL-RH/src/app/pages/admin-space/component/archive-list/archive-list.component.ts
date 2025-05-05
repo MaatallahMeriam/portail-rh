@@ -38,6 +38,7 @@ export class ArchiveListComponent {
   searchText: string = '';
   columns: any[] = [];
   selectedUser: UserDTO | null = null;
+  isSidebarCollapsed: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -47,6 +48,10 @@ export class ArchiveListComponent {
   ngOnInit(): void {
     this.initializeColumns();
     this.loadDeactivatedUsers();
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 
   initializeColumns(): void {
@@ -137,7 +142,7 @@ export class ArchiveListComponent {
               title: 'Utilisateur activé',
               text: `${user.nom} ${user.prenom} a été activé avec succès.`,
             });
-            this.loadDeactivatedUsers(); // Refresh the list
+            this.loadDeactivatedUsers();
           },
           error: (error) => {
             console.error('Error activating user:', error);
@@ -172,7 +177,7 @@ export class ArchiveListComponent {
               title: 'Utilisateur supprimé',
               text: `${user.nom} ${user.prenom} a été supprimé avec succès.`,
             });
-            this.loadDeactivatedUsers(); // Refresh the list
+            this.loadDeactivatedUsers();
           },
           error: (error) => {
             console.error('Error deleting user:', error);
@@ -180,42 +185,6 @@ export class ArchiveListComponent {
               icon: 'error',
               title: 'Erreur',
               text: 'Erreur lors de la suppression de l\'utilisateur.',
-            });
-          },
-        });
-      }
-    });
-    this.selectedUser = null;
-  }
-
-  // Remove or update this method as it’s redundant with activateUser
-  archiveUser(user: UserDTO): void {
-    Swal.fire({
-      title: 'Réactiver l\'utilisateur ?',
-      text: `Voulez-vous réactiver ${user.nom} ${user.prenom} ?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#230046',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Oui, réactiver',
-      cancelButtonText: 'Annuler',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.userService.updateUser(user.id, { ...user, active: true }).subscribe({
-          next: () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Utilisateur réactivé',
-              text: `${user.nom} ${user.prenom} a été réactivé avec succès.`,
-            });
-            this.loadDeactivatedUsers();
-          },
-          error: (error) => {
-            console.error('Error reactivating user:', error);
-            Swal.fire({
-              icon: 'error',
-              title: 'Erreur',
-              text: 'Erreur lors de la réactivation de l\'utilisateur.',
             });
           },
         });

@@ -2,9 +2,9 @@
     <app-header></app-header>
   
     <div class="main-content">
-        <app-sidebar></app-sidebar>
+        <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
         
-        <div class="feed">
+        <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
             <main class="content">
                 <h2>Planning Télétravail :</h2>
 
@@ -26,7 +26,7 @@
                 <!-- Calendrier pour sélectionner ou afficher les jours -->
                 <div class="calendar-card" *ngIf="userPlanning">
                     <div class="calendar-header">
-                        <span class="max-days-badge" *ngIf="userPlanning.planning?.nombreJoursMax">
+                        <span class="max-days-badge" *ngIf="userPlanning.planning?.nombreJoursMax && userPlanning.planning?.politique !== 'PLANNING_FIXE_JOURS_LIBRES'">
                             <mat-icon>event</mat-icon> Max {{ userPlanning.planning?.nombreJoursMax }} jours
                         </span>
                     </div>

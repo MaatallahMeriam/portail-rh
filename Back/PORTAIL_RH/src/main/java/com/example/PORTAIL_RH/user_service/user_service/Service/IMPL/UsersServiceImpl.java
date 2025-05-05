@@ -77,7 +77,8 @@ public class UsersServiceImpl implements UsersService {
                 : null;
         dto.setImage(imageUrl);
         dto.setRole(user.getRole());
-        dto.setNumero(user.getNumero()); // Map the new phone number field
+        dto.setNumero(user.getNumero()); // Map the phone number field
+        dto.setAdresse(user.getAdresse()); // Map the new address field
         dto.setEquipeId(user.getEquipe() != null ? user.getEquipe().getId() : null);
         dto.setDossierId(user.getDossier() != null ? user.getDossier().getId() : null);
         dto.setActive(user.isActive());
@@ -129,7 +130,8 @@ public class UsersServiceImpl implements UsersService {
             user.setDateNaissance(null);
         }
         user.setPoste(userDTO.getPoste());
-        user.setNumero(userDTO.getNumero()); // Map the new phone number field
+        user.setNumero(userDTO.getNumero()); // Map the phone number field
+        user.setAdresse(userDTO.getAdresse()); // Map the new address field
         user.setDepartement(userDTO.getDepartement());
         user.setImage(userDTO.getImage());
         user.setRole(userDTO.getRole());
@@ -194,7 +196,40 @@ public class UsersServiceImpl implements UsersService {
     public UsersDTO updateUser(Long id, UsersDTO userDTO) {
         Users user = usersRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        mapToEntity(userDTO, user);
+
+
+        user.setUserName(userDTO.getUserName());
+        user.setNom(userDTO.getNom());
+        user.setPrenom(userDTO.getPrenom());
+        user.setMail(userDTO.getMail());
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
+        // Parse the dateNaissance string back to Date
+        if (userDTO.getDateNaissance() != null) {
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                user.setDateNaissance(dateFormat.parse(userDTO.getDateNaissance()));
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid date format for dateNaissance. Expected format: dd/MM/yyyy");
+            }
+        } else {
+            user.setDateNaissance(null);
+        }
+        user.setPoste(userDTO.getPoste());
+        user.setNumero(userDTO.getNumero()); // Map the phone number field
+        user.setAdresse(userDTO.getAdresse()); // Map the new address field
+        user.setDepartement(userDTO.getDepartement());
+        user.setImage(user.getImage());
+        user.setRole(userDTO.getRole());
+        user.setActive(userDTO.isActive());
+        if (userDTO.getEquipeId() != null) {
+            Equipe equipe = equipeRepository.findById(userDTO.getEquipeId())
+                    .orElseThrow(() -> new RuntimeException("Equipe not found"));
+            user.setEquipe(equipe);
+        } else {
+            user.setEquipe(null);
+        }
         Users updatedUser = usersRepository.save(user);
         return mapToDTO(updatedUser);
     }

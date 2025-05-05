@@ -29,8 +29,9 @@ export interface TeamMemberDTO {
   prenom: string;
   poste: string;
   departement: string;
-  image: string;
+  image?: string; // Changed to optional to match UserDTO
   mail: string;
+  numero?: string; // Added to support phone number
 }
 
 @Injectable({

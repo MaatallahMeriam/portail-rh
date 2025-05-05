@@ -2,9 +2,9 @@
   <app-header></app-header>
 
   <div class="main-content">
-    <app-sidebar-admin></app-sidebar-admin>
+    <app-sidebar-admin (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar-admin>
 
-    <div class="feed">
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
         <h2 class="title">Utilisateurs Archivés</h2>
 
@@ -25,7 +25,7 @@
           [columnMode]="'force'"
           [headerHeight]="40"
           [footerHeight]="40"
-          [rowHeight]="'auto'" 
+          [rowHeight]="'auto'"
           [scrollbarV]="false"
           [scrollbarH]="true"
           [sorts]="[{ prop: 'id', dir: 'asc' }]"
@@ -35,7 +35,6 @@
             totalMessage: 'utilisateurs au total'
           }"
         >
-          <!-- Définir explicitement les colonnes -->
           <ngx-datatable-column name="User" [width]="200">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <div class="user-cell">
@@ -51,7 +50,6 @@
           <ngx-datatable-column prop="departement" name="Département" [width]="150"></ngx-datatable-column>
           <ngx-datatable-column prop="poste" name="Poste" [width]="150"></ngx-datatable-column>
           <ngx-datatable-column prop="role" name="Rôle" [width]="100"></ngx-datatable-column>
-          <!-- Colonne pour les actions -->
           <ngx-datatable-column name="Actions" [sortable]="false" [width]="50">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <div class="actions-cell">

@@ -1,28 +1,153 @@
-<div class="post-box">
-    <img src="assets/icons/user-login-icon-14.png" alt="User">
-    
-    <div class="post-content">
-        <textarea [(ngModel)]="newPostContent" class="textarea" placeholder="Exprimez-vous..."></textarea>
-        <div class="post-actions">
-            
-            <button class="Publier" (click)="addPost()">Publier</button>
-        </div>
-    </div>
-</div>
+<div class="feed-wrapper">
+  <!-- Success Message Badge -->
+  <div class="success-message" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
 
-<div class="feed-container">
-    <div class="feed-section" *ngFor="let post of publications">
-        <section class="publication">
-            <div class="post-header">
-                <img [src]="post.userPhoto" alt="User" class="profile-pic">
-                <div>
-                    <strong>{{ post.userName }}</strong>
-                    <small>{{ post.timestamp | date:'short' }}</small>
-                </div>
+  <!-- News Carousel -->
+  <h2 class="titre">Actualités :</h2>
+
+  <div class="slider-container">
+    <owl-carousel-o [options]="customOptions">
+      <ng-container *ngFor="let news of news">
+        <ng-template carouselSlide>
+          <div class="slide-content">
+            <img [src]="getImageUrl(news.imageUrl)" alt="News image" class="slide-img" />
+            <div class="image-description">
+              <h4 class="title">{{ news.titre }}</h4>
+              <p class="description">{{ news.description }}</p>
             </div>
-            
-            <p>{{ post.content }}</p>
-            <img *ngIf="post.image" [src]="post.image" alt="Post Image" class="post-img">
-        </section>
+          </div>
+        </ng-template>
+      </ng-container>
+    </owl-carousel-o>
+    <div *ngIf="news.length === 0" class="no-news">
+      Aucune actualité disponible.
     </div>
+  </div>
+
+  <!-- Post Box -->
+  <div class="post-box">
+    <img [src]="userPhoto || 'assets/icons/user-login-icon-14.png'" alt="User" class="user-avatar">
+    <div class="post-content">
+      <textarea [(ngModel)]="newPostContent" class="textarea" placeholder="Exprimez-vous..."></textarea>
+      <div class="post-footer">
+        <div class="file-attach-wrapper">
+          <mat-icon class="file-attach-icon" (click)="fileInput.click()">attach_file</mat-icon>
+          <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*,video/*" style="display: none;" />
+          <span *ngIf="selectedFile" class="file-name">{{ selectedFile.name }}</span>
+        </div>
+        <button class="Publier" (click)="addPost()">Publier</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feed Posts -->
+  <div class="feed-container">
+    <div class="feed-section" *ngFor="let post of publications">
+      <section class="publication">
+        <div class="post-header">
+          <img [src]="post.userPhoto || 'assets/icons/user-login-icon-14.png'" alt="User" class="profile-pic">
+          <div class="post-info">
+            <strong>{{ post.userNom }} {{ post.userPrenom }}</strong>
+            <small>{{ post.createdAt | date:'short' }}</small>
+          </div>
+          <!-- Three Dots Menu (visible only to post owner) -->
+          <div class="post-actions" *ngIf="post.userId.toString() === userId && post.id !== undefined">
+            <mat-icon class="menu-icon" (click)="toggleDropdown(post.id)">more_vert</mat-icon>
+            <div class="dropdown-menu" *ngIf="isDropdownOpen(post.id)">
+              <button class="dropdown-item" (click)="startEditing(post)">Modifier</button>
+              <button class="dropdown-item delete" (click)="deletePost(post.id)">Supprimer</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Display Post Content or Edit Form -->
+        <div *ngIf="post.id !== undefined && !isEditing(post.id)">
+          <p>{{ post.content }}</p>
+          <img 
+            *ngIf="post.mediaUrl" 
+            [src]="getImageUrl(post.mediaUrl)" 
+            alt="Post Media" 
+            class="post-img" 
+            (click)="openImageModal(getImageUrl(post.mediaUrl))"
+          />
+        </div>
+
+        <!-- Edit Form -->
+        <div *ngIf="post.id !== undefined && isEditing(post.id)" class="edit-form">
+          <textarea [(ngModel)]="editPostContent[post.id]" class="textarea" placeholder="Modifier votre publication..."></textarea>
+          <div class="edit-footer">
+            <div class="file-attach-wrapper">
+              <mat-icon class="file-attach-icon" (click)="editFileInput.click()">attach_file</mat-icon>
+              <input #editFileInput type="file" (change)="onEditFileSelected($event, post.id)" accept="image/*,video/*" style="display: none;" />
+              <span *ngIf="editSelectedFiles[post.id]" class="file-name">{{ editSelectedFiles[post.id].name }}</span>
+            </div>
+            <div class="edit-buttons">
+              <button class="save-button" (click)="saveEdit(post)">Enregistrer</button>
+              <button class="cancel-button" (click)="cancelEdit(post.id)">Annuler</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interaction Section -->
+        <div *ngIf="post.id !== undefined && !isEditing(post.id)" class="interaction-section">
+          <div class="like-container">
+            <mat-icon 
+              class="like-icon" 
+              [ngClass]="{'liked': isLikedByUser(post.id)}"
+              (click)="toggleLike(post.id)"
+            >
+              favorite
+            </mat-icon>
+            <span class="like-count">{{ getLikeCount(post.id) }}</span>
+          </div>
+          <div class="comment-container">
+            <mat-icon 
+              class="comment-icon" 
+              (click)="toggleCommentSection(post.id)"
+            >
+              chat_bubble_outline
+            </mat-icon>
+            <span class="comment-count">{{ getCommentCount(post.id) }}</span>
+          </div>
+        </div>
+
+        <!-- Comment Section -->
+        <div *ngIf="post.id !== undefined && isCommentSectionOpen(post.id) && !isEditing(post.id)" class="comment-section">
+          <div class="comment-input-container">
+            <textarea 
+              class="comment-input" 
+              [(ngModel)]="newComment[post.id]" 
+              placeholder="Ajouter un commentaire..."
+            ></textarea>
+            <button class="comment-button" (click)="addComment(post.id)">Commenter</button>
+          </div>
+          <div class="comments-list">
+            <div class="comment" *ngFor="let comment of getComments(post.id)">
+              <div class="comment-header">
+                <img 
+                  [src]="comment.userPhoto || 'assets/icons/user-login-icon-14.png'" 
+                  alt="Comment User" 
+                  class="comment-user-pic"
+                >
+                <p>
+                  <strong>{{ comment.userNom }} {{ comment.userPrenom }}</strong>: {{ comment.content }}
+                </p>
+              </div>
+              <small>{{ comment.createdAt | date:'short' }}</small>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Image Modal -->
+  <div class="image-modal" *ngIf="selectedImage">
+    <div class="modal-content">
+      <span class="close-button" (click)="closeImageModal()">×</span>
+      <img [src]="selectedImage" alt="Full-size image" class="modal-image" />
+    </div>
+  </div>
 </div>

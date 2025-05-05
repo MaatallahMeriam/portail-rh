@@ -19,9 +19,9 @@ interface Demande {
   image: string;
   demandeId: number;
   statut?: string;
-  isProcessing?: boolean; // État de traitement (pour la temporisation)
-  processingAction?: 'accept' | 'reject'; // Action en cours (accept ou reject)
-  timeoutId?: any; // Identifiant du timeout pour annuler
+  isProcessing?: boolean;
+  processingAction?: 'accept' | 'reject';
+  timeoutId?: any;
 }
 
 interface CalendarDay {
@@ -75,6 +75,7 @@ export class TraitDmdComponent implements OnInit {
   validatedDemandes: ManagerCongesDemandeDTO[] = [];
   teamMembers: TeamMemberDTO[] = [];
   activeTab: 'pending' | 'history' = 'pending';
+  isSidebarCollapsed: boolean = false;
 
   constructor(
     private demandeService: DemandeService,
@@ -127,6 +128,10 @@ export class TraitDmdComponent implements OnInit {
         console.error('Error fetching validated demands:', error);
       }
     });
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 
   private loadPendingDemands(managerId: number) {
@@ -196,31 +201,25 @@ export class TraitDmdComponent implements OnInit {
   }
 
   onAction(row: Demande, accepted: boolean) {
-    // Marquer la demande comme en cours de traitement
     row.isProcessing = true;
     row.processingAction = accepted ? 'accept' : 'reject';
 
-    // Lancer un délai de 2 secondes avant de confirmer l'action
     row.timeoutId = setTimeout(() => {
       this.confirmAction(row);
     }, 2000);
 
-    // Forcer la mise à jour de l'affichage
     this.demandes = [...this.demandes];
   }
 
   cancelAction(row: Demande) {
-    // Annuler le timeout
     if (row.timeoutId) {
       clearTimeout(row.timeoutId);
     }
 
-    // Réinitialiser l'état de la demande
     row.isProcessing = false;
     row.processingAction = undefined;
     row.timeoutId = undefined;
 
-    // Forcer la mise à jour de l'affichage
     this.demandes = [...this.demandes];
   }
 
@@ -237,11 +236,9 @@ export class TraitDmdComponent implements OnInit {
           text: `Demande ${row.processingAction === 'accept' ? 'acceptée' : 'refusée'} avec succès.`,
         });
 
-        // Supprimer la demande de la liste (elle passe dans l'historique)
         this.demandes = this.demandes.filter(d => d.demandeId !== row.demandeId);
         this.totalDemandes = this.demandes.length;
 
-        // Recharger l'historique et le calendrier
         const managerId = this.authService.getUserIdFromToken();
         if (managerId) {
           this.loadHistoryDemands(managerId);
@@ -264,7 +261,6 @@ export class TraitDmdComponent implements OnInit {
         });
         console.error('Error processing demand:', error);
 
-        // Réinitialiser l'état en cas d'erreur
         row.isProcessing = false;
         row.processingAction = undefined;
         row.timeoutId = undefined;

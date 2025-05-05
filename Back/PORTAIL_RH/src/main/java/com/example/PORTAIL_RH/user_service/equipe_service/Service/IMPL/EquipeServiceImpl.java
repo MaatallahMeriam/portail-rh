@@ -53,9 +53,9 @@ public class EquipeServiceImpl implements EquipeService {
                 : null;
         dto.setImage(imageUrl);
         dto.setMail(user.getMail());
+        dto.setNumero(user.getNumero()); // Added to include phone number
         return dto;
     }
-
     @Override
     @Transactional
     public EquipeDTO createEquipe(EquipeDTO equipeDTO) {

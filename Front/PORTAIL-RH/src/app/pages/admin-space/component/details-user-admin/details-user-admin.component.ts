@@ -6,21 +6,25 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { UserService, UserDTO } from '../../../../services/users.service';
 import Swal from 'sweetalert2';
 import { SidebarAdminComponent } from '../sidebar-admin/sidebar-admin.component';
+
 @Component({
   selector: 'app-details-user-admin',
   standalone: true,
-  imports: [SidebarAdminComponent,CommonModule,
-      HeaderComponent,
-      RightSidebarComponent,],
+  imports: [
+    SidebarAdminComponent,
+    CommonModule,
+    HeaderComponent,
+    RightSidebarComponent,
+  ],
   templateUrl: './details-user-admin.component.html',
   styleUrl: './details-user-admin.component.scss'
 })
 export class DetailsUserAdminComponent implements OnInit {
   user: UserDTO | null = null;
+  isSidebarCollapsed: boolean = false;
   options = [
     { label: 'Gestion Documents', icon: 'assets/icons/un-journal.png', route: '/dossier-user-admin' },
     { label: 'Infos Personnelles', icon: 'assets/icons/utilisateur.png', route: '/info-user-admin' },
-   
   ];
 
   constructor(
@@ -31,6 +35,10 @@ export class DetailsUserAdminComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserDetails();
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 
   loadUserDetails(): void {

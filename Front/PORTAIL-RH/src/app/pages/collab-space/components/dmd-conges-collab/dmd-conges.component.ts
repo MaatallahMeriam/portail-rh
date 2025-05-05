@@ -83,6 +83,8 @@ export class DmdCongesComponent implements OnInit {
     nav: true,
   };
 
+  isSidebarCollapsed = false; // Track sidebar state
+
   constructor(
     private authService: AuthService,
     private congeTypeService: CongeTypeService,
@@ -100,6 +102,12 @@ export class DmdCongesComponent implements OnInit {
     this.fetchUserConges();
     this.fetchDemandes();
     this.fetchValidatedDemandes();
+  }
+
+  // Handle sidebar state changes
+  onSidebarStateChange(isCollapsed: boolean) {
+    this.isSidebarCollapsed = isCollapsed;
+    this.cdr.markForCheck(); // Ensure change detection runs
   }
 
   // Fetch validated leave requests (statut = VALIDEE)

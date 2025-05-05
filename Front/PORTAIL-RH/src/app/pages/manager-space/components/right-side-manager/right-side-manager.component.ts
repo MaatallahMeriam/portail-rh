@@ -18,7 +18,6 @@ import Swal from 'sweetalert2';
   selector: 'app-right-side-manager',
   standalone: true,
   imports: [
-    MatIconButton,
     MatIconModule,
     MatCardModule,
     MatDatepickerModule,

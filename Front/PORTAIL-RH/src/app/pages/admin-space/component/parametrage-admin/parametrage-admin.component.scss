@@ -44,7 +44,18 @@
     padding: 20px 40px;
     margin: 0 auto;
 }
+.feed::-webkit-scrollbar {
+    display: none;
+}
 
+.feed::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 5px;
+}
+
+.feed::-webkit-scrollbar-track {
+    background: transparent;
+}
 /* Style amélioré pour le titre */
 h2 { 
     color: #230046;

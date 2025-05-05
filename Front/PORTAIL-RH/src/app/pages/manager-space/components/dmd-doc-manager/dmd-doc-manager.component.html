@@ -1,168 +1,174 @@
 <div class="collab-home">
-    <app-header></app-header>
-  
-    <div class="main-content">
-      <app-side-bar-manager></app-side-bar-manager>
-  
-      <div class="feed">
-        <div class="container">
-          <div class="header">
-            <h2 class="title">Demande de Documents</h2>
-            <div class="header-actions">
-              <button class="refresh-button" (click)="loadHistory()" [disabled]="isLoading">
-                <mat-icon>refresh</mat-icon>
-              </button>
-            </div>
-          </div>
-  
-          <!-- Loading Spinner -->
-          <div *ngIf="isLoading" class="loading-overlay">
-            <div class="spinner"></div>
-          </div>
-  
-          <div class="content-wrapper">
-            <!-- Request Form Section -->
-            <section class="form-section">
-              <div class="form-card">
-                <div class="card-header">
-                  <h3>Nouvelle Demande</h3>
-                  <button class="add-button" (click)="toggleForm()">{{ isFormVisible ? '-' : '+' }}</button>
-                </div>
-                <form *ngIf="isFormVisible" class="request-form" (ngSubmit)="submitRequest()">
-                  <div class="form-group">
-                    <label for="documentType">Type de document <span class="required">*</span></label>
-                    <div class="select-wrapper">
-                      <select id="documentType" [(ngModel)]="documentType" name="documentType" class="form-control" required>
-                        <option value="fiche de paie">Fiche de paie</option>
-                        <option value="attestation">Attestation</option>
-                        <option value="contrat">Contrat</option>
-                      </select>
-                    </div>
-                  </div>
-  
-                  <div class="form-group">
-                    <label for="copies">Nombre de copies <span class="required">*</span></label>
-                    <input
-                      type="number"
-                      id="copies"
-                      [(ngModel)]="copies"
-                      name="copies"
-                      min="1"
-                      class="form-control"
-                      required
-                    />
-                  </div>
-  
-                  <div class="form-group">
-                    <label for="reason">Raison de la demande <span class="required">*</span></label>
-                    <input
-                      type="text"
-                      id="reason"
-                      [(ngModel)]="reason"
-                      name="reason"
-                      class="form-control"
-                      required
-                      placeholder="Veuillez indiquer la raison de votre demande"
-                    />
-                  </div>
-  
-                  <div class="form-group">
-                    <label for="comments">Commentaires additionnels</label>
-                    <textarea
-                      id="comments"
-                      [(ngModel)]="comments"
-                      name="comments"
-                      class="form-control"
-                      placeholder="Ajoutez des détails supplémentaires si nécessaire"
-                    ></textarea>
-                  </div>
-  
-                  <div class="form-actions">
-                    <button type="button" class="btn btn-cancel" (click)="resetForm()" [disabled]="isLoading">
-                      <mat-icon>close</mat-icon>
-                      Annuler
-                    </button>
-                    <button type="submit" class="btn btn-submit" [disabled]="isLoading || !reason">
-                      <mat-icon>send</mat-icon>
-                      Envoyer la demande
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </section>
-  
-            <!-- History Section -->
-            <section class="history-section">
-              <div class="history-card">
-                <div class="card-header">
-                  <h3>Historique des Demandes</h3>
-                </div>
-                <div class="history-content">
-                  <div class="search-container">
-                    <mat-icon class="search-icon">search</mat-icon>
-                    <input
-                      type="text"
-                      class="search-input"
-                      [(ngModel)]="searchText"
-                      (ngModelChange)="filterHistory()"
-                      placeholder="Rechercher une demande..."
-                    />
-                  </div>
-  
-                  <ngx-datatable
-                    class="material full-width-table"
-                    [rows]="filteredHistory"
-                    [columns]="columns"
-                    [loadingIndicator]="isLoading"
-                    [headerHeight]="50"
-                    [footerHeight]="50"
-                    [rowHeight]="50"
-                    [limit]="8"
-                    [scrollbarH]="true"
-                    [scrollbarV]="false"
-                    [sorts]="[{ prop: 'dateEmission', dir: 'desc' }]"
-                  >
-                    <ngx-datatable-column name="Type Document" prop="typeDocument" [sortable]="true" [width]="200">
-                      <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-                        <div class="document-type">
-                          <mat-icon [ngClass]="value">
-                            {{ value === 'fiche de paie' ? 'description' : value === 'attestation' ? 'verified' : 'contract' }}
-                          </mat-icon>
-                          <span>{{ value || 'Non spécifié' | titlecase }}</span>
-                        </div>
-                      </ng-template>
-                    </ngx-datatable-column>
-  
-                    <ngx-datatable-column name="Nombre Copies" prop="nombreCopies" [sortable]="true" [width]="200">
-                      <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-                        {{ value || 0 }}
-                      </ng-template>
-                    </ngx-datatable-column>
-  
-                    <ngx-datatable-column name="Date Emission" prop="dateEmission" [sortable]="true" [width]="200">
-                      <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-                        {{ value | date: 'dd/MM/yyyy' }}
-                      </ng-template>
-                    </ngx-datatable-column>
-  
-                    <ngx-datatable-column name="Statut Demande" prop="statut" [sortable]="true" [width]="210">
-                      <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-                        <div class="status-container">
-                          <span class="status-dot" [style.background-color]="getStatusColor(value)"></span>
-                          <span class="status-badge" [ngClass]="getStatusClass(value)">
-                            {{ value || 'Inconnu' | titlecase }}
-                          </span>
-                        </div>
-                      </ng-template>
-                    </ngx-datatable-column>
-                  </ngx-datatable>
-                </div>
-              </div>
-            </section>
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
+
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <div class="container">
+        <div class="header">
+          <h2 class="title">Demande de Documents</h2>
+          <div class="header-actions">
+            <button 
+              class="refresh-button" 
+              (click)="loadHistory(); resetForm()" 
+              [disabled]="isLoading"
+              matTooltip="Actualiser et réinitialiser le formulaire"
+              matTooltipPosition="above"
+            >
+              <mat-icon>refresh</mat-icon>
+            </button>
           </div>
         </div>
-  
-        <app-right-side-manager></app-right-side-manager>
+
+        <!-- Loading Spinner -->
+        <div *ngIf="isLoading" class="loading-overlay">
+          <div class="spinner"></div>
+        </div>
+
+        <div class="content-wrapper">
+          <!-- Request Form Section -->
+          <section class="form-section">
+            <div class="form-card">
+              <div class="card-header">
+                <h3>Nouvelle Demande</h3>
+                <button class="add-button" (click)="toggleForm()">{{ isFormVisible ? '-' : '+' }}</button>
+              </div>
+              <form *ngIf="isFormVisible" class="request-form" (ngSubmit)="submitRequest()">
+                <div class="form-group">
+                  <label for="documentType">Type de document <span class="required">*</span></label>
+                  <div class="select-wrapper">
+                    <select id="documentType" [(ngModel)]="documentType" name="documentType" class="form-control" required>
+                      <option value="fiche de paie">Fiche de paie</option>
+                      <option value="attestation">Attestation</option>
+                      <option value="contrat">Contrat</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="copies">Nombre de copies <span class="required">*</span></label>
+                  <input
+                    type="number"
+                    id="copies"
+                    [(ngModel)]="copies"
+                    name="copies"
+                    min="1"
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="reason">Raison de la demande <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    id="reason"
+                    [(ngModel)]="reason"
+                    name="reason"
+                    class="form-control"
+                    required
+                    placeholder="Veuillez indiquer la raison de votre demande"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="comments">Commentaires additionnels</label>
+                  <textarea
+                    id="comments"
+                    [(ngModel)]="comments"
+                    name="comments"
+                    class="form-control"
+                    placeholder="Ajoutez des détails supplémentaires si nécessaire"
+                  ></textarea>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn btn-cancel" (click)="resetForm()" [disabled]="isLoading">
+                    <mat-icon>close</mat-icon>
+                    Annuler
+                  </button>
+                  <button type="submit" class="btn btn-submit" [disabled]="isLoading || !reason">
+                    <mat-icon>send</mat-icon>
+                    Envoyer la demande
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- History Section -->
+          <section class="history-section">
+            <div class="history-card">
+              <div class="card-header">
+                <h3>Historique des Demandes</h3>
+              </div>
+              <div class="history-content">
+                <div class="search-container">
+                  <mat-icon class="search-icon">search</mat-icon>
+                  <input
+                    type="text"
+                    class="search-input"
+                    [(ngModel)]="searchText"
+                    (ngModelChange)="filterHistory()"
+                    placeholder="Rechercher une demande..."
+                  />
+                </div>
+
+                <ngx-datatable
+                  class="material full-width-table"
+                  [rows]="filteredHistory"
+                  [columns]="columns"
+                  [loadingIndicator]="isLoading"
+                  [headerHeight]="50"
+                  [footerHeight]="50"
+                  [rowHeight]="50"
+                  [limit]="8"
+                  [scrollbarH]="true"
+                  [scrollbarV]="false"
+                  [sorts]="[{ prop: 'dateEmission', dir: 'desc' }]"
+                >
+                  <ngx-datatable-column name="Type Document" prop="typeDocument" [sortable]="true" [width]="200">
+                    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                      <div class="document-type">
+                        <mat-icon [ngClass]="value">
+                          {{ value === 'fiche de paie' ? 'description' : value === 'attestation' ? 'verified' : 'contract' }}
+                        </mat-icon>
+                        <span>{{ value || 'Non spécifié' | titlecase }}</span>
+                      </div>
+                    </ng-template>
+                  </ngx-datatable-column>
+
+                  <ngx-datatable-column name="Nombre Copies" prop="nombreCopies" [sortable]="true" [width]="200">
+                    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                      {{ value || 0 }}
+                    </ng-template>
+                  </ngx-datatable-column>
+
+                  <ngx-datatable-column name="Date Emission" prop="dateEmission" [sortable]="true" [width]="200">
+                    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                      {{ value | date: 'dd/MM/yyyy' }}
+                    </ng-template>
+                  </ngx-datatable-column>
+
+                  <ngx-datatable-column name="Statut Demande" prop="statut" [sortable]="true" [width]="210">
+                    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                      <div class="status-container">
+                        <span class="status-dot" [style.background-color]="getStatusColor(value)"></span>
+                        <span class="status-badge" [ngClass]="getStatusClass(value)">
+                          {{ value || 'Inconnu' | titlecase }}
+                        </span>
+                      </div>
+                    </ng-template>
+                  </ngx-datatable-column>
+                </ngx-datatable>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
+
+      <app-right-side-manager></app-right-side-manager>
     </div>
+  </div>
 </div>

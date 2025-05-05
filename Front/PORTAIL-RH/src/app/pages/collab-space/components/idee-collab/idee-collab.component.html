@@ -1,0 +1,126 @@
+<div class="collab-home">
+    <!-- Success Message Badge -->
+    <div class="success-message" *ngIf="successMessage">
+        {{ successMessage }}
+    </div>
+
+    <app-header></app-header>
+
+    <div class="main-content">
+        <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+        
+        <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+            <!-- Post Idea Section -->
+            <div class="welcome-container">
+                <h2 class="welcome-message">Bonjour, avez-vous des idées à poser aujourd'hui?</h2>
+                <div class="idea-icon">
+                    <mat-icon class="animated-icon">lightbulb</mat-icon>
+                </div>
+            </div>
+
+            <!-- Idea Submission Form -->
+            <div class="post-idea-section">
+                <div class="idea-form">
+                    <textarea #postInput [(ngModel)]="newIdea" placeholder="Partagez votre idée..." rows="3" class="idea-input"></textarea>
+                    <input [(ngModel)]="newTopic" placeholder="Entrez le sujet de l'idée" class="topic-input" />
+                    <div class="form-actions">
+                        <label for="idea-image-upload" class="upload-btn">
+                            <mat-icon>attach_file</mat-icon> Ajouter une image
+                        </label>
+                        <input id="idea-image-upload" type="file" (change)="onFileSelected($event)" accept="image/*" style="display: none;" />
+                        <button mat-flat-button color="primary" (click)="addIdea()">Publier</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input [(ngModel)]="searchQuery" (input)="searchIdeas()" placeholder="Rechercher une idée..." class="search-input" />
+                <mat-icon class="search-icon">search</mat-icon>
+            </div>
+
+            <!-- Ideas Grid -->
+            <div class="ideas-grid">
+                <div class="idea-card" *ngFor="let idea of filteredIdeas">
+                    <!-- User Info -->
+                    <div class="user-info">
+                        <img [src]="getImageUrl(idea.userPhoto)" alt="User Photo" class="user-photo" />
+                        <div class="user-details">
+                            <span class="user-name">{{ idea.userPrenom }} {{ idea.userNom }}</span>
+                            <span class="post-date">{{ idea.createdAt | date:'short' }}</span>
+                        </div>
+                        <div class="actions" *ngIf="isAuthenticatedUser(idea)">
+                            <button mat-icon-button (click)="startEditing(idea)">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                            <button mat-icon-button (click)="deleteIdea(idea.id)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Idea Content -->
+                    <div class="idea-content">
+                        <ng-container *ngIf="editingIdeaId === idea.id; else showIdea">
+                            <textarea [(ngModel)]="editedIdeaContent" rows="3" class="edit-input"></textarea>
+                            <input [(ngModel)]="editedTopic" placeholder="Modifier le sujet" class="edit-topic-input" />
+                            <div class="edit-actions">
+                                <button mat-flat-button color="primary" (click)="saveEdit()">Enregistrer</button>
+                                <button mat-flat-button (click)="cancelEdit()">Annuler</button>
+                            </div>
+                        </ng-container>
+                        <ng-template #showIdea>
+                            <h3 class="idea-topic">{{ idea.topic }}</h3>
+                            <p class="idea-text">{{ idea.idee }}</p>
+                            <div *ngIf="idea.image; else noImage">
+                                <img [src]="getImageUrl(idea.image)" alt="Idea Image" class="idea-image"
+                                     (error)="onImageError($event)" />
+                            </div>
+                            <ng-template #noImage>
+                                <p>No image available for this idea.</p>
+                            </ng-template>
+                        </ng-template>
+                    </div>
+
+                    <!-- Interaction Bar -->
+                    <div class="interaction-bar">
+                        <!-- Likes -->
+                        <div class="interaction-item">
+                            <mat-icon [ngClass]="{'liked': isLikedByUser(idea.id)}" (click)="toggleLike(idea.id)">favorite</mat-icon>
+                            <span>{{ getLikeCount(idea.id) }}</span>
+                        </div>
+
+                        <!-- Comments -->
+                        <div class="interaction-item">
+                            <mat-icon (click)="toggleCommentSection(idea.id)">comment</mat-icon>
+                            <span>{{ getCommentCount(idea.id) }}</span>
+                        </div>
+
+                        <!-- Ratings -->
+                        <div class="interaction-item rating">
+                            <mat-icon *ngFor="let star of [1, 2, 3, 4, 5]" [ngClass]="{'filled': star <= getUserRating(idea.id)}" (click)="rateIdea(idea.id, star)">star</mat-icon>
+                        </div>
+                    </div>
+
+                    <!-- Comment Section -->
+                    <div class="comment-section" *ngIf="isCommentSectionOpen(idea.id)">
+                        <div class="comments-list">
+                            <div class="comment" *ngFor="let comment of getComments(idea.id)">
+                                <img   alt="User Photo" class="comment-user-photo" />
+                                <div class="comment-content">
+                                    <span class="comment-user">{{ comment.userPrenom }} {{ comment.userNom }}</span>
+                                    <p>{{ comment.content }}</p>
+                                    <span class="comment-date">{{ comment.createdAt | date:'short' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comment-form">
+                            <textarea [(ngModel)]="newComment[idea.id]" placeholder="Ajouter un commentaire..." rows="2"></textarea>
+                            <button mat-flat-button color="primary" (click)="addComment(idea.id)">Commenter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

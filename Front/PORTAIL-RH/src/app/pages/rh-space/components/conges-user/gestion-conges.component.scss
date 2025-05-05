@@ -40,8 +40,15 @@
   bottom: 0;
   overflow-y: auto;
   background: transparent;
-  max-width: 900px;
+  max-width: 950px;
   padding: 20px;
+  transition: all 0.3s ease-in-out;
+
+  &.sidebar-collapsed {
+    left: 100px;
+    right: 200px;
+    max-width: 1150px;
+  }
 }
 
 .form-container::-webkit-scrollbar-thumb {
@@ -433,6 +440,12 @@
     left: 250px;
     right: 300px;
     max-width: calc(100% - 150px);
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 250px;
+      max-width: 1150px;
+    }
   }
 }
 
@@ -449,6 +462,12 @@
     left: 250px;
     right: 300px;
     max-width: calc(100% - 150px);
+
+    &.sidebar-collapsed {
+      left: 100px;
+      right: 250px;
+      max-width: 1150px;
+    }
   }
 
   .leave-card {
@@ -469,6 +488,12 @@
     left: 200px;
     right: 250px;
     max-width: calc(100% - 180px);
+
+    &.sidebar-collapsed {
+      left: 0;
+      right: 250px;
+      max-width: 100%;
+    }
   }
 
   .leave-card {
@@ -511,6 +536,12 @@
     right: 0;
     width: 100%;
     padding: 10px;
+
+    &.sidebar-collapsed {
+      left: 0;
+      right: 0;
+      max-width: 100%;
+    }
   }
 
   .leave-card {

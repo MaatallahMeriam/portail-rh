@@ -1,224 +1,261 @@
 .collab-home {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-  
-  .main-content {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
-  
-  .app-side-bar-manager,
-  .app-right-sidebar {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    z-index: 100;
-  }
-  
-  .app-side-bar-manager {
-    left: 0;
-    width: 250px;
-    background: #f4f4f4;
-  }
-  
-  .app-right-sidebar {
-    right: 0;
-    width: 250px;
-    background: #f4f4f4;
-  }
-  
-  .feed {
-    position: fixed;
-    top: 70px;
-    left: 350px;
-    right: 250px;
-    bottom: 0;
-    overflow-y: auto;
-    max-width: 800px;
-    background: #fff;
-    padding: 20px;
-  }
-  
-  .feed::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .feed::-webkit-scrollbar-thumb {
-    background-color: #aaa;
-    border-radius: 5px;
-  }
-  
-  .feed::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  .section-title {
-    color: #230046;
-    font-size: 28px;
-    font-weight: 600;
-    margin-bottom: 25px;
-    margin-top: -5px;
-    position: relative;
-    padding-bottom: 15px;
-  }
-
-  .section-title::after{
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 80px;
-    height: 4px;
-    background: linear-gradient(135deg, #230046, #FF6B00, #ff00ea);
-    border-radius: 2px;
-  }
-  
-  .members-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); // 3 cards per row
-    gap: 20px;
-  }
-  
-  .member-card {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  
-    &:hover {
-      cursor: pointer;
-      transform: translateY(-5px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-    }
-  }
-  
-  .member-photo {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    border: 2px solid #230046;
-    margin-bottom: 10px;
-  }
-  
-  .member-info {
-    h3 {
-      font-size: 18px;
-      font-weight: bold;
-      color: #230046;
-      margin: 5px 0;
-    }
-  
-    .poste {
-      font-size: 14px;
-      color: #ff00ea;
-      margin: 5px 0;
-    }
-  
-    .mail {
-      font-size: 12px;
-      color: #817a90;
-      margin: 5px 0;
-      font-family: 'Amaranth', sans-serif;
-      word-break: break-all;
-    }
-  }
-  
-  .no-members {
-    font-size: 16px;
-    color: #230046;
-    text-align: center;
-    margin-top: 20px;
-  }
-  @media screen and (max-width: 1300px) {
-    .app-side-bar-manager {
-        width: 200px; 
-    }
-
-    .app-right-sidebar {
-        display: none; 
-    }
-
-    .feed {
-        left: 250px; 
-        right: 300px; 
-        max-width: calc(100% - 150px);
-    }
-
-    .members-container {
-        grid-template-columns: repeat(1, 1fr); // 2 cards per row
-      }
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
 
+.app-side-bar-manager {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 250px;
+  background: #f4f4f4;
+  z-index: 100;
+}
 
+.feed {
+  position: fixed;
+  top: 70px;
+  left: 250px;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  max-width: 1200px;
+  background: #fff;
+  padding: 20px 40px;
+  transition: all 0.3s ease-in-out;
 
+  &.sidebar-collapsed {
+    left: 180px;
+    max-width: calc(100% - 70px);
+  }
+}
 
+.feed::-webkit-scrollbar {
+  width: 8px;
+}
 
+.feed::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 5px;
+}
 
+.feed::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.section-title {
+  color: #230046;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  margin-top: -5px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(135deg, #230046, #FF6B00, #ff00ea);
+  border-radius: 2px;
+}
+
+.manager-section,
+.members-section {
+  margin-bottom: 40px;
+}
+
+.manager-title,
+.members-title {
+  color: #230046;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.members-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.member-card,
+.manager-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.manager-card {
+  max-width: 350px;
+}
+
+.member-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid #230046;
+  margin-bottom: 10px;
+}
+
+.member-info {
+  h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #230046;
+    margin: 5px 0;
+  }
+
+  .poste {
+    font-size: 14px;
+    color: #ff00ea;
+    margin: 5px 0;
+  }
+
+  .mail {
+    font-size: 12px;
+    color: #817a90;
+    margin: 5px 0;
+    font-family: 'Amaranth', sans-serif;
+    word-break: break-all;
+  }
+
+  .phone {
+    font-size: 12px;
+    color: #817a90;
+    margin: 5px 0;
+    font-family: 'Amaranth', sans-serif;
+  }
+}
+
+.no-members {
+  font-size: 16px;
+  color: #230046;
+  text-align: center;
+  margin-top: 20px;
+}
+
+@media screen and (max-width: 1300px) {
+  .feed {
+    left: 250px;
+    right: 0;
+    max-width: calc(100% - 250px);
+    padding: 20px;
+
+    &.sidebar-collapsed {
+      left: 70px;
+      max-width: calc(100% - 70px);
+    }
+  }
+
+  .members-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
 @media screen and (max-width: 1024px) {
-    .app-side-bar-manager {
-        width: 200px; 
-    }
+  .feed {
+    left: 250px;
+    right: 0;
+    max-width: calc(100% - 250px);
+    padding: 20px;
 
-    .app-right-sidebar {
-        display: none; 
+    &.sidebar-collapsed {
+      left: 70px;
+      max-width: calc(100% - 70px);
     }
+  }
 
-    .feed {
-        left: 250px; 
-        right: 250px; 
-        max-width: calc(100% - 150px);
-    }
-    .members-container {
-        grid-template-columns: repeat(1, 1fr); // 2 cards per row
-      }
+  .members-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
-
-
-
 
 @media screen and (max-width: 768px) {
-    .app-side-bar-manager{
-        display: none; 
-    }
+  .app-side-bar-manager {
+    display: none;
+  }
 
-    .app-right-sidebar {
-        width: 180px;
-    }
+  .feed {
+    top: 80px;
+    left: 200px;
+    max-width: calc(100% - 150px);
 
-    .feed {
-        left: 200px; 
-        right: 250px; 
-        max-width: calc(100% - 180px);
+    &.sidebar-collapsed {
+      left: 70px;
+      max-width: calc(100% - 70px);
     }
+  }
+
+  .members-container {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-card {
+    max-width: 100%;
+  }
 }
-
-
-
-
-
 
 @media screen and (max-width: 480px) {
-    .app-right-sidebar {
-        display: none; 
+  .feed {
+    padding: 10px;
+  }
+
+  .section-title {
+    font-size: 24px;
+  }
+
+  .manager-title,
+  .members-title {
+    font-size: 20px;
+  }
+
+  .member-card,
+  .manager-card {
+    padding: 10px;
+  }
+
+  .member-photo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .member-info {
+    h3 {
+      font-size: 16px;
     }
 
-    .feed {
-        right: 0; 
-        width: 100%; 
+    .poste,
+    .mail,
+    .phone {
+      font-size: 11px;
     }
+  }
 }
-
-
