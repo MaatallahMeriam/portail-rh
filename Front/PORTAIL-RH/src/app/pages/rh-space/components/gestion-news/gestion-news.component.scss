@@ -208,6 +208,8 @@ h2::after {
       background: #ffffff;
       padding: 15px 0;
       max-width: 900px;
+      border-bottom: 3px solid rgba(35, 0, 70, 0.02);
+
 
       .datatable-header-cell {
         color: #230046;
@@ -255,7 +257,7 @@ h2::after {
   display: flex;
   justify-content: center;
   align-items: center;
-}
+  overflow: visible;}
 
 .menu-button {
   background: none;
@@ -274,16 +276,16 @@ h2::after {
 }
 
 .dropdown-menu {
-  position: fixed;
-  margin-top: 15px;
-  margin-left: -150px;
-  margin-right: 70px;
+  position: absolute;
+  top: 50%;
+  right: 80%;
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   min-width: 180px;
-  z-index: 9999;
+  z-index: 2000;
   border: 1px solid #e0e0e0;
+  display: block;
 }
 
 .dropdown-menu button {
@@ -306,7 +308,9 @@ h2::after {
   background-color: rgba(35, 0, 70, 0.05);
   color: #230046;
 }
-
+:host ::ng-deep .ngx-datatable.material .datatable-body .datatable-body-cell {
+  overflow: visible !important;
+}
 .dropdown-menu button mat-icon {
   font-size: 18px;
   width: 18px;

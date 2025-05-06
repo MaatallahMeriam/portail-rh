@@ -16,7 +16,7 @@
           >
             <option value="">Sélectionnez un type</option>
             <option *ngFor="let leave of data.leaveBalances" [value]="leave.id">
-              {{ leave.type }} 
+              {{ leave.type }} <!-- Affiche le nom du CongeType -->
             </option>
           </select>
           <span class="error-message" *ngIf="demandeForm.get('congeTypeId')?.hasError('required') && demandeForm.get('congeTypeId')?.touched">

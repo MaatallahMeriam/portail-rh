@@ -16,11 +16,11 @@
             [(ngModel)]="searchText"
             (ngModelChange)="filterDocuments()"
           />
-          <button class="add-button" (click)="toggleForm()">+</button>
+          <button class="add-button" (click)="toggleForm()"></button>
         </div>
 
         <div class="documents-grid">
-          <div class="document-card" *ngFor="let document of filteredDocuments">
+          <div class="document-card" *ngFor="let document of filteredDocuments" (click)="downloadDocument(document.id)">
             <div class="document-icon">
               <mat-icon>description</mat-icon>
             </div>
@@ -30,23 +30,12 @@
               <span class="document-category">Catégorie : {{ document.categorie }}</span>
             </div>
             <div class="document-actions">
-              <button mat-icon-button (click)="toggleMenu(document); $event.stopPropagation()" class="menu-button">
-                <mat-icon>more_vert</mat-icon>
+              <button mat-icon-button class="edit-button" (click)="editDocument(document); $event.stopPropagation()" title="Modifier">
+                <mat-icon>edit</mat-icon>
               </button>
-              <div class="dropdown-menu" *ngIf="selectedDocument === document">
-                <button mat-button (click)="deleteDocument(document)">
-                  <mat-icon>delete</mat-icon>
-                  Supprimer
-                </button>
-                <button mat-button (click)="editDocument(document)">
-                  <mat-icon class="edit">edit</mat-icon>
-                  Modifier
-                </button>
-                <button mat-button (click)="downloadDocument(document.id)">
-                  <mat-icon class="telecharger">download</mat-icon>
-                  Télécharger
-                </button>
-              </div>
+              <button mat-icon-button class="delete-button" (click)="deleteDocument(document); $event.stopPropagation()" title="Supprimer">
+                <mat-icon>delete</mat-icon>
+              </button>
             </div>
           </div>
         </div>

@@ -11,16 +11,19 @@ import { PublicationService, PublicationDTO, CommentDTO, CommentRequest } from '
 import { ReactionService, ReactionDTO, ReactionRequest, ReactionSummaryDTO } from '../../../../services/reaction.service';
 import { AuthService } from '../../../../shared/services/auth.service';
 import Swal from 'sweetalert2';
-// Interface with required id for safer typing in this context
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { AddIdeaDialogComponent } from './add-idea-dialog/add-idea-dialog.component';
+
+
 interface PublicationDTOWithId extends PublicationDTO {
-  id: number; // Make id required for this component's context
+  id: number; 
 }
 @Component({
   selector: 'app-idee-rh',
   standalone: true,
   imports: [HeaderComponent,
       SidebarComponent,
-      RightSidebarComponent,
       MatIconModule,
       MatButtonModule,
       CommonModule,
@@ -29,20 +32,23 @@ interface PublicationDTOWithId extends PublicationDTO {
   styleUrl: './idee-rh.component.scss'
 })
 export class IdeeRhComponent implements OnInit {
-  @ViewChild('postInput') postInput!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('postInput') postInput?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('editInput') editInput?: ElementRef<HTMLTextAreaElement>;
 
   ideas: PublicationDTOWithId[] = [];
   filteredIdeas: PublicationDTOWithId[] = [];
   newIdea: string = '';
+  newTopic: string = '';
+  selectedFile?: File;
   searchQuery: string = '';
   userId: string | null = null;
   editingIdeaId: number | null = null;
   editedIdeaContent: string = '';
+  editedTopic: string = '';
+  editedImageFile: File | null = null;
   successMessage: string | null = null;
   isSidebarCollapsed = false;
 
-  // Like and Comment State
   likes: { [ideaId: number]: ReactionDTO[] } = {};
   likeSummaries: { [ideaId: number]: ReactionSummaryDTO } = {};
   userLikes: { [ideaId: number]: boolean } = {};
@@ -50,39 +56,187 @@ export class IdeeRhComponent implements OnInit {
   openCommentSections: { [ideaId: number]: boolean } = {};
   newComment: { [ideaId: number]: string } = {};
 
-  constructor(
+  userRatings: { [ideaId: number]: number } = {};
+
+  private backendBaseUrl = 'http://localhost:8080';
+
+  constructor(   
+    private router: Router,
     private publicationService: PublicationService,
     private reactionService: ReactionService,
     private authService: AuthService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
     this.userId = this.authService.getUserIdFromToken()?.toString() || null;
     if (!this.userId) {
-      console.error('User not authenticated');
+      Swal.fire('Erreur', 'Utilisateur non authentifié', 'error');
       return;
     }
-
     this.loadIdeas();
+  }
+
+  getImageUrl(imagePath: string | null | undefined): string {
+    if (!imagePath) {
+      return 'assets/icons/user-login-icon-14.png';
+    }
+    return `${this.backendBaseUrl}/${imagePath}`;
   }
 
   loadIdeas(): void {
     this.publicationService.getAllIdeeBoitePosts().subscribe({
       next: (ideas) => {
-        // Filter out ideas with undefined or null id and cast to PublicationDTOWithId
         this.ideas = ideas
-          .filter((idea): idea is PublicationDTOWithId => idea.id !== undefined && idea.id !== null)
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          .filter(idea => idea.id !== undefined)
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) as PublicationDTOWithId[];
         this.filteredIdeas = [...this.ideas];
-
-        // Load likes and comments for each idea
         this.ideas.forEach(idea => {
           this.loadLikes(idea.id);
           this.loadLikeSummary(idea.id);
           this.loadComments(idea.id);
+          this.loadUserRating(idea.id);
         });
       },
-      error: (err) => console.error('Error fetching ideas:', err)
+      error: (err) => Swal.fire('Erreur', err.message, 'error')
+    });
+  }
+
+  openAddIdeaDialog(): void {
+    const dialogRef = this.dialog.open(AddIdeaDialogComponent, {
+      width: '500px',
+      data: { newIdea: '', newTopic: '', selectedFile: undefined }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.newIdea = result.newIdea;
+        this.newTopic = result.newTopic;
+        this.selectedFile = result.selectedFile;
+        this.addIdea();
+      }
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
+  }
+
+  onEditFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.editedImageFile = input.files[0];
+    }
+  }
+
+  addIdea(): void {
+    if (!this.newIdea.trim() || !this.newTopic.trim() || !this.userId || !this.selectedFile) {
+      Swal.fire('Erreur', 'Veuillez remplir tous les champs et sélectionner une image.', 'error');
+      return;
+    }
+
+    this.publicationService.createIdeeBoitePost(this.userId, this.newIdea, this.newTopic, this.selectedFile).subscribe({
+      next: (createdIdea) => {
+        if (createdIdea.id !== undefined) {
+          this.ideas.unshift(createdIdea as PublicationDTOWithId);
+          this.filteredIdeas = [...this.ideas];
+          this.loadLikes(createdIdea.id);
+          this.loadLikeSummary(createdIdea.id);
+          this.comments[createdIdea.id] = [];
+          this.userRatings[createdIdea.id] = 0;
+          this.newIdea = '';
+          this.newTopic = '';
+          this.selectedFile = undefined;
+          this.showSuccessMessage('Idée publiée avec succès !');
+        }
+      },
+      error: (err) => Swal.fire('Erreur', err.message, 'error')
+    });
+  }
+
+  searchIdeas(): void {
+    this.filteredIdeas = this.ideas.filter(idea =>
+      (idea.topic?.toLowerCase().includes(this.searchQuery.toLowerCase()) || false) ||
+      (idea.idee?.toLowerCase().includes(this.searchQuery.toLowerCase()) || false)
+    );
+  }
+
+  startEditing(idea: PublicationDTOWithId): void {
+    this.editingIdeaId = idea.id;
+    this.editedIdeaContent = idea.idee || '';
+    this.editedTopic = idea.topic || '';
+    this.editedImageFile = null;
+  }
+
+  saveEdit(): void {
+    if (!this.userId || !this.editingIdeaId || !this.editedIdeaContent.trim() || !this.editedTopic.trim()) {
+      Swal.fire('Erreur', 'Veuillez remplir tous les champs.', 'error');
+      return;
+    }
+
+    const idea = this.ideas.find(i => i.id === this.editingIdeaId);
+    if (!idea) return;
+
+    this.publicationService.updateIdeeBoitePost(
+      this.editingIdeaId,
+      this.editedIdeaContent,
+      this.editedTopic,
+      this.editedImageFile,
+      idea.image || null,
+      this.userId
+    ).subscribe({
+      next: (updatedIdea) => {
+        const index = this.ideas.findIndex(i => i.id === this.editingIdeaId);
+        if (index !== -1) {
+          this.ideas[index] = updatedIdea as PublicationDTOWithId;
+          this.filteredIdeas = [...this.ideas];
+        }
+        this.editingIdeaId = null;
+        this.editedIdeaContent = '';
+        this.editedTopic = '';
+        this.editedImageFile = null;
+        this.showSuccessMessage('Idée mise à jour avec succès !');
+      },
+      error: (err) => Swal.fire('Erreur', err.message, 'error')
+    });
+  }
+
+  cancelEdit(): void {
+    this.editingIdeaId = null;
+    this.editedIdeaContent = '';
+    this.editedTopic = '';
+    this.editedImageFile = null;
+  }
+
+  deleteIdea(ideaId: number): void {
+    if (!this.userId) {
+      Swal.fire('Erreur', 'Utilisateur non authentifié', 'error');
+      return;
+    }
+
+    Swal.fire({
+      title: 'Êtes-vous sûr ?',
+      text: 'Vous ne pourrez pas récupérer cette idée !',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#E5007F',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui, supprimer !',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.publicationService.deleteIdeeBoitePost(ideaId).subscribe({
+          next: () => {
+            this.ideas = this.ideas.filter(idea => idea.id !== ideaId);
+            this.filteredIdeas = [...this.ideas];
+            this.showSuccessMessage('Idée supprimée avec succès !');
+          },
+          error: (err) => Swal.fire('Erreur', err.message, 'error')
+        });
+      }
     });
   }
 
@@ -90,116 +244,128 @@ export class IdeeRhComponent implements OnInit {
     this.reactionService.getReactionsByPublicationId(ideaId).subscribe({
       next: (reactions) => {
         this.likes[ideaId] = reactions;
-        // Check if the current user has liked this idea
-        const userReaction = reactions.find(r => r.userId.toString() === this.userId);
-        this.userLikes[ideaId] = !!userReaction;
+        this.userLikes[ideaId] = reactions.some(r => r.userId.toString() === this.userId);
       },
-      error: (err) => console.error(`Error fetching likes for idea ${ideaId}:`, err)
+      error: (err) => console.error('Erreur lors du chargement des likes', err)
     });
   }
 
   loadLikeSummary(ideaId: number): void {
     this.reactionService.getReactionSummaryByPublicationId(ideaId).subscribe({
-      next: (summary) => {
-        this.likeSummaries[ideaId] = summary;
-      },
-      error: (err) => console.error(`Error fetching like summary for idea ${ideaId}:`, err)
+      next: (summary) => this.likeSummaries[ideaId] = summary,
+      error: (err) => console.error('Erreur lors du chargement du résumé des likes', err)
     });
+  }
+
+  toggleLike(ideaId: number): void {
+    if (!this.userId) {
+      Swal.fire('Erreur', 'Utilisateur non authentifié', 'error');
+      return;
+    }
+
+    const hasLiked = this.userLikes[ideaId] || false;
+    const request: ReactionRequest = { userId: Number(this.userId), publicationId: ideaId };
+
+    if (hasLiked) {
+      this.reactionService.deleteReaction(Number(this.userId), ideaId).subscribe({
+        next: () => {
+          this.userLikes[ideaId] = false;
+          this.loadLikes(ideaId);
+          this.loadLikeSummary(ideaId);
+        },
+        error: (err) => Swal.fire('Erreur', err.message, 'error')
+      });
+    } else {
+      this.reactionService.createOrUpdateReaction(request).subscribe({
+        next: () => {
+          this.userLikes[ideaId] = true;
+          this.loadLikes(ideaId);
+          this.loadLikeSummary(ideaId);
+        },
+        error: (err) => Swal.fire('Erreur', err.message, 'error')
+      });
+    }
+  }
+
+  isLikedByUser(ideaId: number): boolean {
+    return this.userLikes[ideaId] || false;
+  }
+
+  getLikeCount(ideaId: number): number {
+    return this.likeSummaries[ideaId]?.totalLikes || 0;
   }
 
   loadComments(ideaId: number): void {
     this.publicationService.getCommentsByPublicationId(ideaId).subscribe({
       next: (comments) => {
-        this.comments[ideaId] = comments;
+        this.comments[ideaId] = comments.sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
       },
-      error: (err) => console.error(`Error fetching comments for idea ${ideaId}:`, err)
+      error: (err) => console.error('Erreur lors du chargement des commentaires', err)
     });
   }
 
-  
+  toggleCommentSection(ideaId: number): void {
+    this.openCommentSections[ideaId] = !this.openCommentSections[ideaId] || false;
+    if (this.openCommentSections[ideaId]) {
+      this.newComment[ideaId] = this.newComment[ideaId] || '';
+      this.loadComments(ideaId);
+    }
+  }
 
-  onSearch(): void {
-    const query = this.searchQuery.toLowerCase().trim();
-    if (!query) {
-      this.filteredIdeas = [...this.ideas];
+  isCommentSectionOpen(ideaId: number): boolean {
+    return this.openCommentSections[ideaId] || false;
+  }
+
+  addComment(ideaId: number): void {
+    if (!this.userId || !this.newComment[ideaId]?.trim()) {
+      Swal.fire('Erreur', 'Veuillez entrer un commentaire.', 'error');
       return;
     }
 
-    this.filteredIdeas = this.ideas.filter(idea => {
-      const fullName = `${idea.userNom || ''} ${idea.userPrenom || ''}`.toLowerCase();
-      return fullName.includes(query);
+    const commentRequest: CommentRequest = {
+      userId: Number(this.userId),
+      publicationId: ideaId,
+      content: this.newComment[ideaId]
+    };
+
+    this.publicationService.createComment(ideaId, commentRequest).subscribe({
+      next: (comment) => {
+        this.comments[ideaId] = [...(this.comments[ideaId] || []), comment].sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        this.newComment[ideaId] = '';
+        this.showSuccessMessage('Commentaire ajouté avec succès !');
+      },
+      error: (err) => Swal.fire('Erreur', err.message, 'error')
     });
   }
 
-  adjustTextareaHeight(): void {
-    const textarea = this.postInput.nativeElement;
-    textarea.style.height = 'auto';
-    textarea.style.height = `${textarea.scrollHeight}px`;
+  getComments(ideaId: number): CommentDTO[] {
+    return this.comments[ideaId] || [];
   }
 
-  adjustCommentTextareaHeight(ideaId: number): void {
-    const textarea = document.querySelector(`#comment-input-${ideaId}`) as HTMLTextAreaElement;
-    if (textarea) {
-      textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }
+  getCommentCount(ideaId: number): number {
+    return this.comments[ideaId]?.length || 0;
   }
 
-  startEditing(idea: PublicationDTOWithId): void {
-    if (idea.userId.toString() === this.userId && this.userId && typeof this.userId === 'string') {
-      this.editingIdeaId = idea.id;
-      this.editedIdeaContent = idea.idee || '';
-    }
+  loadUserRating(ideaId: number): void {
+    this.publicationService.getIdeaRatingsByPublicationId(ideaId).subscribe({
+      next: (ratings) => {
+        const userRating = ratings.find(r => r.userId.toString() === this.userId);
+        this.userRatings[ideaId] = userRating ? userRating.rate : 0;
+      },
+      error: (err) => console.error('Erreur lors du chargement des évaluations', err)
+    });
   }
 
-  cancelEditing(): void {
-    this.editingIdeaId = null;
-    this.editedIdeaContent = '';
+  getAverageRating(idea: PublicationDTOWithId): number {
+    return idea.averageRate ? Math.round(idea.averageRate) : 0;
   }
 
-  saveEditedIdea(): void {
-    if (this.editingIdeaId && this.userId && typeof this.userId === 'string' && this.editedIdeaContent.trim()) {
-      this.publicationService.updateIdeeBoitePost(this.editingIdeaId, this.userId, this.editedIdeaContent).subscribe({
-        next: (updatedIdea) => {
-          const index = this.ideas.findIndex(i => i.id === this.editingIdeaId);
-          if (index !== -1) {
-            this.ideas[index] = updatedIdea as PublicationDTOWithId;
-            this.filteredIdeas = [...this.ideas];
-          }
-          this.editingIdeaId = null;
-          this.editedIdeaContent = '';
-          this.showSuccessMessage('Idée mise à jour avec succès !');
-        },
-        error: (err) => console.error('Error updating idea:', err)
-      });
-    }
-  }
-
-  deleteIdea(ideaId: number): void {
-    if (this.userId && typeof this.userId === 'string') {
-      const userId: string = this.userId;
-      Swal.fire({
-        title: 'Êtes-vous sûr ?',
-        text: 'Cette action supprimera l\'idée de manière permanente !',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Oui, supprimer !',
-        cancelButtonText: 'Annuler'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.publicationService.deleteIdeeBoitePost(ideaId, userId).subscribe({
-            next: () => {
-              this.ideas = this.ideas.filter(i => i.id !== ideaId);
-              this.filteredIdeas = [...this.ideas];
-              Swal.fire('Supprimé !', 'L\'idée a été supprimée.', 'success');
-            },
-            error: (err) => console.error('Error deleting idea:', err)
-          });
-        }
-      });
-    }
+  getUserRating(ideaId: number): number {
+    return this.userRatings[ideaId] || 0;
   }
 
   isAuthenticatedUser(idea: PublicationDTOWithId): boolean {
@@ -213,84 +379,17 @@ export class IdeeRhComponent implements OnInit {
     }, 2000);
   }
 
-  toggleLike(ideaId: number): void {
-    if (!this.userId) return;
-
-    const hasLiked = this.userLikes[ideaId];
-    if (hasLiked) {
-      this.reactionService.deleteReaction(Number(this.userId), ideaId).subscribe({
-        next: () => {
-          this.userLikes[ideaId] = false;
-          this.loadLikes(ideaId);
-          this.loadLikeSummary(ideaId);
-        },
-        error: (err) => console.error(`Error unliking idea ${ideaId}:`, err)
-      });
-    } else {
-      const reactionRequest: ReactionRequest = {
-        userId: Number(this.userId),
-        publicationId: ideaId
-      };
-      this.reactionService.createOrUpdateReaction(reactionRequest).subscribe({
-        next: () => {
-          this.userLikes[ideaId] = true;
-          this.loadLikes(ideaId);
-          this.loadLikeSummary(ideaId);
-        },
-        error: (err) => console.error(`Error liking idea ${ideaId}:`, err)
-      });
-    }
-  }
-
-  isLikedByUser(ideaId: number): boolean {
-    return this.userLikes[ideaId] || false;
-  }
-
-  getLikeCount(ideaId: number): number {
-    return this.likeSummaries[ideaId]?.totalLikes || 0;
-  }
-
-  toggleCommentSection(ideaId: number): void {
-    this.openCommentSections[ideaId] = !this.openCommentSections[ideaId];
-    if (this.openCommentSections[ideaId]) {
-      this.newComment[ideaId] = '';
-      this.loadComments(ideaId);
-    }
-  }
-
-  isCommentSectionOpen(ideaId: number): boolean {
-    return this.openCommentSections[ideaId] || false;
-  }
-
-  addComment(ideaId: number): void {
-    if (!this.userId || !this.newComment[ideaId]?.trim()) return;
-
-    const commentRequest: CommentRequest = {
-      userId: Number(this.userId),
-      publicationId: ideaId,
-      content: this.newComment[ideaId]
-    };
-
-    this.publicationService.createComment(ideaId, commentRequest).subscribe({
-      next: (comment) => {
-        this.comments[ideaId] = [...(this.comments[ideaId] || []), comment];
-        this.newComment[ideaId] = '';
-        this.adjustCommentTextareaHeight(ideaId);
-        this.showSuccessMessage('Commentaire ajouté !');
-      },
-      error: (err) => console.error(`Error adding comment to idea ${ideaId}:`, err)
-    });
-  }
-
-  getComments(ideaId: number): CommentDTO[] {
-    return this.comments[ideaId] || [];
-  }
-
-  getCommentCount(ideaId: number): number {
-    return this.comments[ideaId]?.length || 0;
-  }
-
   onSidebarStateChange(isCollapsed: boolean): void {
     this.isSidebarCollapsed = isCollapsed;
+  }
+
+  onImageError(event: Event): void {
+    const imgElement = event.target as HTMLImageElement;
+    console.error(`Failed to load image: ${imgElement.src}`);
+    imgElement.src = 'assets/icons/user-login-icon-14.png'; 
+  }
+
+  navigateTo(ideaId: number): void {
+    this.router.navigate(['/details-idee-rh', ideaId]);
   }
 }

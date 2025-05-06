@@ -132,7 +132,7 @@
                     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
                       <div class="document-type">
                         <mat-icon [ngClass]="value">
-                          {{ value === 'fiche de paie' ? 'description' : value === 'attestation' ? 'verified' : 'contract' }}
+                          {{ value === 'fiche de paie' ? 'description' : value === 'attestation' ? 'verified' : value === 'contrat' ? 'assignment' : 'description' }}
                         </mat-icon>
                         <span>{{ value || 'Non spécifié' | titlecase }}</span>
                       </div>

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 export interface ReactionDTO {
     id?: number;
@@ -9,6 +10,7 @@ export interface ReactionDTO {
     userPrenom: string;
     publicationId: number;
 }
+
 export interface CommentDTO {
     id?: number;
     userId: number;
@@ -19,6 +21,7 @@ export interface CommentDTO {
     content: string;
     createdAt: Date;
 }
+
 export interface ReactionRequest {
     userId: number;
     publicationId: number;
@@ -66,6 +69,13 @@ export class ReactionService {
         return this.http.delete<void>(`${this.apiUrl}/user/${userId}/publication/${publicationId}/like`);
     }
 
+    // Delete an idea rating for a user and publication
+    deleteIdeaRating(userId: number, publicationId: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/user/${userId}/publication/${publicationId}/rating`).pipe(
+            catchError(this.handleError)
+        );
+    }
+
     // Fetch all comments for a publication (optional, prefer PublicationService)
     getCommentsByPublicationId(publicationId: number): Observable<CommentDTO[]> {
         return this.http.get<CommentDTO[]>(`${this.apiUrl}/publication/${publicationId}/comments`);
@@ -74,5 +84,26 @@ export class ReactionService {
     // Delete a comment
     deleteComment(commentId: number, userId: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/comment/${commentId}/user/${userId}`);
+    }
+
+    private handleError(error: HttpErrorResponse): Observable<never> {
+        let errorMessage = 'Une erreur est survenue.';
+        if (error.error instanceof ErrorEvent) {
+            // Client-side error
+            errorMessage = `Erreur côté client : ${error.error.message}`;
+        } else {
+            // Server-side error
+            if (error.status === 404) {
+                errorMessage = 'Ressource introuvable. Vérifiez l\'URL ou l\'existence de la ressource.';
+            } else if (error.status === 400) {
+                errorMessage = error.error?.message || 'Requête invalide. Vérifiez les données envoyées.';
+            } else if (error.status === 500) {
+                errorMessage = 'Erreur interne du serveur. Contactez l\'administrateur.';
+            } else {
+                errorMessage = `Code d'erreur ${error.status}: ${error.error?.message || error.message}`;
+            }
+        }
+        console.error(errorMessage, error);
+        return throwError(() => new Error(errorMessage));
     }
 }

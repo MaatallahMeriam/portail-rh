@@ -117,7 +117,9 @@ $transition: all 0.3s ease;
   background-position: center;
   border: 2px solid $primary-color;
 }
-
+.membre{
+  color: $primary-color;
+}
 .user-details {
   h3 {
     margin: 0;

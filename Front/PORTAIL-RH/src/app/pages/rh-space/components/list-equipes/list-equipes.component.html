@@ -23,40 +23,14 @@
 
         <!-- Grid des équipes -->
         <div class="teams-grid" *ngIf="filteredEquipes.length > 0">
-          <div class="team-card" *ngFor="let equipe of filteredEquipes" (click)="viewDetails(equipe.id)">
-            <div class="actions-menu" (click)="$event.stopPropagation()">
-              <button class="menu-button" (click)="toggleDropdown(equipe)">
-                <mat-icon class="icon">more_vert</mat-icon>
-              </button>
-              <div class="dropdown-menu" *ngIf="equipe.showDropdown">
-                <div class="dropdown-item" (click)="editEquipe(equipe)">
-                  <mat-icon>edit</mat-icon>
-                  <span>Modifier</span>
-                </div>
-                <div class="dropdown-item" (click)="deleteEquipe(equipe.id)">
-                  <mat-icon>delete</mat-icon>
-                  <span>Supprimer</span>
-                </div>
-              </div>
-            </div>
-
-            <h3 class="team-name">{{ equipe.nom }}</h3>
-            <div class="team-department">{{ equipe.departement }}</div>
-
-            <div class="manager-info">
-              <img
-                [src]="equipe.manager?.image || 'assets/icons/user-login-icon-14.png'"
-                alt="Manager Photo"
-                class="manager-photo"
-              />
-              <div class="manager-details">
-                <div class="manager-name">
-                  {{ equipe.manager ? equipe.manager.prenom + ' ' + equipe.manager.nom : 'Aucun manager' }}
-                </div>
-                <div class="manager-role">Manager</div>
-              </div>
-            </div>
-          </div>
+          <app-team-card
+            *ngFor="let equipe of filteredEquipes"
+            [equipe]="equipe"
+            (viewDetails)="viewDetails($event)"
+            (editTeam)="editEquipe($event)"
+            (deleteTeam)="deleteEquipe($event)"
+            (toggleDropdown)="toggleDropdown($event)"
+          ></app-team-card>
         </div>
 
         <!-- Empty state when no teams -->
@@ -80,27 +54,12 @@
         ></app-add-team-form>
 
         <!-- Formulaire de modification -->
-        <div class="form-container" *ngIf="showEditForm">
-          <div class="form-modal">
-            <h3>Modifier une équipe</h3>
-            <form>
-              <div class="form-group">
-                <label for="edit-nom">Nom de l'équipe</label>
-                <input id="edit-nom" type="text" [(ngModel)]="editEquipeData.nom" name="edit-nom" placeholder="Nom" required />
-              </div>
-
-              <div class="form-group">
-                <label for="edit-departement">Département</label>
-                <input id="edit-departement" type="text" [(ngModel)]="editEquipeData.departement" name="edit-departement" placeholder="Département" required />
-              </div>
-
-              <div class="form-actions">
-                <button type="button" class="btn btn-cancel" (click)="toggleEditForm()">Annuler</button>
-                <button type="button" class="btn btn-submit" (click)="updateEquipe()">Enregistrer</button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <app-edit-team-form
+          *ngIf="showEditForm"
+          [editEquipeData]="editEquipeData"
+          (close)="toggleEditForm()"
+          (update)="updateEquipe()"
+        ></app-edit-team-form>
       </div>
     </div>
 

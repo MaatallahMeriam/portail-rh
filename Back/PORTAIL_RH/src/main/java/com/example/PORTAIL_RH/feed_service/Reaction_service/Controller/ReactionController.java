@@ -5,6 +5,8 @@ import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.CommentRequest;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.ReactionDTO;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.ReactionRequest;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.ReactionSummaryDTO;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.IdeaRatingDTO;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.IdeaRatingRequest;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Service.ReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -80,5 +82,21 @@ public class ReactionController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
+    }
+
+    @PostMapping("/ratings")
+    public ResponseEntity<IdeaRatingDTO> createIdeaRating(@RequestBody IdeaRatingRequest ratingRequest) {
+        try {
+            IdeaRatingDTO ratingDTO = reactionService.createIdeaRating(ratingRequest);
+            return new ResponseEntity<>(ratingDTO, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/publication/{publicationId}/ratings")
+    public ResponseEntity<List<IdeaRatingDTO>> getIdeaRatingsByPublicationId(@PathVariable Long publicationId) {
+        List<IdeaRatingDTO> ratings = reactionService.getIdeaRatingsByPublicationId(publicationId);
+        return new ResponseEntity<>(ratings, HttpStatus.OK);
     }
 }

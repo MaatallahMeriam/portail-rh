@@ -57,88 +57,44 @@ export class GestionDossierComponent {
   roleOptions: string[] = ['COLLAB', 'RH', 'ADMIN', 'MANAGER'];
 
   columns = [
-    { prop: 'id', name: 'ID user', width: 100 },
-    { name: 'User', width: 200 },
+    { name: 'Utilisateur', width: 200 },
     { prop: 'departement', name: 'Département', width: 150 },
     { prop: 'poste', name: 'Poste', width: 150 },
     { prop: 'role', name: 'Rôle', width: 100 },
     { name: 'Actions', sortable: false, width: 50 },
   ];
-$event: any;
 
   constructor(private userService: UserService, private router: Router) {
     this.loadUsers();
   }
-  getDropdownTopPosition(event: any): number {
-    // You can adjust this calculation based on your layout
-    // This helps position the dropdown relative to the viewport
-    const buttonHeight = 40; // Approximate height of your button
-    return buttonHeight;
-  }
+
   onSidebarStateChange(isCollapsed: boolean): void {
     this.isSidebarCollapsed = isCollapsed;
   }
-  toggleMenu(row: any, event: Event): void {
-    // Prevent the event from bubbling up to the row
+
+  toggleMenu(row: UserDTO, event: Event): void {
     event.stopPropagation();
-    
-    // Toggle the selected user
-    this.selectedUser = this.selectedUser === row ? null : row;
-    
-    // Add a click outside handler to close the menu
-    if (this.selectedUser) {
-      setTimeout(() => {
-        const closeMenuHandler = (e: any) => {
-          if (!e.target.closest('.dropdown-menu') && !e.target.closest('.menu-button')) {
-            this.selectedUser = null;
-            document.removeEventListener('click', closeMenuHandler);
-          }
-        };
-        document.addEventListener('click', closeMenuHandler);
-      });
-    }
+    console.log('Toggling menu for row:', row, 'Current selectedUser:', this.selectedUser);
+    this.selectedUser = this.selectedUser?.id === row.id ? null : row;
   }
   
-  
-
-
-
-  // In your ngOnInit method
-ngOnInit() {
-  // Add this to your existing ngOnInit
-  document.addEventListener('click', (event) => {
-    // Fix: Add null check for event.target
-    if (this.selectedUser && event.target) {
-      const target = event.target as HTMLElement;
-      if (!target.closest('.dropdown-menu') && !target.closest('.menu-button')) {
-        this.selectedUser = null;
-      }
+  @HostListener('document:click', ['$event'])
+  closeMenu(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.menu-button') && !target.closest('.dropdown-menu')) {
+      console.log('Closing dropdown due to outside click');
+      this.selectedUser = null;
     }
-  });
-}
+  }
 
-// In your onRowClick method
-onRowClick(event: any) {
-  // Fix: Add null check for event.target
-  if (event.target) {
+  onRowClick(event: any) {
+    // Ne fait rien si le clic provient du menu ou du bouton
     const target = event.target as HTMLElement;
     if (target.closest('.dropdown-menu') || target.closest('.menu-button')) {
-      event.stopPropagation();
+      return;
     }
+    // Vous pouvez ajouter une logique ici si un clic sur la ligne doit faire quelque chose
   }
-}
-
-// You already have a closeMenu method with proper typing, but let's make sure it's consistent
-@HostListener('document:click', ['$event'])
-closeMenu(event: Event) {
-  const target = event.target as HTMLElement;
-  if (!target.closest('.menu-button') && !target.closest('.dropdown-menu')) {
-    this.selectedUser = null;
-  }
-}
-
-
-
 
   get passwordMismatch(): boolean {
     return this.password !== this.confirmPassword && this.confirmPassword.length > 0;
@@ -173,7 +129,6 @@ closeMenu(event: Event) {
         (user.role?.toLowerCase().includes(search) || '')
     );
   }
-
 
   toggleForm() {
     this.showFirstForm = !this.showFirstForm;
@@ -238,7 +193,7 @@ closeMenu(event: Event) {
       });
       return;
     }
-    
+
     const registerRequest: RegisterRequest = {
       userName: this.userName,
       nom: this.nom,
@@ -322,10 +277,27 @@ closeMenu(event: Event) {
   }
 
   viewDetails(user: UserDTO): void {
+    if (!user.id) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'ID utilisateur invalide.',
+      });
+      return;
+    }
     this.router.navigate(['/details-dossier', user.id]);
   }
 
   deleteUser(user: UserDTO): void {
+    if (!user.id) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'ID utilisateur invalide.',
+      });
+      return;
+    }
+
     Swal.fire({
       title: 'Voulez-vous vraiment supprimer cet utilisateur ?',
       text: `Vous allez supprimer ${user.nom} ${user.prenom}. Cette action est irréversible.`,
@@ -362,6 +334,15 @@ closeMenu(event: Event) {
   }
 
   archiveUser(user: UserDTO): void {
+    if (!user.id) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'ID utilisateur invalide.',
+      });
+      return;
+    }
+
     Swal.fire({
       title: 'Voulez-vous vraiment archiver cet utilisateur ?',
       text: `L'utilisateur ${user.nom} ${user.prenom} sera archivé et ne sera plus affiché dans la liste des utilisateurs actifs.`,
@@ -396,7 +377,4 @@ closeMenu(event: Event) {
       }
     });
   }
-
-
-  
 }

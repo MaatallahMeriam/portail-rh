@@ -19,6 +19,7 @@ public interface PublicationService {
     // Liste des réactions sur une publication
     List<ReactionDTO> getReactionsByPublicationId(Long publicationId);
     PublicationDTO updateNewsWithImage(Long id, MultipartFile image, String titre, String description);
+
     // CRUD spécifique par type
     List<PublicationDTO> getAllNews();
     PublicationDTO createNews(PublicationRequest publicationRequest);
@@ -30,6 +31,7 @@ public interface PublicationService {
     PublicationDTO createIdeeBoite(PublicationRequest publicationRequest);
     PublicationDTO updateIdeeBoite(Long id, PublicationRequest publicationRequest);
     void deleteIdeeBoite(Long id);
+    PublicationDTO createIdeeBoiteWithImage(MultipartFile image, String idee, String topic, Long userId);
 
     List<PublicationDTO> getAllFeed();
     PublicationDTO createFeed(PublicationRequest publicationRequest);
@@ -38,5 +40,4 @@ public interface PublicationService {
 
     // Gestion des réactions
     ReactionDTO createReaction(ReactionRequest reactionRequest);
-    void deleteReaction(Long id);
 }

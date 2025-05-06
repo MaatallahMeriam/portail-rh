@@ -149,6 +149,41 @@
     margin: 8px 0;
     opacity: 0.9;
   }
+
+  .actions-cell {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+  }
+
+  .edit-button, .delete-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    mat-icon {margin-left: -1px;
+      margin-top: 5px;
+      font-size: 15px;
+      width: 18px;
+      height: 18px;
+      color: #fff;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+  }
 }
 
 /* Bouton d'ajout */
@@ -156,95 +191,27 @@
   background: linear-gradient(45deg, #230046, #3a0073);
   color: white;
   border: none;
-  width: 35px;
-  height: 35px;
+  width: 30px;
+  height: 30px;
   font-size: 20px;
-  margin-right: 30px;
-  margin-top: -35px;
   cursor: pointer;
   border-radius: 50%;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 35px;
+  &::before {
+    content: '+';
+    transform: translateY(-10%); /* Ajustez la valeur (-10%, -5px, etc.) selon le besoin */
+  }
 }
+
 
 .add-button-conges:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(35, 0, 70, 0.3);
-}
-
-/* Actions (menu déroulant) */
-.actions-cell {
-  position: absolute;
-  top: 10px;
-  right: 15px; /* Increased from 10px to 15px to shift the button left */
-}
-
-.menu-button {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: #ffffff;
-
-  mat-icon {
-    margin-left: -2px;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
-  }
-}
-
-.menu-button:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-}
-
-.dropdown-menu {
-  background-color: white;
-  position: absolute;
-  top: 40px;
-  right: 0;
-  border-radius: 10px;
-  min-width: 150px;
-  z-index: 1000;
-  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.2);
-  overflow: hidden;
-}
-
-/* Appliquer le gradient en fonction du type de congé */
-
-/* Styles des boutons dans le dropdown */
-.dropdown-menu button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 15px;
-  color: #230046; /* Texte blanc pour contraster avec le gradient */
-  background: transparent; /* Pas de fond, juste le gradient du parent */
-  border: none;
-  width: 100%;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.dropdown-menu button:hover {
-  background: rgba(255, 255, 255, 0.1); /* Légère superposition blanche au survol */
-}
-
-.dropdown-menu button mat-icon {
-  margin-left: -15px;
-  color: #230046;
 }
 
 /* Section historique */
@@ -353,7 +320,7 @@
     }
 
     .datatable-footer {
-      margin-left: 15px; /* Add margin-left to the footer */
+      margin-left: 15px;
     }
   }
 }
@@ -415,16 +382,15 @@
 /* Formulaire */
 .form-container {
   position: fixed;
-  top: 50%;
-  left: 50%;
+  top: 55%;  left: 50%;
   transform: translate(-50%, -50%);
-  background: white;
+  background: #ffffff;
   padding: 30px;
   border-radius: 15px;
-  box-shadow: 0 10px 40px rgba(35, 0, 70, 0.2);
+  box-shadow: 0 8px 25px rgba(35, 0, 70, 0.15);
   width: 90%;
   max-width: 600px;
-  max-height: 90vh;
+  max-height: 87vh;
   overflow-y: auto;
   z-index: 1000;
 }

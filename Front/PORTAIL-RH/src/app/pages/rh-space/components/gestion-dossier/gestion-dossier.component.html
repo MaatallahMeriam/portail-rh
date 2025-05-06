@@ -6,7 +6,7 @@
 
     <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
-        <h2 class="title">Liste Des Utilisateurs</h2>
+        <h2 class="title">Liste des utilisateurs</h2>
 
         <div class="history-header">
           <input
@@ -16,7 +16,7 @@
             [(ngModel)]="searchText"
             (ngModelChange)="filterUsers()"
           />
-          <button class="add-button" (click)="toggleForm()">+</button>
+          <button class="add-button" (click)="toggleForm()"></button>
         </div>
 
         <ngx-datatable
@@ -37,7 +37,7 @@
         }"
       >
             <!-- Définir explicitement les colonnes -->
-            <ngx-datatable-column name="Utilisateur" [width]="200">
+            <ngx-datatable-column name="Utilisateur" [width]="150">
               <ng-template let-row="row" ngx-datatable-cell-template>
                 <div class="user-cell">
                   <img
@@ -51,7 +51,7 @@
             </ngx-datatable-column>
             <ngx-datatable-column prop="departement" name="Département" [width]="150"></ngx-datatable-column>
             <ngx-datatable-column prop="poste" name="Poste" [width]="150"></ngx-datatable-column>
-            <ngx-datatable-column prop="role" name="Rôle" [width]="100"></ngx-datatable-column>
+            <ngx-datatable-column prop="role" name="Rôle" [width]="70"></ngx-datatable-column>
             <!-- Colonne pour les actions -->
             <ngx-datatable-column name="Actions" [sortable]="false" [width]="50">
               <ng-template let-row="row" ngx-datatable-cell-template>
@@ -59,7 +59,7 @@
                   <button mat-icon-button (click)="toggleMenu(row, $event)" class="menu-button">
                     <mat-icon>more_vert</mat-icon>
                   </button>
-                  <div class="dropdown-menu" *ngIf="selectedUser === row">
+                  <div class="dropdown-menu" *ngIf="selectedUser?.id === row.id">
                     <button mat-button (click)="viewDetails(row); $event.stopPropagation()">
                       <mat-icon>visibility</mat-icon>
                       Détails user
@@ -84,7 +84,7 @@
               <mat-icon>close</mat-icon>
             </button>
             <div class="form-section">
-              <h1>Ajouter Un Utilisateur</h1>
+              <h1>Enregistrer un utilisateur</h1>
               <form (ngSubmit)="register()">
                 <div class="form-group">
                   <label for="userName">Nom d'utilisateur</label>

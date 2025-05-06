@@ -1,6 +1,7 @@
 package com.example.PORTAIL_RH.feed_service.pub_service.Entity;
 
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Comment;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.IdeaRating;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Reaction;
 import com.example.PORTAIL_RH.user_service.user_service.Entity.Users;
 import jakarta.persistence.*;
@@ -45,6 +46,9 @@ public class Publication {
     @OneToMany(mappedBy = "publication", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "publication", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IdeaRating> ratings = new ArrayList<>();
+
     // Synchronisation avec Reaction
     public void addReaction(Reaction reaction) {
         reactions.add(reaction);
@@ -65,5 +69,16 @@ public class Publication {
     public void removeComment(Comment comment) {
         comments.remove(comment);
         comment.setPublication(null);
+    }
+
+    // Synchronisation avec IdeaRating
+    public void addIdeaRating(IdeaRating rating) {
+        ratings.add(rating);
+        rating.setPublication(this);
+    }
+
+    public void removeIdeaRating(IdeaRating rating) {
+        ratings.remove(rating);
+        rating.setPublication(null);
     }
 }

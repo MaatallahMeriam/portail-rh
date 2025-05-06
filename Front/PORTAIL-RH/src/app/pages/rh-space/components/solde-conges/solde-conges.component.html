@@ -8,7 +8,7 @@
       <div class="leave-balance">
         <div class="history-header">
           <h2>Motifs Congés Généraux :</h2>
-          <button class="add-button-conges" (click)="toggleForm()">+</button>
+          <button class="add-button-conges" (click)="toggleForm()"></button>
         </div>
         <div class="slider-container">
           <owl-carousel-o [options]="customOptions">
@@ -16,24 +16,12 @@
               <ng-template carouselSlide>
                 <div class="leave-card" [ngClass]="leave.color">
                   <div class="actions-cell">
-                    <button
-                      mat-icon-button
-                      (click)="toggleSlideMenu(i); $event.stopPropagation()"
-                      class="menu-button"
-                      type="button"
-                    >
-                      <mat-icon>more_vert</mat-icon>
+                    <button mat-icon-button class="edit-button" (click)="openEditForm(leave)" title="Modifier">
+                      <mat-icon>edit</mat-icon>
                     </button>
-                    <div class="dropdown-menu" *ngIf="selectedSlideIndex === i">
-                      <button mat-button (click)="openEditForm(leave); $event.stopPropagation()">
-                        <mat-icon>edit</mat-icon>
-                        Modifier
-                      </button>
-                      <button mat-button (click)="deleteCongeType(leave); $event.stopPropagation()">
-                        <mat-icon>delete</mat-icon>
-                        Supprimer
-                      </button>
-                    </div>
+                    <button mat-icon-button class="delete-button" (click)="deleteCongeType(leave)" title="Supprimer">
+                      <mat-icon>delete</mat-icon>
+                    </button>
                   </div>
                   <h4>{{ leave.nom }}</h4>
                   <p>Type : {{ leave.type }}</p>

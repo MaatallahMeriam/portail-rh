@@ -132,9 +132,9 @@
                                         <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
                                             <div class="component-type">
                                                 <mat-icon [ngClass]="value">
-                                                    {{ value === 'Imprimente' ? 'print' : value === 'Souris' ? 'mouse' : 'monitor' }}
+                                                    {{ value === 'Imprimente' ? 'print' : value === 'Souris' ? 'mouse' : 'monitor' }}   
                                                 </mat-icon>
-                                                <span>{{ value || 'Non spécifié' | titlecase }}</span>
+                                                <span class="value-compo">  {{ value || 'Non spécifié' | titlecase }}</span>
                                             </div>
                                         </ng-template>
                                     </ngx-datatable-column>

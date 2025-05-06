@@ -40,9 +40,8 @@ h2::after {
 h3 {
   color: #230046;
 }
-
 .add-button {
-  background: linear-gradient(45deg, $primary-color, #3a0073);
+  background: linear-gradient(45deg, #230046, #3a0073);
   color: white;
   border: none;
   width: 30px;
@@ -56,6 +55,12 @@ h3 {
   justify-content: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
+
+  /* Déplace le "+" vers le haut */
+  &::before {
+    content: '+';
+    transform: translateY(-10%); /* Ajustez la valeur (-10%, -5px, etc.) selon le besoin */
+  }
 
   &:hover {
     transform: scale(1.1);

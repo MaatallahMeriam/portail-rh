@@ -9,6 +9,8 @@ import { HeaderComponent } from '../../../../shared/components/header/header.com
 import { SidebarComponent } from '../sidebar-RH/sidebar.component';
 import { RightSidebarComponent } from '../../../../shared/components/right-sidebar/right-sidebar.component';
 import { AddTeamFormComponent } from './add-team-form/add-team-form.component';
+import { EditTeamFormComponent } from './edit-team-form/edit-team-form.component';
+import { TeamCardComponent } from './team-card/team-card.component';
 import { UserService, UserDTO } from '../../../../services/users.service';
 import { CreateEquipeRequest, EquipeDTO, EquipeService } from '../../../../services/equipe.service';
 
@@ -23,6 +25,8 @@ import { CreateEquipeRequest, EquipeDTO, EquipeService } from '../../../../servi
     SidebarComponent,
     RightSidebarComponent,
     AddTeamFormComponent,
+    EditTeamFormComponent,
+    TeamCardComponent,
   ],
   templateUrl: './list-equipes.component.html',
   styleUrl: './list-equipes.component.scss'
@@ -223,10 +227,20 @@ export class ListEquipesComponent implements OnInit {
   }
 
   toggleDropdown(equipe: EquipeDTO & { showDropdown?: boolean }): void {
+    console.log('Toggling dropdown for equipe:', equipe, 'Current showDropdown:', equipe.showDropdown);
     this.filteredEquipes.forEach(e => {
       if (e !== equipe) e.showDropdown = false;
     });
     equipe.showDropdown = !equipe.showDropdown;
+  }
+
+  @HostListener('document:click', ['$event'])
+  closeDropdown(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.menu-button') && !target.closest('.dropdown-menu')) {
+      console.log('Closing all dropdowns due to outside click');
+      this.filteredEquipes.forEach(e => e.showDropdown = false);
+    }
   }
 
   viewDetails(equipeId: number): void {

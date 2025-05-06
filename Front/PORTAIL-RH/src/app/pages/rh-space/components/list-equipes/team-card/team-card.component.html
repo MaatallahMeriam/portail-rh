@@ -1,38 +1,34 @@
-<div class="team-card">
-    <div class="actions-menu">
-      <button class="menu-button" (click)="onToggleDropdown()">
-        <mat-icon class="icon">more_vert</mat-icon>
-      </button>
-      <div class="dropdown-menu" *ngIf="equipe.showDropdown">
-        <div class="dropdown-item" (click)="onViewDetails()">
-          <mat-icon>visibility</mat-icon>
-          <span>Détails</span>
-        </div>
-        <div class="dropdown-item" (click)="onEditTeam()">
-          <mat-icon>edit</mat-icon>
-          <span>Modifier</span>
-        </div>
-        <div class="dropdown-item" (click)="onDeleteTeam()">
-          <mat-icon>delete</mat-icon>
-          <span>Supprimer</span>
-        </div>
+<div class="team-card" (click)="onViewDetails()">
+  <div class="actions-menu" (click)="$event.stopPropagation()">
+    <button class="menu-button" (click)="onToggleDropdown(); $event.stopPropagation()">
+      <mat-icon class="icon">more_vert</mat-icon>
+    </button>
+    <div class="dropdown-menu" *ngIf="equipe.showDropdown">
+      <div class="dropdown-item" (click)="onEditTeam(); $event.stopPropagation()">
+        <mat-icon>edit</mat-icon>
+        <span>Modifier</span>
       </div>
-    </div>
-    
-    <h3 class="team-name">{{ equipe.nom }}</h3>
-    <div class="team-department">{{ equipe.departement }}</div>
-    
-    <div class="manager-info">
-      <img
-        [src]="equipe.manager?.image || 'assets/icons/user-login-icon-14.png'"
-        alt="Manager Photo"
-        class="manager-photo"
-      />
-      <div class="manager-details">
-        <div class="manager-name">
-          {{ equipe.manager ? equipe.manager.prenom + ' ' + equipe.manager.nom : 'Aucun manager' }}
-        </div>
-        <div class="manager-role">Manager</div>
+      <div class="dropdown-item" (click)="onDeleteTeam(); $event.stopPropagation()">
+        <mat-icon>delete</mat-icon>
+        <span>Supprimer</span>
       </div>
     </div>
   </div>
+  
+  <h3 class="team-name">{{ equipe.nom }}</h3>
+  <div class="team-department">{{ equipe.departement }}</div>
+  
+  <div class="manager-info">
+    <img
+      [src]="equipe.manager?.image || 'assets/icons/user-login-icon-14.png'"
+      alt="Manager Photo"
+      class="manager-photo"
+    />
+    <div class="manager-details">
+      <div class="manager-name">
+        {{ equipe.manager ? equipe.manager.prenom + ' ' + equipe.manager.nom : 'Aucun manager' }}
+      </div>
+      <div class="manager-role">Manager</div>
+    </div>
+  </div>
+</div>

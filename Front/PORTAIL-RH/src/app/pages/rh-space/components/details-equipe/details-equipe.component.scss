@@ -19,15 +19,18 @@
 }
 
 .dropdown-menu {
-  position: absolute;
-  top: 100%;
+  position: fixed;
+  top: 50%;
   right: 0;
-  background: #ffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+  background: var(--card-background, #ffffff);
+  border-radius: var(--radius-sm, 8px);
+  box-shadow: var(--shadow-md, 0 4px 15px rgba(35, 0, 70, 0.1));
   min-width: 150px;
-  z-index: 1000;
+  z-index: 1100;
   margin-top: 5px;
+  overflow: hidden;
+  display: block;
+  border: 1px solid rgba(35, 0, 70, 0.1);
 }
 
 .icon-edit {
@@ -394,7 +397,7 @@
 /* Modal */
 .modal-overlay {
   position: fixed;
-  top: 0;
+  top: 50px;
   left: 0;
   right: 0;
   bottom: 0;

@@ -2,6 +2,8 @@ package com.example.PORTAIL_RH.user_service.user_service.Service.IMPL;
 
 import com.example.PORTAIL_RH.KPI_service.Service.KpiService;
 import com.example.PORTAIL_RH.user_service.conges_service.DTO.UserCongesDTO;
+import com.example.PORTAIL_RH.user_service.conges_service.Entity.UserConges;
+import com.example.PORTAIL_RH.user_service.conges_service.Repo.UserCongesRepository;
 import com.example.PORTAIL_RH.user_service.conges_service.Service.UserCongesService;
 import com.example.PORTAIL_RH.user_service.user_service.DTO.UsersDTO;
 import com.example.PORTAIL_RH.user_service.equipe_service.Entity.Equipe;
@@ -11,10 +13,21 @@ import com.example.PORTAIL_RH.user_service.dossier_service.DTO.ResponseDossier;
 import com.example.PORTAIL_RH.user_service.equipe_service.Repo.EquipeRepository;
 import com.example.PORTAIL_RH.user_service.user_service.Repo.UsersRepository;
 import com.example.PORTAIL_RH.user_service.dossier_service.Repo.DossierUserRepository;
+import com.example.PORTAIL_RH.feed_service.pub_service.Entity.Publication;
+import com.example.PORTAIL_RH.feed_service.pub_service.Repo.PublicationRepository;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Comment;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Reaction;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.IdeaRating;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.CommentRepository;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.ReactionRepository;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.IdeaRatingRepository;
+import com.example.PORTAIL_RH.request_service.Entity.Demande;
+import com.example.PORTAIL_RH.request_service.Repo.DemandeRepository;
 import com.example.PORTAIL_RH.user_service.user_service.Service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -22,14 +35,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class UsersServiceImpl implements UsersService {
-    private static final String UPLOAD_DIR = "uploads/profile_photos/";
+    private static final String UPLOAD_DIR = "Uploads/profile_photos/";
 
     @Autowired
     private UsersRepository usersRepository;
@@ -39,6 +51,24 @@ public class UsersServiceImpl implements UsersService {
 
     @Autowired
     private DossierUserRepository dossierUserRepository;
+
+    @Autowired
+    private PublicationRepository publicationRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
+
+    @Autowired
+    private ReactionRepository reactionRepository;
+
+    @Autowired
+    private IdeaRatingRepository ideaRatingRepository;
+
+    @Autowired
+    private DemandeRepository demandeRepository;
+
+    @Autowired
+    private UserCongesRepository userCongesRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -77,8 +107,8 @@ public class UsersServiceImpl implements UsersService {
                 : null;
         dto.setImage(imageUrl);
         dto.setRole(user.getRole());
-        dto.setNumero(user.getNumero()); // Map the phone number field
-        dto.setAdresse(user.getAdresse()); // Map the new address field
+        dto.setNumero(user.getNumero());
+        dto.setAdresse(user.getAdresse());
         dto.setEquipeId(user.getEquipe() != null ? user.getEquipe().getId() : null);
         dto.setDossierId(user.getDossier() != null ? user.getDossier().getId() : null);
         dto.setActive(user.isActive());
@@ -130,8 +160,8 @@ public class UsersServiceImpl implements UsersService {
             user.setDateNaissance(null);
         }
         user.setPoste(userDTO.getPoste());
-        user.setNumero(userDTO.getNumero()); // Map the phone number field
-        user.setAdresse(userDTO.getAdresse()); // Map the new address field
+        user.setNumero(userDTO.getNumero());
+        user.setAdresse(userDTO.getAdresse());
         user.setDepartement(userDTO.getDepartement());
         user.setImage(userDTO.getImage());
         user.setRole(userDTO.getRole());
@@ -197,7 +227,6 @@ public class UsersServiceImpl implements UsersService {
         Users user = usersRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-
         user.setUserName(userDTO.getUserName());
         user.setNom(userDTO.getNom());
         user.setPrenom(userDTO.getPrenom());
@@ -217,8 +246,8 @@ public class UsersServiceImpl implements UsersService {
             user.setDateNaissance(null);
         }
         user.setPoste(userDTO.getPoste());
-        user.setNumero(userDTO.getNumero()); // Map the phone number field
-        user.setAdresse(userDTO.getAdresse()); // Map the new address field
+        user.setNumero(userDTO.getNumero());
+        user.setAdresse(userDTO.getAdresse());
         user.setDepartement(userDTO.getDepartement());
         user.setImage(user.getImage());
         user.setRole(userDTO.getRole());
@@ -244,28 +273,58 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long id) {
-        Users user = usersRepository.findById(id)
+        // Fetch the user with related entities
+        Users user = usersRepository.findByIdWithRelations(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (user.getEquipesGerees() != null) {
-            List<Equipe> equipesCopy = new ArrayList<>(user.getEquipesGerees());
-            equipesCopy.forEach(equipe -> {
-                equipe.setManager(null);
-                equipeRepository.save(equipe);
-            });
+        // Handle managed teams (equipesGerees)
+        if (user.getEquipesGerees() != null && !user.getEquipesGerees().isEmpty()) {
+            user.getEquipesGerees().forEach(equipe -> equipe.setManager(null));
             user.getEquipesGerees().clear();
         }
 
-        if (user.getPublications() != null) user.getPublications().clear();
-        if (user.getReactions() != null) user.getReactions().clear();
-        if (user.getDemandes() != null) user.getDemandes().clear();
-        if (user.getCongesList() != null) user.getCongesList().clear();
+        // Clear related collections to leverage cascade and orphanRemoval
+        if (user.getComments() != null) {
+            user.getComments().clear();
+        }
 
+        if (user.getReactions() != null) {
+            user.getReactions().clear();
+        }
+
+        if (user.getRatings() != null) {
+            user.getRatings().clear();
+        }
+
+        if (user.getPublications() != null) {
+            user.getPublications().clear();
+        }
+
+        if (user.getDemandes() != null) {
+            user.getDemandes().clear();
+        }
+
+        if (user.getCongesList() != null) {
+            user.getCongesList().clear();
+        }
+
+        if (user.getUserTeletravail() != null) {
+            user.getUserTeletravail().clear();
+        }
+
+        // Disassociate from team (equipe)
         if (user.getEquipe() != null) {
             user.setEquipe(null);
         }
 
+        // Delete dossier
+        if (user.getDossier() != null) {
+            user.setDossier(null);
+        }
+
+        // Delete the user (cascading will handle dependent entities)
         usersRepository.delete(user);
     }
 
@@ -275,6 +334,7 @@ public class UsersServiceImpl implements UsersService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return user.getDossier();
     }
+
     @Override
     public UsersDTO activateUser(Long id) {
         Users user = usersRepository.findById(id)
@@ -286,6 +346,7 @@ public class UsersServiceImpl implements UsersService {
         Users updatedUser = usersRepository.save(user);
         return mapToDTO(updatedUser);
     }
+
     @Override
     public DossierUser updateDossierByUserId(Long userId, DossierUser updatedDossier) {
         Users user = usersRepository.findById(userId)

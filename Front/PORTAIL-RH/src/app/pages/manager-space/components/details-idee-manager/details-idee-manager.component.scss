@@ -1,0 +1,398 @@
+.collab-home {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #f9f9f9;
+    position: relative;
+}
+
+.main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.app-side-bar-manager {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+    left: 0;
+    width: 250px;
+    background: #5b2e91;
+    color: white;
+    transition: width 0.3s ease;
+}
+
+.feed {
+    position: fixed;
+    top: 85px;
+    left: 270px;
+    right: 30px;
+    bottom: 10px;
+    overflow-y: auto;
+    max-width: 1250px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    gap: 20px;
+
+    &.sidebar-collapsed {
+        left: 100px;
+        max-width: calc(100% - 100px);
+    }
+}
+
+.idea-details-container {
+    display: flex;
+    width: 100%;
+    gap: 20px;
+}
+
+.left-section {
+    flex: 2;
+    padding: 20px;
+    background: #fff;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.user-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+   
+    border-color: #230046;
+}
+
+.user-details .user-name {
+    font-size: 1rem;
+    color: #5b2e91;
+    font-weight: 500;
+    margin-top: -50px;
+    
+}
+
+.user-details .post-date {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.idea-topic {
+    font-size: 1.5rem;
+    color: #5b2e91;
+    margin: 10px 0;
+    font-weight: 600;
+}
+
+.idea-image-container {
+    margin: 15px 0;
+    max-width: 100%;
+    max-height: 250px; /* Limite la hauteur pour ne pas dépasser la section droite */
+}
+
+.idea-image {
+    width: 100%;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.image-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+.modal-content {
+    overflow-y: auto;
+    position: relative;
+    max-width: 100%; /* Réduit de 90% à 80% */
+    max-height: 80%; /* Réduit de 90% à 80% */
+    width: auto; /* Permet à la modal de s'adapter à la taille de l'image */
+    height: auto; /* Permet à la modal de s'adapter à la taille de l'image */
+    max-width: 900px; /* Limite maximale en pixels pour éviter une modal trop grande */
+    max-height: 650px; /* Limite maximale en pixels pour éviter une modal trop grande */
+}
+.modal-content::-webkit-scrollbar {
+    display: none;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+    border-radius: 5px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modal-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Garde l'intégralité de l'image tout en s'adaptant */
+    border-radius: 5px; /* Ajoute un léger arrondi pour l'esthétique */
+}
+
+.close-button {
+    position: absolute;
+    top: 2px; /* Déplace le bouton un peu plus haut pour qu'il soit plus visible */
+    right: 5px; /* Déplace le bouton un peu plus à droite */
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.7); /* Fond un peu plus sombre pour le contraste */
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.2s ease; /* Animation pour le hover */
+}
+
+.close-button:hover {
+    background: rgba(0, 0, 0, 0.9); /* Effet hover pour une meilleure interaction */
+}
+
+.idea-description p:first-child {
+    font-weight: 500;
+    color: #230046;
+    margin-bottom: 5px;
+}
+
+.idea-description p:last-child {
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.5;
+}
+
+.right-section {
+    flex: 1;
+    padding: 20px;
+    background: #fff;
+    min-width: 300px; /* Assure une taille minimale pour la section droite */
+}
+
+.evaluation-section {
+    margin-bottom: 20px;
+}
+
+.evaluation-section h3 {
+    font-size: 1.2rem;
+    color: #E5007F;;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.rating-stars mat-icon {
+    font-size: 1.5rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.rating-stars mat-icon.filled {
+    color: #FFD700;
+}
+
+.comments-section {
+    margin-top: 70px;
+}
+.comments-section h3 {
+    font-size: 1.2rem;
+    color: #E5007F;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.comments-list {
+    margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+.comments-list::-webkit-scrollbar {
+    display: none;
+}
+
+.comments-list::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+    border-radius: 5px;
+}
+
+.comments-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.comment {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.comment-user-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.comment-content {
+    flex: 1;
+}
+
+.comment-user {
+    font-size: 0.95rem;
+    color: #5b2e91;
+    font-weight: 500;
+}
+
+.comment-time {
+    font-size: 0.8rem;
+    color: #666;
+    margin-left: 10px;
+}
+
+.comment-content p {
+    font-size: 0.9rem;
+    color: #333;
+    margin: 5px 0;
+}
+
+.comment-form {
+    display: flex;
+    gap: 10px;
+}
+
+.comment-form textarea {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.comment-form button {
+    padding: 6px 13px;
+    background-color: #230046;
+    color: white;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.feed::-webkit-scrollbar {
+    width: 8px;
+}
+
+.feed::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 5px;
+}
+
+.feed::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+@media screen and (max-width: 1300px) {
+    .app-side-bar-manager {
+        width: 200px;
+    }
+
+    .feed {
+        left: 300px;
+        right: 30px;
+        max-width: calc(100% - 350px);
+
+        &.sidebar-collapsed {
+            left: 100px;
+            width: 100%;
+        }
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .app-side-bar-manager {
+        width: 200px;
+    }
+
+    .feed {
+        left: 250px;
+        right: 30px;
+        max-width: calc(100% - 300px);
+
+        &.sidebar-collapsed {
+            left: 100px;
+            max-width: calc(100% - 80px);
+        }
+    }
+
+    .idea-details-container {
+        flex-direction: column;
+    }
+
+    .left-section, .right-section {
+        width: 100%;
+    }
+
+    .idea-image {
+        max-height: 200px; /* Réduction sur tablette */
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .app-side-bar-manager {
+        display: none;
+    }
+
+    .feed {
+        left: 0;
+        right: 30px;
+        max-width: calc(100% - 180px);
+
+        &.sidebar-collapsed {
+            left: 20px;
+            right: 20px;
+            max-width: calc(100% - 90px);
+        }
+    }
+
+    .idea-image {
+        max-height: 150px; /* Réduction sur mobile */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .feed {
+        left: 0;
+        right: 0;
+        max-width: 100%;
+        padding: 10px;
+
+        &.sidebar-collapsed {
+            left: 20px;
+            right: 0px;
+            max-width: calc(100% - 50px);
+        }
+    }
+
+    .idea-image {
+        max-height: 120px; /* Réduction supplémentaire sur petit mobile */
+    }
+}

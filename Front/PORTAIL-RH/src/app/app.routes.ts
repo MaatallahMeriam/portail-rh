@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 import { DetailsUserAdminComponent } from './pages/admin-space/component/details-user-admin/details-user-admin.component';
 import { GestionProfileAdminComponent } from './pages/admin-space/component/gestion-profile-admin/gestion-profile-admin.component';
+import { DetailsIdeeComponent } from './pages/collab-space/components/details-idee/details-idee.component';
+import { DetailsIdeeComponentRH } from './pages/rh-space/components/details-idee-rh/details-idee.component';
+import { DetailsIdeeManagerComponent } from './pages/manager-space/components/details-idee-manager/details-idee-manager.component';
 
 import { DetailsEquipeComponent } from './pages/rh-space/components/details-equipe/details-equipe.component';
 import { LoginComponent } from './shared/components/login/login.component';
@@ -71,7 +74,7 @@ export const routes: Routes = [
     {path:'doc-manager',component:EspaceDocManagerComponent},
     {path:'idee-collab',component:IdeeCollabComponent},
     {path:'profil-admin',component:GestionProfileAdminComponent},
-
+    { path: 'details-idee-collab/:id', component: DetailsIdeeComponent },
     {path:'idee-rh',component:IdeeRhComponent},
     {path:'idee-manager',component:IdeeManagerComponent},
   {path:'planning-manager',component:PlanningManagerComponent},
@@ -89,6 +92,7 @@ export const routes: Routes = [
   {path:'list-plannings', component:ListPlanningsComponent},
   {path:'membre-equipe',component:DetailsMembreEqComponent},
   {path:'profile-collab',component:GestionProfileComponent},
+  { path: 'details-idee-manager/:id', component: DetailsIdeeManagerComponent },
 
   {path:'trait-dmd',component:TraitDmdComponent},
   {path:'trait-dmd-rh',component:TraitDmdRhComponent},
@@ -125,7 +129,8 @@ export const routes: Routes = [
     {path :'list-equipe', component: ListEquipesComponent},
     {path :'gestion-doss' , component: GestionDossierComponent},
     {path : 'kpi-rh', component: KPIComponent},
-      
+    { path: 'details-idee-rh/:id', component: DetailsIdeeComponentRH },
+
     
 
     

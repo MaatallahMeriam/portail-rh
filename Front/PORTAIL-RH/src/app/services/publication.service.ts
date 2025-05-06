@@ -1,21 +1,24 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 export interface PublicationDTO {
     id?: number;
     type: 'FEED' | 'BOITE_IDEE' | 'NEWS';
     userId: number;
-    userNom?: string;
-    userPrenom?: string;
-    userPhoto?: string;
-    content?: string;
-    mediaUrl?: string;
-    idee?: string;
-    topic?: string;
-    image?: string;
-    averageRating?: number; // For IdeeBoitePost
+    userNom?: string | null;
+    userPrenom?: string | null;
+    userPhoto?: string | null;
+    content?: string | null;
+    mediaUrl?: string | null;
+    idee?: string | null;
+    topic?: string | null;
+    image?: string | null;
+    averageRate?: number | null; // Changé de averageRating à averageRate
     createdAt: string;
+    titre?: string | null;
+    description?: string | null;
 }
 
 export interface CommentDTO {
@@ -50,30 +53,47 @@ export interface IdeaRatingRequest {
     rate: number;
 }
 
+export interface IdeeBoiteUpdateRequest {
+    idee: string;
+    topic: string;
+    userId: number;
+    type: 'BOITE_IDEE';
+    image?: string | null;
+}
+
 @Injectable({
     providedIn: 'root'
 })
 export class PublicationService {
     private apiUrl = 'http://localhost:8080/api/publications';
+    private reactionApiUrl = 'http://localhost:8080/api/reactions';
 
     constructor(private http: HttpClient) {}
 
-    // Helper method to create headers for JSON requests
     private getJsonHeaders(): HttpHeaders {
         return new HttpHeaders({
             'Content-Type': 'application/json'
         });
     }
 
-    // Helper method to create headers for multipart requests
     private getMultipartHeaders(): HttpHeaders {
-        return new HttpHeaders({
-            // Note: Do not set Content-Type for multipart/form-data; the browser will set it with the correct boundary
-        });
+        return new HttpHeaders({});
     }
 
-    // FeedPost Operations
+    private validateFile(file: File): boolean {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        return allowedTypes.includes(file.type) && file.size <= maxSize;
+    }
+
     createFeedPost(userId: string, content: string, media?: File): Observable<PublicationDTO> {
+        if (!content.trim()) {
+            return throwError(() => new Error('Le contenu ne peut pas être vide.'));
+        }
+        if (media && !this.validateFile(media)) {
+            return throwError(() => new Error('Fichier invalide. Seuls les fichiers JPEG, PNG ou GIF de moins de 5 Mo sont acceptés.'));
+        }
+
         const formData = new FormData();
         formData.append('userId', userId);
         formData.append('content', content);
@@ -82,14 +102,22 @@ export class PublicationService {
         }
         return this.http.post<PublicationDTO>(`${this.apiUrl}/feed`, formData, {
             headers: this.getMultipartHeaders()
-        });
+        }).pipe(
+            catchError(this.handleError)
+        );
     }
 
     getAllFeedPosts(): Observable<PublicationDTO[]> {
-        return this.http.get<PublicationDTO[]>(`${this.apiUrl}/feed`);
+        return this.http.get<PublicationDTO[]>(`${this.apiUrl}/feed`).pipe(
+            catchError(this.handleError)
+        );
     }
 
     updateFeedPost(id: number, userId: string, content?: string, media?: File): Observable<PublicationDTO> {
+        if (media && !this.validateFile(media)) {
+            return throwError(() => new Error('Fichier invalide. Seuls les fichiers JPEG, PNG ou GIF de moins de 5 Mo sont acceptés.'));
+        }
+
         const formData = new FormData();
         formData.append('userId', userId);
         if (content) {
@@ -100,114 +128,191 @@ export class PublicationService {
         }
         return this.http.put<PublicationDTO>(`${this.apiUrl}/feed/${id}`, formData, {
             headers: this.getMultipartHeaders()
-        });
+        }).pipe(
+            catchError(this.handleError)
+        );
     }
 
     deleteFeedPost(id: number, userId: string): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/feed/${id}`, {
             params: { userId }
-        });
+        }).pipe(
+            catchError(this.handleError)
+        );
     }
 
-    // IdeeBoitePost Operations
-    createIdeeBoitePost(userId: string, idee: string, topic: string, image?: File): Observable<PublicationDTO> {
+    createIdeeBoitePost(userId: string, idee: string, topic: string, image: File): Observable<PublicationDTO> {
+        if (!idee.trim() || !topic.trim()) {
+            return throwError(() => new Error('L\'idée et le sujet ne peuvent pas être vides.'));
+        }
+        if (!image || !this.validateFile(image)) {
+            return throwError(() => new Error('Image invalide. Seuls les fichiers JPEG, PNG ou GIF de moins de 5 Mo sont acceptés.'));
+        }
+
         const formData = new FormData();
         formData.append('userId', userId);
         formData.append('idee', idee);
         formData.append('topic', topic);
-        if (image) {
-            formData.append('image', image, image.name);
-        }
-        return this.http.post<PublicationDTO>(`${this.apiUrl}/idee-boite`, formData, {
-            headers: this.getMultipartHeaders()
-        });
+        formData.append('image', image, image.name);
+        return this.http.post<PublicationDTO>(`${this.apiUrl}/idee-boite/upload`, formData).pipe(
+            catchError(this.handleError)
+        );
     }
 
     getAllIdeeBoitePosts(): Observable<PublicationDTO[]> {
-        return this.http.get<PublicationDTO[]>(`${this.apiUrl}/idee-boite`);
+        return this.http.get<PublicationDTO[]>(`${this.apiUrl}/idee-boite`).pipe(
+            catchError(this.handleError)
+        );
     }
 
-    updateIdeeBoitePost(id: number, userId: string, idee?: string, topic?: string, image?: File): Observable<PublicationDTO> {
-        const formData = new FormData();
-        formData.append('userId', userId);
-        if (idee) {
-            formData.append('idee', idee);
+    updateIdeeBoitePost(id: number, idee: string, topic: string, image: File | null, imageUrl: string | null, userId: string): Observable<PublicationDTO> {
+        if (!idee.trim() || !topic.trim()) {
+            return throwError(() => new Error('L\'idée et le sujet ne peuvent pas être vides.'));
         }
-        if (topic) {
-            formData.append('topic', topic);
+        if (image && !this.validateFile(image)) {
+            return throwError(() => new Error('Image invalide. Seuls les fichiers JPEG, PNG ou GIF de moins de 5 Mo sont acceptés.'));
         }
+
         if (image) {
+            const formData = new FormData();
+            formData.append('idee', idee);
+            formData.append('topic', topic);
             formData.append('image', image, image.name);
+            return this.http.put<PublicationDTO>(`${this.apiUrl}/idee-boite/${id}`, formData).pipe(
+                catchError(this.handleError)
+            );
+        } else {
+            const updateData: IdeeBoiteUpdateRequest = {
+                idee,
+                topic,
+                type: 'BOITE_IDEE',
+                userId: parseInt(userId, 10),
+                image: imageUrl || null
+            };
+            return this.http.put<PublicationDTO>(`${this.apiUrl}/idee-boite/${id}/json`, updateData, {
+                headers: this.getJsonHeaders()
+            }).pipe(
+                catchError(this.handleError)
+            );
         }
-        return this.http.put<PublicationDTO>(`${this.apiUrl}/idee-boite/${id}`, formData, {
-            headers: this.getMultipartHeaders()
-        });
     }
 
-    deleteIdeeBoitePost(id: number, userId: string): Observable<void> {
-        return this.http.delete<void>(`${this.apiUrl}/idee-boite/${id}`, {
-            params: { userId }
-        });
+    deleteIdeeBoitePost(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/idee-boite/${id}`).pipe(
+            catchError(this.handleError)
+        );
     }
 
-    // NewsPost Operations
     createNewsPost(userId: string, titre: string, description: string, image: File): Observable<PublicationDTO> {
+        if (!titre.trim() || !description.trim()) {
+            return throwError(() => new Error('Le titre et la description ne peuvent pas être vides.'));
+        }
+        if (!image || !this.validateFile(image)) {
+            return throwError(() => new Error('Image invalide. Seuls les fichiers JPEG, PNG ou GIF de moins de 5 Mo sont acceptés.'));
+        }
+
         const formData = new FormData();
         formData.append('userId', userId);
         formData.append('titre', titre);
         formData.append('description', description);
         formData.append('image', image, image.name);
-        return this.http.post<PublicationDTO>(`${this.apiUrl}/news/upload`, formData, {
-            headers: this.getMultipartHeaders()
-        });
+        return this.http.post<PublicationDTO>(`${this.apiUrl}/news/upload`, formData).pipe(
+            catchError(this.handleError)
+        );
     }
 
     getAllNewsPosts(): Observable<PublicationDTO[]> {
-        return this.http.get<PublicationDTO[]>(`${this.apiUrl}/news`);
+        return this.http.get<PublicationDTO[]>(`${this.apiUrl}/news`).pipe(
+            catchError(this.handleError)
+        );
     }
 
-    // IdeaRating Operations
     createIdeaRating(ratingRequest: IdeaRatingRequest): Observable<IdeaRatingDTO> {
-        return this.http.post<IdeaRatingDTO>(`${this.apiUrl}/idee-boite/ratings`, ratingRequest, {
+        if (ratingRequest.rate < 1 || ratingRequest.rate > 5) {
+            return throwError(() => new Error('La note doit être comprise entre 1 et 5.'));
+        }
+        return this.http.post<IdeaRatingDTO>(`${this.reactionApiUrl}/ratings`, ratingRequest, {
             headers: this.getJsonHeaders()
-        });
+        }).pipe(
+            catchError(this.handleError)
+        );
     }
 
     getIdeaRatingsByPublicationId(publicationId: number): Observable<IdeaRatingDTO[]> {
-        return this.http.get<IdeaRatingDTO[]>(`${this.apiUrl}/${publicationId}/ratings`);
+        return this.http.get<IdeaRatingDTO[]>(`${this.reactionApiUrl}/publication/${publicationId}/ratings`).pipe(
+            catchError(this.handleError)
+        );
     }
 
-    // Comment Operations
+    deleteIdeaRating(userId: number, publicationId: number): Observable<void> {
+        return this.http.delete<void>(`${this.reactionApiUrl}/user/${userId}/publication/${publicationId}/rating`).pipe(
+            catchError(this.handleError)
+        );
+    }
+
     createComment(publicationId: number, commentRequest: CommentRequest): Observable<CommentDTO> {
-        return this.http.post<CommentDTO>(`${this.apiUrl}/${publicationId}/comments`, commentRequest, {
+        if (!commentRequest.content.trim()) {
+            return throwError(() => new Error('Le commentaire ne peut pas être vide.'));
+        }
+        return this.http.post<CommentDTO>(`${this.reactionApiUrl}/comment`, commentRequest, {
             headers: this.getJsonHeaders()
-        });
+        }).pipe(
+            catchError(this.handleError)
+        );
     }
 
     getCommentsByPublicationId(publicationId: number): Observable<CommentDTO[]> {
-        return this.http.get<CommentDTO[]>(`${this.apiUrl}/${publicationId}/comments`);
+        return this.http.get<CommentDTO[]>(`${this.reactionApiUrl}/publication/${publicationId}/comments`).pipe(
+            catchError(this.handleError)
+        );
     }
 
     deleteComment(commentId: number, userId: number): Observable<void> {
-        return this.http.delete<void>(`${this.apiUrl}/comments/${commentId}`, {
-            params: { userId: userId.toString() }
-        });
+        return this.http.delete<void>(`${this.reactionApiUrl}/comment/${commentId}/user/${userId}`).pipe(
+            catchError(this.handleError)
+        );
     }
 
-    // General Publication Operations
     getAllPublications(): Observable<PublicationDTO[]> {
-        return this.http.get<PublicationDTO[]>(this.apiUrl);
+        return this.http.get<PublicationDTO[]>(this.apiUrl).pipe(
+            catchError(this.handleError)
+        );
     }
 
     getPublicationsByUserId(userId: number): Observable<PublicationDTO[]> {
-        return this.http.get<PublicationDTO[]>(`${this.apiUrl}/user/${userId}`);
+        return this.http.get<PublicationDTO[]>(`${this.apiUrl}/user/${userId}`).pipe(
+            catchError(this.handleError)
+        );
     }
 
     getPublicationById(id: number): Observable<PublicationDTO> {
-        return this.http.get<PublicationDTO>(`${this.apiUrl}/${id}`);
+        return this.http.get<PublicationDTO>(`${this.apiUrl}/${id}`).pipe(
+            catchError(this.handleError)
+        );
     }
 
     deletePublication(id: number): Observable<void> {
-        return this.http.delete<void>(`${this.apiUrl}/${id}`);
+        return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+            catchError(this.handleError)
+        );
+    }
+
+    private handleError(error: HttpErrorResponse): Observable<never> {
+        let errorMessage = 'Une erreur est survenue.';
+        if (error.error instanceof ErrorEvent) {
+            errorMessage = `Erreur côté client : ${error.error.message}`;
+        } else {
+            if (error.status === 404) {
+                errorMessage = 'Ressource introuvable. Vérifiez l\'URL ou l\'existence de la ressource.';
+            } else if (error.status === 400) {
+                errorMessage = error.error?.message || 'Requête invalide. Vérifiez les données envoyées.';
+            } else if (error.status === 500) {
+                errorMessage = 'Erreur interne du serveur. Contactez l\'administrateur.';
+            } else {
+                errorMessage = `Code d'erreur ${error.status}: ${error.error?.message || error.message}`;
+            }
+        }
+        console.error(errorMessage, error);
+        return throwError(() => new Error(errorMessage));
     }
 }

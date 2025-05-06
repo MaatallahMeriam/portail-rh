@@ -3,8 +3,8 @@ package com.example.PORTAIL_RH.feed_service.Reaction_service.DTO;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 public class IdeaRatingDTO {
     private Long id;
     private Long userId;

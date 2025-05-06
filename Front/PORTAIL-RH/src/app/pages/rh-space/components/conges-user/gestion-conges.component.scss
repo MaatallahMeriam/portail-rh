@@ -1,4 +1,3 @@
-/* Layout de base */
 .collab-home {
   overflow: hidden;
   display: flex;
@@ -145,26 +144,35 @@
     position: absolute;
     top: 10px;
     right: 10px;
+    display: flex;
+    gap: 8px;
     z-index: 2;
   }
 
-  .menu-button {
-    background: rgba(255, 255, 255, 0.1);
+  .edit-button, .delete-button {
+    background: rgba(255, 255, 255, 0.2);
     border: none;
-    padding: 8px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    color: #ffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
     transition: all 0.3s ease;
 
-    &:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
+    mat-icon {
+      margin-left: -1px;
+      margin-top: 5px;
+      font-size: 15px;
+      width: 18px;
+      height: 18px;
+      color: #fff;
     }
 
-    mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
     }
   }
 }
@@ -172,7 +180,7 @@
 /* Tableau */
 .history-table-container {
   margin-top: 30px;
-  background: #ffff;
+  background: #ffffff;
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
   overflow: hidden;
@@ -205,18 +213,21 @@
   background: linear-gradient(45deg, #230046, #3a0073);
   color: white;
   border: none;
-  width: 35px;
-  height: 35px;
-  font-size: 24px;
-  margin-right: 30px;
-  margin-top: -40px;
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
   cursor: pointer;
   border-radius: 50%;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
+  &::before {
+    content: '+';
+    transform: translateY(-10%); /* Ajustez la valeur (-10%, -5px, etc.) selon le besoin */
+  }
 }
 
 .add-button-conges:hover {
@@ -233,6 +244,8 @@
     .datatable-header {
       background: #fff;
       padding: 15px 0;
+      border-bottom: 3px solid rgba(35, 0, 70, 0.02);
+
 
       .datatable-header-cell {
         color: #230046;
@@ -267,29 +280,7 @@
 
     .datatable-footer {
       padding: 10px 20px;
-      margin-left: 20px; /* Ajout de la marge à gauche pour le footer */
-    }
-  }
-
-  .mat-menu-panel.dropdown-menu {
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
-
-    .mat-menu-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 16px;
-      transition: all 0.2s ease;
-
-      &:hover {
-        background: rgba(35, 0, 70, 0.05);
-      }
-
-      mat-icon {
-        margin-right: 8px;
-        color: #230046;
-      }
+      margin-left: 20px;
     }
   }
 }
@@ -297,16 +288,15 @@
 /* Formulaire */
 .form-container {
   position: fixed;
-  top: 50%;
-  left: 50%;
+  top: 55%;  left: 50%;
   transform: translate(-50%, -50%);
-  background: #ffff;
+  background: #ffffff;
   padding: 30px;
   border-radius: 15px;
   box-shadow: 0 8px 25px rgba(35, 0, 70, 0.15);
   width: 90%;
   max-width: 600px;
-  max-height: 90vh;
+  max-height: 87vh;
   overflow-y: auto;
   z-index: 1000;
 
@@ -371,14 +361,14 @@
 
   input,
   select {
-    width: 100%; /* Largeur uniforme pour tous les inputs et selects */
-    max-width: 600px; /* Limite la largeur maximale pour uniformité */
+    width: 100%;
+    max-width: 600px;
     padding: 12px;
     border: 2px solid rgba(35, 0, 70, 0.1);
     border-radius: 8px;
     font-size: 14px;
     transition: all 0.3s ease;
-    box-sizing: border-box; /* Assure que le padding est inclus dans la largeur */
+    box-sizing: border-box;
 
     &:focus {
       border-color: #230046;
@@ -521,7 +511,7 @@
   .form-group {
     input,
     select {
-      max-width: 100%; /* Ajuste la largeur pour les petits écrans */
+      max-width: 100%;
     }
   }
 }
@@ -576,7 +566,7 @@
   .form-group {
     input,
     select {
-      max-width: 100%; /* Ajuste la largeur pour les petits écrans */
+      max-width: 100%;
     }
   }
 }

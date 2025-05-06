@@ -10,7 +10,7 @@
       <div class="leave-balance">
         <div class="history-header">
           <h2 *ngIf="user">Congés de {{ user.nom }} {{ user.prenom }}</h2>
-          <button class="add-button-conges" (click)="toggleForm()">+</button>
+          <button class="add-button-conges" (click)="toggleForm()"></button>
         </div>
 
         <div class="slider-container">
@@ -19,17 +19,12 @@
               <ng-template carouselSlide>
                 <mat-card class="leave-card" [ngClass]="getColorForType(conge.type)">
                   <div class="actions-cell">
-                    <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button">
-                      <mat-icon>more_vert</mat-icon>
+                    <button mat-icon-button class="edit-button" (click)="toggleEditForm(conge)" title="Modifier">
+                      <mat-icon>edit</mat-icon>
                     </button>
-                    <mat-menu #menu="matMenu" class="dropdown-menu">
-                      <button mat-menu-item (click)="toggleEditForm(conge)">
-                        <mat-icon>edit</mat-icon> Modifier
-                      </button>
-                      <button mat-menu-item (click)="deleteConge(conge)">
-                        <mat-icon>delete</mat-icon> Supprimer
-                      </button>
-                    </mat-menu>
+                    <button mat-icon-button class="delete-button" (click)="deleteConge(conge)" title="Supprimer">
+                      <mat-icon>delete</mat-icon>
+                    </button>
                   </div>
                   <mat-card-content class="content-card">
                     <p><strong>Nom :</strong> {{ conge.nom }}</p>

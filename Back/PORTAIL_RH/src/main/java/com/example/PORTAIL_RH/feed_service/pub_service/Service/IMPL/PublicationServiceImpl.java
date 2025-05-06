@@ -1,4 +1,5 @@
 package com.example.PORTAIL_RH.feed_service.pub_service.Service.IMPL;
+
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Reaction;
 import com.example.PORTAIL_RH.feed_service.pub_service.Entity.FeedPost;
 import com.example.PORTAIL_RH.feed_service.pub_service.Entity.IdeeBoitePost;
@@ -39,6 +40,7 @@ public class PublicationServiceImpl implements PublicationService {
     private UsersRepository usersRepository;
 
     private static final String UPLOAD_DIR = "uploads/news/";
+    private static final String UPLOAD_DIR_IDEE = "uploads/idee/";
 
     private PublicationDTO mapToDTO(Publication publication) {
         PublicationDTO dto = new PublicationDTO();
@@ -46,6 +48,8 @@ public class PublicationServiceImpl implements PublicationService {
         dto.setType(publication.getType());
         dto.setUserId(publication.getUser().getId());
         dto.setUserNom(publication.getUser().getNom());
+        dto.setUserPrenom(publication.getUser().getPrenom());
+        dto.setUserPhoto(publication.getUser().getImage());
         dto.setCreatedAt(publication.getCreatedAt());
 
         if (publication instanceof FeedPost feed) {
@@ -57,6 +61,9 @@ public class PublicationServiceImpl implements PublicationService {
             dto.setDescription(news.getDescription());
         } else if (publication instanceof IdeeBoitePost idee) {
             dto.setIdee(idee.getIdee());
+            dto.setImage(idee.getImage());
+            dto.setTopic(idee.getTopic());
+            dto.setAverageRate(idee.getAverageRate());
         }
 
         return dto;
@@ -70,6 +77,7 @@ public class PublicationServiceImpl implements PublicationService {
         dto.setPublicationId(reaction.getPublication().getId());
         return dto;
     }
+
     @Override
     public PublicationDTO createNewsWithImage(MultipartFile image, String titre, String description, Long userId) {
         try {
@@ -105,6 +113,40 @@ public class PublicationServiceImpl implements PublicationService {
         }
     }
 
+    @Override
+    public PublicationDTO createIdeeBoiteWithImage(MultipartFile image, String idee, String topic, Long userId) {
+        try {
+            // Vérifier l'utilisateur
+            Users user = usersRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Générer un nom de fichier unique
+            String uniqueFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+            Path filePath = Paths.get(UPLOAD_DIR_IDEE + uniqueFileName);
+
+            // Créer le dossier s'il n'existe pas et sauvegarder l'image
+            Files.createDirectories(filePath.getParent());
+            Files.write(filePath, image.getBytes());
+
+            // Créer une nouvelle IdeeBoitePost
+            IdeeBoitePost ideePost = new IdeeBoitePost();
+            ideePost.setImage(filePath.toString());
+            ideePost.setIdee(idee);
+            ideePost.setTopic(topic);
+            ideePost.setUser(user);
+            ideePost.setType(Publication.PublicationType.BOITE_IDEE);
+            ideePost.setCreatedAt(new Date());
+
+            // Sauvegarder l'idée
+            Publication savedIdee = publicationRepository.save(ideePost);
+            user.addPublication(savedIdee);
+            usersRepository.save(user);
+
+            return mapToDTO(savedIdee);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la création de l'idée avec image", e);
+        }
+    }
 
     @Override
     public PublicationDTO createPublication(PublicationRequest publicationRequest) {
@@ -129,6 +171,8 @@ public class PublicationServiceImpl implements PublicationService {
             case BOITE_IDEE:
                 IdeeBoitePost idee = new IdeeBoitePost();
                 idee.setIdee(publicationRequest.getIdee());
+                idee.setImage(publicationRequest.getImage());
+                idee.setTopic(publicationRequest.getTopic());
                 publication = idee;
                 break;
             default:
@@ -214,7 +258,7 @@ public class PublicationServiceImpl implements PublicationService {
         }
         if (publicationRequest.getImageUrl() != null) {
             news.setImageUrl(publicationRequest.getImageUrl());
-        } // If imageUrl is null, keep the existing value
+        }
 
         Publication updatedPublication = publicationRepository.save(news);
         return mapToDTO(updatedPublication);
@@ -243,7 +287,7 @@ public class PublicationServiceImpl implements PublicationService {
                 Files.createDirectories(filePath.getParent());
                 Files.write(filePath, image.getBytes());
                 news.setImageUrl(filePath.toString());
-            } // If no image is provided, keep the existing imageUrl
+            }
 
             Publication updatedPublication = publicationRepository.save(news);
             return mapToDTO(updatedPublication);
@@ -278,7 +322,17 @@ public class PublicationServiceImpl implements PublicationService {
             throw new IllegalArgumentException("Publication is not an IdeeBoitePost");
         }
         IdeeBoitePost idee = (IdeeBoitePost) publication;
-        idee.setIdee(publicationRequest.getIdee());
+
+        if (publicationRequest.getIdee() != null) {
+            idee.setIdee(publicationRequest.getIdee());
+        }
+        if (publicationRequest.getImage() != null) {
+            idee.setImage(publicationRequest.getImage());
+        }
+        if (publicationRequest.getTopic() != null) {
+            idee.setTopic(publicationRequest.getTopic());
+        }
+
         Publication updatedPublication = publicationRepository.save(idee);
         return mapToDTO(updatedPublication);
     }
@@ -338,18 +392,5 @@ public class PublicationServiceImpl implements PublicationService {
         publicationRepository.save(publication);
 
         return mapToReactionDTO(savedReaction);
-    }
-
-    @Override
-    public void deleteReaction(Long id) {
-        Reaction reaction = reactionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reaction not found"));
-        Users user = reaction.getUser();
-        Publication publication = reaction.getPublication();
-        user.removeReaction(reaction);
-        publication.removeReaction(reaction);
-        usersRepository.save(user);
-        publicationRepository.save(publication);
-        reactionRepository.delete(reaction);
     }
 }

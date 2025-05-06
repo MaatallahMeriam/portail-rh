@@ -1,10 +1,12 @@
 package com.example.PORTAIL_RH.user_service.user_service.Entity;
 
+import com.example.PORTAIL_RH.teletravail_service.entity.UserTeletravail;
 import com.example.PORTAIL_RH.user_service.conges_service.Entity.UserConges;
 import com.example.PORTAIL_RH.request_service.Entity.Demande;
 import com.example.PORTAIL_RH.feed_service.pub_service.Entity.Publication;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Comment;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Reaction;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.IdeaRating;
 import com.example.PORTAIL_RH.user_service.dossier_service.Entity.DossierUser;
 import com.example.PORTAIL_RH.user_service.equipe_service.Entity.Equipe;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -13,9 +15,9 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -56,23 +58,29 @@ public class Users {
     private Equipe equipe;
 
     @OneToMany(mappedBy = "manager")
-    private List<Equipe> equipesGerees = new ArrayList<>();
+    private Set<Equipe> equipesGerees = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
-    private List<UserConges> congesList = new ArrayList<>();
+    private Set<UserConges> congesList = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Demande> demandes = new ArrayList<>();
+    private Set<Demande> demandes = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Publication> publications = new ArrayList<>();
+    private Set<Publication> publications = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reaction> reactions = new ArrayList<>();
+    private Set<Reaction> reactions = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments = new ArrayList<>();
+    private Set<Comment> comments = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<IdeaRating> ratings = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserTeletravail> userTeletravail = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "dossier_id", referencedColumnName = "id")
@@ -144,5 +152,25 @@ public class Users {
     public void removeComment(Comment comment) {
         comments.remove(comment);
         comment.setUser(null);
+    }
+
+    public void addIdeaRating(IdeaRating rating) {
+        ratings.add(rating);
+        rating.setUser(this);
+    }
+
+    public void removeIdeaRating(IdeaRating rating) {
+        ratings.remove(rating);
+        rating.setUser(null);
+    }
+
+    public void addUserTeletravail(UserTeletravail teletravail) {
+        userTeletravail.add(teletravail);
+        teletravail.setUser(this);
+    }
+
+    public void removeUserTeletravail(UserTeletravail teletravail) {
+        userTeletravail.remove(teletravail);
+        teletravail.setUser(null);
     }
 }

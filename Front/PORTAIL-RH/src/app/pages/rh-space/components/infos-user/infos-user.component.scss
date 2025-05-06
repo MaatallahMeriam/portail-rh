@@ -10,6 +10,7 @@
 .badge-section {
   margin-bottom: 30px;
 }
+
 .modal-content {
   background: white;
   padding: 30px;
@@ -22,7 +23,7 @@
     margin-bottom: 20px;
   }
 
-  input, select { /* Added select styling */
+  input, select {
     width: 100%;
     padding: 12px;
     border: 2px solid #e0e0e0;
@@ -36,6 +37,7 @@
     }
   }
 }
+
 .professional-badge {
   border-radius: 15px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -43,8 +45,7 @@
   position: relative;
   max-width: 500px;
   margin: 0 auto;
-  border:10px solid #230046;
-
+  border: 10px solid #230046;
 }
 
 .badge-header {
@@ -110,7 +111,7 @@
   right: 10px;
 }
 
-.menu-button {
+.export-button {
   background: none;
   border: none;
   padding: 5px;
@@ -132,56 +133,6 @@
     background: #f0f0f0;
     mat-icon {
       color: #230046;
-    }
-  }
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 35px;
-  right: 0;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  padding: 10px 0;
-  z-index: 1000;
-  min-width: 200px;
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  border: 1px solid #e0e0e0;
-
-  &.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  button {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 12px 20px;
-    background: none;
-    border: none;
-    text-align: left;
-    font-size: 14px;
-    color: #333;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    mat-icon {
-      font-size: 18px;
-      color: #666;
-    }
-
-    &:hover {
-      background: #f5f5f5;
-      color: #230046;
-
-      mat-icon {
-        color: #230046;
-      }
     }
   }
 }
@@ -238,7 +189,7 @@
   border: none;
   color: #666;
   cursor: pointer;
-  padding: 5px;
+  padding: 2px;
   border-radius: 50%;
   transition: all 0.2s ease;
 
@@ -248,6 +199,7 @@
   }
 
   mat-icon {
+    margin-top: 15px;
     font-size: 18px;
   }
 }
@@ -401,10 +353,10 @@
   background: #fff;
   transition: all 0.3s ease-in-out;
 
-    &.sidebar-collapsed {
-        left: 100px;
-        max-width: calc(100% - 400px);
-    }
+  &.sidebar-collapsed {
+    left: 100px;
+    max-width: calc(100% - 400px);
+  }
 }
 
 .feed::-webkit-scrollbar {

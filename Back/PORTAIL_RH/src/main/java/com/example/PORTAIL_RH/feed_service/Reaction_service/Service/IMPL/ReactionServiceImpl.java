@@ -5,12 +5,17 @@ import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.CommentRequest;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.ReactionDTO;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.ReactionRequest;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.ReactionSummaryDTO;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.IdeaRatingDTO;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.IdeaRatingRequest;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Comment;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Reaction;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.IdeaRating;
 import com.example.PORTAIL_RH.feed_service.pub_service.Entity.Publication;
+import com.example.PORTAIL_RH.feed_service.pub_service.Entity.IdeeBoitePost;
 import com.example.PORTAIL_RH.user_service.user_service.Entity.Users;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.CommentRepository;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.ReactionRepository;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.IdeaRatingRepository;
 import com.example.PORTAIL_RH.feed_service.pub_service.Repo.PublicationRepository;
 import com.example.PORTAIL_RH.user_service.user_service.Repo.UsersRepository;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Service.ReactionService;
@@ -33,6 +38,9 @@ public class ReactionServiceImpl implements ReactionService {
     private CommentRepository commentRepository;
 
     @Autowired
+    private IdeaRatingRepository ideaRatingRepository;
+
+    @Autowired
     private UsersRepository usersRepository;
 
     @Autowired
@@ -53,7 +61,6 @@ public class ReactionServiceImpl implements ReactionService {
         dto.setUserId(comment.getUser().getId());
         dto.setUserNom(comment.getUser().getNom());
         dto.setUserPrenom(comment.getUser().getPrenom());
-        // Construct full URL for userPhoto using ServletUriComponentsBuilder
         String imageUrl = comment.getUser().getImage() != null
                 ? ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/" + comment.getUser().getImage().replace("\\", "/"))
@@ -66,10 +73,20 @@ public class ReactionServiceImpl implements ReactionService {
         return dto;
     }
 
+    private IdeaRatingDTO mapToIdeaRatingDTO(IdeaRating rating) {
+        IdeaRatingDTO dto = new IdeaRatingDTO();
+        dto.setId(rating.getId());
+        dto.setUserId(rating.getUser().getId());
+        dto.setUserNom(rating.getUser().getNom());
+        dto.setUserPrenom(rating.getUser().getPrenom());
+        dto.setPublicationId(rating.getPublication().getId());
+        dto.setRate(rating.getRate());
+        return dto;
+    }
+
     @Override
     @Transactional
     public ReactionDTO createOrUpdateReaction(ReactionRequest reactionRequest) {
-        // Validate request
         if (reactionRequest.getUserId() == null || reactionRequest.getPublicationId() == null) {
             throw new IllegalArgumentException("User ID and Publication ID cannot be null");
         }
@@ -84,7 +101,6 @@ public class ReactionServiceImpl implements ReactionService {
 
         Reaction reaction;
         if (existingReaction.isPresent()) {
-            // Reaction already exists, no need to update since type is implicit (LIKE)
             reaction = existingReaction.get();
         } else {
             reaction = new Reaction();
@@ -195,5 +211,87 @@ public class ReactionServiceImpl implements ReactionService {
         }
 
         commentRepository.delete(comment);
+    }
+
+    @Override
+    @Transactional
+    public IdeaRatingDTO createIdeaRating(IdeaRatingRequest ratingRequest) {
+        if (ratingRequest.getUserId() == null || ratingRequest.getPublicationId() == null || ratingRequest.getRate() == null) {
+            throw new IllegalArgumentException("User ID, Publication ID, and Rate cannot be null");
+        }
+        if (ratingRequest.getRate() < 1 || ratingRequest.getRate() > 5) {
+            throw new IllegalArgumentException("Rate must be between 1 and 5");
+        }
+
+        Users user = usersRepository.findById(ratingRequest.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + ratingRequest.getUserId()));
+        Publication publication = publicationRepository.findById(ratingRequest.getPublicationId())
+                .orElseThrow(() -> new RuntimeException("Publication not found with ID: " + ratingRequest.getPublicationId()));
+
+        if (!(publication instanceof IdeeBoitePost)) {
+            throw new IllegalArgumentException("Ratings can only be applied to IdeeBoitePost");
+        }
+
+        Optional<IdeaRating> existingRating = ideaRatingRepository.findByUserIdAndPublicationId(
+                ratingRequest.getUserId(), ratingRequest.getPublicationId());
+
+        IdeaRating rating;
+        if (existingRating.isPresent()) {
+            rating = existingRating.get();
+            rating.setRate(ratingRequest.getRate());
+        } else {
+            rating = new IdeaRating();
+            rating.setUser(user);
+            rating.setPublication(publication);
+            rating.setRate(ratingRequest.getRate());
+            user.addIdeaRating(rating);
+            publication.addIdeaRating(rating);
+        }
+
+        IdeaRating savedRating = ideaRatingRepository.save(rating);
+        usersRepository.save(user);
+
+        IdeeBoitePost ideePost = (IdeeBoitePost) publication;
+        ideePost.recalculateAverageRate();
+        publicationRepository.save(ideePost);
+
+        return mapToIdeaRatingDTO(savedRating);
+    }
+
+    @Override
+    public List<IdeaRatingDTO> getIdeaRatingsByPublicationId(Long publicationId) {
+        if (publicationId == null) {
+            throw new IllegalArgumentException("Publication ID cannot be null");
+        }
+        return ideaRatingRepository.findByPublicationId(publicationId).stream()
+                .map(this::mapToIdeaRatingDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void deleteIdeaRating(Long userId, Long publicationId) {
+        if (userId == null || publicationId == null) {
+            throw new IllegalArgumentException("User ID and Publication ID cannot be null");
+        }
+
+        Optional<IdeaRating> ratingOptional = ideaRatingRepository.findByUserIdAndPublicationId(userId, publicationId);
+        IdeaRating rating = ratingOptional.orElseThrow(() -> new RuntimeException(
+                "Rating not found for user ID: " + userId + " and publication ID: " + publicationId));
+
+        Users user = rating.getUser();
+        Publication publication = rating.getPublication();
+
+        user.removeIdeaRating(rating);
+        publication.removeIdeaRating(rating);
+
+        usersRepository.save(user);
+        ideaRatingRepository.delete(rating);
+
+        if (publication instanceof IdeeBoitePost) {
+            IdeeBoitePost ideePost = (IdeeBoitePost) publication;
+            ideePost.recalculateAverageRate();
+            publicationRepository.save(ideePost);
+        }
     }
 }

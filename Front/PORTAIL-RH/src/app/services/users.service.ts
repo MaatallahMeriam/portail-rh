@@ -187,16 +187,20 @@ export class UserService {
 
   deleteUser(userId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/users/${userId}`).pipe(
-      catchError((error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
-          text: 'Erreur lors de la suppression de l\'utilisateur.',
-        });
-        return throwError(error);
-      })
+        catchError((error) => {
+            let errorMessage = 'Erreur lors de la suppression de l\'utilisateur.';
+            if (error.status === 500 && error.error?.message?.includes('OptimisticLocking')) {
+                errorMessage = 'L\'utilisateur est en cours de modification par une autre opération. Veuillez réessayer.';
+            }
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: errorMessage,
+            });
+            return throwError(error);
+        })
     );
-  }
+}
 
   activateUser(userId: number): Observable<UserDTO> {
     return this.http.put<UserDTO>(`${this.apiUrl}/users/${userId}/activate`, {}).pipe(

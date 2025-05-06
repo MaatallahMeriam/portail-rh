@@ -25,15 +25,9 @@
               </div>
             </div>
             <div class="badge-actions">
-              <button class="menu-button" (click)="toggleBadgeMenu()">
-                <mat-icon>more_vert</mat-icon>
+              <button class="export-button" (click)="exportBadge()" title="Exporter le badge">
+                <mat-icon>file_download</mat-icon>
               </button>
-              <div class="dropdown-menu" [ngClass]="{'visible': showBadgeMenu}" *ngIf="showBadgeMenu">
-                <button (click)="exportBadge()">
-                  <mat-icon>file_download</mat-icon>
-                  Exporter le badge
-                </button>
-              </div>
             </div>
           </div>
         </div>

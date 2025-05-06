@@ -40,7 +40,6 @@ h2::after {
 h3 {
   color: #230046;
 }
-
 .add-button {
   background: linear-gradient(45deg, $primary-color, #3a0073);
   color: white;
@@ -57,6 +56,12 @@ h3 {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 
+  /* Déplace le "+" vers le haut */
+  &::before {
+    content: '+';
+    transform: translateY(-10%); /* Ajustez la valeur (-10%, -5px, etc.) selon le besoin */
+  }
+
   &:hover {
     transform: scale(1.1);
     background: linear-gradient(45deg, darken($primary-color, 5%), darken(#3a0073, 5%));
@@ -71,8 +76,6 @@ h3 {
   border-radius: $border-radius;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   margin-top: -20px;
-  max-width: 800px; // Increased from 600px to 800px
-  width: 100%; // Ensure it takes full available width up to max-width
 }
 
 :host ::ng-deep {
@@ -80,11 +83,9 @@ h3 {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    width: 100%; // Ensure the datatable fits within the container
-    max-width: 800px; // Increased from 600px to 800px
     
     .datatable-header {
-      background: white ;
+      background: white;
       border-bottom: 1px solid rgba($primary-color, 0.1);
       
       .datatable-header-cell {
@@ -94,7 +95,6 @@ h3 {
         font-size: 14px;
       }
     }
-
     .datatable-body-row {
       width: 100%;
     }
@@ -152,7 +152,7 @@ h3 {
   position: relative;
   margin-bottom: 20px;
   width: 100%;
-  max-width: 760px; // Increased from 560px to 760px to align with table width
+  max-width: 560px;
 
   .search-icon {
     position: absolute;
@@ -381,7 +381,7 @@ h3 {
   padding: 0;
 }
 
-.app-side-bar-manager {
+.app-side-bar-manager  {
   position: fixed;
   left: 0;
   top: 70px;
@@ -514,7 +514,7 @@ h3 {
 // Ajustements responsifs pour le search-container et search-input
 @media (max-width: 1200px) {
   .search-container {
-    max-width: 600px; // Adjusted from 400px to 600px to better fit the wider table
+    max-width: 400px;
   }
 
   .feed {
@@ -526,14 +526,6 @@ h3 {
   .feed.sidebar-collapsed {
     left: 100px;
     width: calc(100% - 100px);
-  }
-
-  .history-table-container {
-    max-width: 700px; // Adjusted for smaller screens (down from 800px)
-  }
-
-  :host ::ng-deep .ngx-datatable {
-    max-width: 700px; // Match the container's max-width
   }
 }
 
@@ -575,18 +567,10 @@ h3 {
       justify-content: center;
     }
   }
-
-  .history-table-container {
-    max-width: 100%; // Full width on smaller screens
-  }
-
-  :host ::ng-deep .ngx-datatable {
-    max-width: 100%; // Match the container's max-width
-  }
 }
 
 @media screen and (max-width: 1473px) {
-  .app-side-bar-manager {
+  .app-side-bar-manager  {
     max-width: 250px;
   }
 
@@ -601,8 +585,10 @@ h3 {
   }
 }
 
+
+
 @media screen and (max-width: 480px) {
-  .app-side-bar-manager {
+  .app-side-bar-manager  {
     display: none;
   }
 
@@ -630,18 +616,12 @@ h3 {
     left: 8px;
     font-size: 14px;
   }
-
-  .history-table-container {
-    max-width: 100%; // Full width on smaller screens
-  }
-
-  :host ::ng-deep .ngx-datatable {
-    max-width: 100%; // Match the container's max-width
-  }
 }
 
+
+
 @media screen and (max-width: 1024px) {
-  .app-side-bar-manager {
+  .app-side-bar-manager  {
     max-width: 200px;
   }
 
@@ -659,18 +639,27 @@ h3 {
     left: 100px;
     width: calc(100% - 100px);
   }
+}
 
-  .history-table-container {
-    max-width: 100%; // Adjust for smaller screens
+@media screen and (max-width: 768px) {
+  .app-right-sidebar {
+    width: 180px;
   }
 
-  :host ::ng-deep .ngx-datatable {
-    max-width: 100%; // Match the container's max-width
+  .feed {
+    left: 500px;
+    right: 0px;
+    max-width: 100% ;
+  }
+
+  .feed.sidebar-collapsed {
+    left: 100px;
+    width: calc(100% - 100px);
   }
 }
 
 @media screen and (max-width: 768px)  {
-  .app-side-bar-manager {
+  .app-side-bar-manager  {
     display: none;
   }
 

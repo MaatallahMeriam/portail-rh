@@ -27,8 +27,6 @@ public class PublicationController {
         return new ResponseEntity<>(createdPublication, HttpStatus.CREATED);
     }
 
-
-
     @PostMapping(value = "/news/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PublicationDTO> createNewsWithImage(
             @RequestParam("image") MultipartFile image,
@@ -46,6 +44,22 @@ public class PublicationController {
         }
     }
 
+    @PostMapping(value = "/idee-boite/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PublicationDTO> createIdeeBoiteWithImage(
+            @RequestParam("image") MultipartFile image,
+            @RequestParam("idee") String idee,
+            @RequestParam("topic") String topic,
+            @RequestParam("userId") Long userId) {
+        try {
+            if (image.isEmpty()) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            PublicationDTO createdIdee = publicationService.createIdeeBoiteWithImage(image, idee, topic, userId);
+            return new ResponseEntity<>(createdIdee, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
     @GetMapping
     public ResponseEntity<List<PublicationDTO>> getAllPublications() {
@@ -103,13 +117,20 @@ public class PublicationController {
         }
     }
 
-    // Separate PUT endpoint for JSON updates (no image)
     @PutMapping(value = "/news/{id}/json", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PublicationDTO> updateNews(
             @PathVariable Long id,
             @RequestBody PublicationRequest publicationRequest) {
         PublicationDTO updatedNews = publicationService.updateNews(id, publicationRequest);
         return new ResponseEntity<>(updatedNews, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/idee-boite/{id}/json", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PublicationDTO> updateIdeeBoiteJson(
+            @PathVariable Long id,
+            @RequestBody PublicationRequest publicationRequest) {
+        PublicationDTO updatedIdee = publicationService.updateIdeeBoite(id, publicationRequest);
+        return new ResponseEntity<>(updatedIdee, HttpStatus.OK);
     }
 
     @DeleteMapping("/news/{id}")
@@ -172,9 +193,5 @@ public class PublicationController {
         return new ResponseEntity<>(createdReaction, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/reactions/{id}")
-    public ResponseEntity<Void> deleteReaction(@PathVariable Long id) {
-        publicationService.deleteReaction(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+
 }

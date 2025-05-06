@@ -46,7 +46,7 @@ export class DemandeCongesDialogComponent {
   soldeSuffisantValidator(control: AbstractControl): ValidationErrors | null {
     const duree = control.get('duree')?.value;
     const solde = control.get('solde')?.value;
-    if (duree && solde && parseFloat(duree) >= parseFloat(solde)) {
+    if (duree && solde && parseFloat(duree) > parseFloat(solde)) {
       return { soldeInsuffisant: true };
     }
     return null;

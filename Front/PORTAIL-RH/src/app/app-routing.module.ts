@@ -58,9 +58,15 @@ import { EspaceDocManagerComponent } from './pages/manager-space/components/espa
 import { IdeeManagerComponent } from './pages/manager-space/components/idee-manager/idee-manager.component';
 import { IdeeRhComponent } from './pages/rh-space/components/idee-rh/idee-rh.component';
 import { GestionProfileAdminComponent } from './pages/admin-space/component/gestion-profile-admin/gestion-profile-admin.component';
-
+import { DetailsIdeeComponent } from './pages/collab-space/components/details-idee/details-idee.component';
+import { DetailsIdeeComponentRH } from './pages/rh-space/components/details-idee-rh/details-idee.component';
+import { DetailsIdeeManagerComponent } from './pages/manager-space/components/details-idee-manager/details-idee-manager.component';
 const routes: Routes = [
-  {path:'profil-admin',component:GestionProfileAdminComponent},
+  { path: 'details-idee-rh/:id', component: DetailsIdeeComponentRH },
+  { path: 'details-idee-manager/:id', component: DetailsIdeeManagerComponent },
+
+  { path: 'details-idee-collab/:id', component: DetailsIdeeComponent },
+    {path:'profil-admin',component:GestionProfileAdminComponent},
   {path:'idee-rh',component:IdeeRhComponent},
   {path:'idee-manager',component:IdeeManagerComponent},
   {path:'idee-collab',component:IdeeCollabComponent},
