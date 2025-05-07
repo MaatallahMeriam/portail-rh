@@ -2,29 +2,29 @@ package com.example.PORTAIL_RH.user_service.user_service.Service.IMPL;
 
 import com.example.PORTAIL_RH.KPI_service.Service.KpiService;
 import com.example.PORTAIL_RH.user_service.conges_service.DTO.UserCongesDTO;
-import com.example.PORTAIL_RH.user_service.conges_service.Entity.UserConges;
 import com.example.PORTAIL_RH.user_service.conges_service.Repo.UserCongesRepository;
 import com.example.PORTAIL_RH.user_service.conges_service.Service.UserCongesService;
+import com.example.PORTAIL_RH.user_service.user_service.DTO.BirthdayWishDTO;
 import com.example.PORTAIL_RH.user_service.user_service.DTO.UsersDTO;
 import com.example.PORTAIL_RH.user_service.equipe_service.Entity.Equipe;
+import com.example.PORTAIL_RH.user_service.user_service.Entity.BirthdayWish;
 import com.example.PORTAIL_RH.user_service.user_service.Entity.Users;
 import com.example.PORTAIL_RH.user_service.dossier_service.Entity.DossierUser;
 import com.example.PORTAIL_RH.user_service.dossier_service.DTO.ResponseDossier;
 import com.example.PORTAIL_RH.user_service.equipe_service.Repo.EquipeRepository;
+import com.example.PORTAIL_RH.user_service.user_service.Repo.BirthdayWishRepository;
 import com.example.PORTAIL_RH.user_service.user_service.Repo.UsersRepository;
 import com.example.PORTAIL_RH.user_service.dossier_service.Repo.DossierUserRepository;
-import com.example.PORTAIL_RH.feed_service.pub_service.Entity.Publication;
 import com.example.PORTAIL_RH.feed_service.pub_service.Repo.PublicationRepository;
-import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Comment;
-import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Reaction;
-import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.IdeaRating;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.CommentRepository;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.ReactionRepository;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.IdeaRatingRepository;
-import com.example.PORTAIL_RH.request_service.Entity.Demande;
 import com.example.PORTAIL_RH.request_service.Repo.DemandeRepository;
 import com.example.PORTAIL_RH.user_service.user_service.Service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,13 +35,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class UsersServiceImpl implements UsersService {
     private static final String UPLOAD_DIR = "Uploads/profile_photos/";
+    private static final String WISH_UPLOAD_DIR = "Uploads/birthday_wishes/";
 
     @Autowired
     private UsersRepository usersRepository;
@@ -79,6 +82,9 @@ public class UsersServiceImpl implements UsersService {
     @Autowired
     private KpiService kpiService;
 
+    @Autowired
+    private BirthdayWishRepository birthdayWishRepository;
+
     @Override
     public UsersDTO mapToDTO(Users user) {
         UsersDTO dto = new UsersDTO();
@@ -88,7 +94,6 @@ public class UsersServiceImpl implements UsersService {
         dto.setPrenom(user.getPrenom());
         dto.setMail(user.getMail());
 
-        // Format the dateNaissance as DD/MM/YYYY
         if (user.getDateNaissance() != null) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             dto.setDateNaissance(dateFormat.format(user.getDateNaissance()));
@@ -99,7 +104,6 @@ public class UsersServiceImpl implements UsersService {
         dto.setAge(user.getAge());
         dto.setPoste(user.getPoste());
         dto.setDepartement(user.getDepartement());
-        // Construct the full URL for the image
         String imageUrl = user.getImage() != null
                 ? ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/" + user.getImage().replace("\\", "/"))
@@ -121,21 +125,13 @@ public class UsersServiceImpl implements UsersService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (image != null && !image.isEmpty()) {
-            // Generate a unique file name
             String uniqueFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
             Path filePath = Paths.get(UPLOAD_DIR + uniqueFileName);
-
-            // Create the directory if it doesn't exist
             Files.createDirectories(filePath.getParent());
-
-            // Save the image file
             Files.write(filePath, image.getBytes());
-
-            // Update the user's profile photo
             user.updateProfilePhoto(filePath.toString());
         }
 
-        // Save the updated user
         Users updatedUser = usersRepository.save(user);
         return mapToDTO(updatedUser);
     }
@@ -148,7 +144,6 @@ public class UsersServiceImpl implements UsersService {
         if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         }
-        // Parse the dateNaissance string back to Date
         if (userDTO.getDateNaissance() != null) {
             try {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -226,39 +221,7 @@ public class UsersServiceImpl implements UsersService {
     public UsersDTO updateUser(Long id, UsersDTO userDTO) {
         Users user = usersRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        user.setUserName(userDTO.getUserName());
-        user.setNom(userDTO.getNom());
-        user.setPrenom(userDTO.getPrenom());
-        user.setMail(userDTO.getMail());
-        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        }
-        // Parse the dateNaissance string back to Date
-        if (userDTO.getDateNaissance() != null) {
-            try {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                user.setDateNaissance(dateFormat.parse(userDTO.getDateNaissance()));
-            } catch (Exception e) {
-                throw new RuntimeException("Invalid date format for dateNaissance. Expected format: dd/MM/yyyy");
-            }
-        } else {
-            user.setDateNaissance(null);
-        }
-        user.setPoste(userDTO.getPoste());
-        user.setNumero(userDTO.getNumero());
-        user.setAdresse(userDTO.getAdresse());
-        user.setDepartement(userDTO.getDepartement());
-        user.setImage(user.getImage());
-        user.setRole(userDTO.getRole());
-        user.setActive(userDTO.isActive());
-        if (userDTO.getEquipeId() != null) {
-            Equipe equipe = equipeRepository.findById(userDTO.getEquipeId())
-                    .orElseThrow(() -> new RuntimeException("Equipe not found"));
-            user.setEquipe(equipe);
-        } else {
-            user.setEquipe(null);
-        }
+        mapToEntity(userDTO, user);
         Users updatedUser = usersRepository.save(user);
         return mapToDTO(updatedUser);
     }
@@ -275,56 +238,21 @@ public class UsersServiceImpl implements UsersService {
     @Override
     @Transactional
     public void deleteUser(Long id) {
-        // Fetch the user with related entities
         Users user = usersRepository.findByIdWithRelations(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // Handle managed teams (equipesGerees)
         if (user.getEquipesGerees() != null && !user.getEquipesGerees().isEmpty()) {
             user.getEquipesGerees().forEach(equipe -> equipe.setManager(null));
             user.getEquipesGerees().clear();
         }
-
-        // Clear related collections to leverage cascade and orphanRemoval
-        if (user.getComments() != null) {
-            user.getComments().clear();
-        }
-
-        if (user.getReactions() != null) {
-            user.getReactions().clear();
-        }
-
-        if (user.getRatings() != null) {
-            user.getRatings().clear();
-        }
-
-        if (user.getPublications() != null) {
-            user.getPublications().clear();
-        }
-
-        if (user.getDemandes() != null) {
-            user.getDemandes().clear();
-        }
-
-        if (user.getCongesList() != null) {
-            user.getCongesList().clear();
-        }
-
-        if (user.getUserTeletravail() != null) {
-            user.getUserTeletravail().clear();
-        }
-
-        // Disassociate from team (equipe)
-        if (user.getEquipe() != null) {
-            user.setEquipe(null);
-        }
-
-        // Delete dossier
-        if (user.getDossier() != null) {
-            user.setDossier(null);
-        }
-
-        // Delete the user (cascading will handle dependent entities)
+        if (user.getComments() != null) user.getComments().clear();
+        if (user.getReactions() != null) user.getReactions().clear();
+        if (user.getRatings() != null) user.getRatings().clear();
+        if (user.getPublications() != null) user.getPublications().clear();
+        if (user.getDemandes() != null) user.getDemandes().clear();
+        if (user.getCongesList() != null) user.getCongesList().clear();
+        if (user.getUserTeletravail() != null) user.getUserTeletravail().clear();
+        if (user.getEquipe() != null) user.setEquipe(null);
+        if (user.getDossier() != null) user.setDossier(null);
         usersRepository.delete(user);
     }
 
@@ -339,9 +267,7 @@ public class UsersServiceImpl implements UsersService {
     public UsersDTO activateUser(Long id) {
         Users user = usersRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        if (user.isActive()) {
-            throw new RuntimeException("User is already active");
-        }
+        if (user.isActive()) throw new RuntimeException("User is already active");
         user.setActive(true);
         Users updatedUser = usersRepository.save(user);
         return mapToDTO(updatedUser);
@@ -381,19 +307,15 @@ public class UsersServiceImpl implements UsersService {
     public ResponseDossier uploadFilesForUser(Long userId, MultipartFile cv, MultipartFile contrat, MultipartFile diplome) throws Exception {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
         DossierUser dossier = user.getDossier();
         if (dossier == null) {
             dossier = new DossierUser();
             user.setDossier(dossier);
         }
-
         if (cv != null && !cv.isEmpty()) dossier.setCv(cv.getBytes());
         if (contrat != null && !contrat.isEmpty()) dossier.setContrat(contrat.getBytes());
         if (diplome != null && !diplome.isEmpty()) dossier.setDiplome(diplome.getBytes());
-
         usersRepository.save(user);
-
         String cvUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/dossier/download/" + dossier.getId() + "/cv")
                 .toUriString();
@@ -403,12 +325,93 @@ public class UsersServiceImpl implements UsersService {
         String diplomeUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/dossier/download/" + dossier.getId() + "/diplome")
                 .toUriString();
-
         return new ResponseDossier(cvUrl, contratUrl, diplomeUrl);
     }
 
     @Override
     public List<UserCongesDTO> getUserConges(Long userId) {
         return userCongesService.getUserCongesByUserId(userId);
+    }
+
+    @Override
+    @Transactional
+    public void sendBirthdayWish(Long recipientId, String message, String icon, MultipartFile image) throws Exception {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getName() == null) {
+            throw new RuntimeException("Utilisateur non authentifié");
+        }
+        String currentUserEmail = auth.getName();
+        Users sender = usersRepository.findByMail(currentUserEmail)
+                .orElseThrow(() -> new RuntimeException("Expéditeur non trouvé"));
+
+        Users recipient = usersRepository.findById(recipientId)
+                .orElseThrow(() -> new RuntimeException("Destinataire non trouvé"));
+
+        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
+        if (birthdayWishRepository.findBySenderAndRecipientAndCreatedAtBetween(sender, recipient, startOfDay, endOfDay).isPresent()) {
+            throw new RuntimeException("Un souhait a déjà été envoyé aujourd'hui à cet utilisateur");
+        }
+
+        BirthdayWish wish = new BirthdayWish();
+        wish.setSender(sender);
+        wish.setRecipient(recipient);
+        wish.setMessage(message);
+
+        if (image != null && !image.isEmpty()) {
+            String uniqueFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+            Path filePath = Paths.get(WISH_UPLOAD_DIR + uniqueFileName);
+            Files.createDirectories(filePath.getParent());
+            Files.write(filePath, image.getBytes());
+        }
+
+        birthdayWishRepository.save(wish);
+    }
+
+    @Override
+    @Transactional
+    public void clearOldWishes() {
+        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        List<BirthdayWish> oldWishes = birthdayWishRepository.findOldWishes(cutoffDate);
+        birthdayWishRepository.deleteAll(oldWishes);
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void cleanupBirthdayWishes() {
+        clearOldWishes();
+    }
+
+    @Override
+    public List<BirthdayWishDTO> getBirthdayWishes(Long recipientId) {
+        Users recipient = usersRepository.findById(recipientId)
+                .orElseThrow(() -> new RuntimeException("Recipient not found"));
+        List<BirthdayWish> wishes = birthdayWishRepository.findByRecipient(recipient);
+
+        return wishes.stream().map(wish -> {
+            BirthdayWishDTO dto = new BirthdayWishDTO();
+            dto.setMessage(wish.getMessage());
+            Users sender = wish.getSender();
+            dto.setSenderNom(sender.getNom());
+            dto.setSenderPrenom(sender.getPrenom());
+            String senderPhotoUrl = sender.getImage() != null
+                    ? ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/" + sender.getImage().replace("\\", "/"))
+                    .toUriString()
+                    : null;
+            dto.setSenderPhotoUrl(senderPhotoUrl);
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Set<Long> getWishedUserIdsToday(Long senderId) {
+        Users sender = usersRepository.findById(senderId)
+                .orElseThrow(() -> new RuntimeException("Sender not found"));
+        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
+        List<BirthdayWish> wishes = birthdayWishRepository.findBySenderAndCreatedAtBetween(sender, startOfDay, endOfDay);
+        return wishes.stream()
+                .map(wish -> wish.getRecipient().getId())
+                .collect(Collectors.toSet());
     }
 }

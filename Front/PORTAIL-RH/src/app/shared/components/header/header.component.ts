@@ -109,18 +109,30 @@ export class HeaderComponent implements OnInit, OnDestroy {
   formatNotificationMessage(notification: Notification): string {
     const type = notification.type?.toLowerCase();
     const message = notification.message?.toLowerCase() || '';
-    
+
     if (type === 'conges') {
       if (message.includes('acceptée')) {
-        return 'Demande de congé acceptée';
+        return 'Votre demande de congé a été acceptée';
       } else if (message.includes('refusée')) {
-        return 'Demande de congé refusée';
+        return 'Votre demande de congé a été refusée';
+      } else if (message.includes('membre')) {
+        return notification.message; // Ex: "Membre John Doe a soumis une demande de congé"
       }
       return 'Nouvelle demande de congé';
     } else if (type === 'document') {
-      return 'Nouvelle demande de document';
+      if (message.includes('acceptée')) {
+        return 'Votre demande de document a été acceptée';
+      } else if (message.includes('refusée')) {
+        return 'Votre demande de document a été refusée';
+      }
+      return notification.message; // Ex: "Nouvelle demande de document soumise par John Doe"
     } else if (type === 'logistique') {
-      return 'Nouvelle demande logistique';
+      if (message.includes('acceptée')) {
+        return 'Votre demande logistique a été acceptée';
+      } else if (message.includes('refusée')) {
+        return 'Votre demande logistique a été refusée';
+      }
+      return notification.message; // Ex: "Nouvelle demande logistique soumise par John Doe"
     }
     return message || 'Nouvelle notification';
   }
@@ -156,8 +168,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.notificationService.markAsRead(notification.id).subscribe({
         next: (updatedNotification) => {
           const updatedNotifications = this.notifications.map((n) =>
-            n.id === notification.id ? { ...n, read: true } : n
-          );
+            n.id === notification.id ? { ...n, read: true } : n          );
           this.notificationService.updateNotifications(updatedNotifications);
         },
         error: (error) => {
@@ -239,7 +250,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       case 'RH':
         this.router.navigate(['/profil-rh']);
         break;
-        case 'ADMIN':
+      case 'ADMIN':
         this.router.navigate(['/profil-admin']);
         break;
       default:

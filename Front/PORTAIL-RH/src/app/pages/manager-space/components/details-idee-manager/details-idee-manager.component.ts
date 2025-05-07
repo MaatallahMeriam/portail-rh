@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PublicationService, PublicationDTO, CommentDTO, CommentRequest, IdeaRatingDTO, IdeaRatingRequest } from '../../../../services/publication.service';
+import { PublicationService, PublicationDTO, CommentDTO, CommentRequest, IdeaRatingDTO, IdeaRatingRequest, CommentUpdateRequest } from '../../../../services/publication.service';
 import { ReactionService, ReactionDTO, ReactionRequest, ReactionSummaryDTO } from '../../../../services/reaction.service';
 import { AuthService } from '../../../../shared/services/auth.service';
 import { ActivatedRoute } from '@angular/router';
@@ -36,7 +36,9 @@ export class DetailsIdeeManagerComponent implements OnInit {
   userId: string | null = null;
   private backendBaseUrl = 'http://localhost:8080';
   private ideaId: number | null = null;
-  selectedImage: string | null = null; // Nouvelle propriété pour la modal
+  selectedImage: string | null = null;
+  editingCommentId: number | null = null;
+  editedCommentContent: string = '';
 
   constructor(
     private publicationService: PublicationService,
@@ -157,6 +159,61 @@ export class DetailsIdeeManagerComponent implements OnInit {
         Swal.fire('Succès', 'Commentaire ajouté !', 'success');
       },
       error: (err) => Swal.fire('Erreur', err.message, 'error')
+    });
+  }
+
+  startEditingComment(comment: CommentDTO): void {
+    this.editingCommentId = comment.id || null;
+    this.editedCommentContent = comment.content;
+  }
+
+  cancelEditingComment(): void {
+    this.editingCommentId = null;
+    this.editedCommentContent = '';
+  }
+
+  updateComment(commentId: number): void {
+    if (!this.userId || !this.ideaId || !this.editedCommentContent.trim()) {
+      Swal.fire('Erreur', 'Le commentaire ne peut pas être vide ou l\'idée est invalide.', 'error');
+      return;
+    }
+    const updateRequest: CommentUpdateRequest = {
+      userId: Number(this.userId),
+      publicationId: this.ideaId,
+      content: this.editedCommentContent
+    };
+    this.publicationService.updateComment(commentId, updateRequest).subscribe({
+      next: (updatedComment) => {
+        this.comments = this.comments.map(c => c.id === commentId ? updatedComment : c);
+        this.cancelEditingComment();
+        Swal.fire('Succès', 'Commentaire mis à jour !', 'success');
+      },
+      error: (err) => Swal.fire('Erreur', err.message, 'error')
+    });
+  }
+
+  deleteComment(commentId: number): void {
+    if (!this.userId || !commentId) {
+      Swal.fire('Erreur', 'Utilisateur ou commentaire non valide.', 'error');
+      return;
+    }
+    Swal.fire({
+      title: 'Confirmation',
+      text: 'Voulez-vous vraiment supprimer ce commentaire ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.publicationService.deleteComment(commentId, Number(this.userId)).subscribe({
+          next: () => {
+            this.comments = this.comments.filter(c => c.id !== commentId);
+            Swal.fire('Succès', 'Commentaire supprimé !', 'success');
+          },
+          error: (err) => Swal.fire('Erreur', err.message, 'error')
+        });
+      }
     });
   }
 

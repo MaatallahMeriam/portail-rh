@@ -10,20 +10,41 @@
     <section class="birthday-message" *ngIf="birthdayUsers.length > 0">
       <ng-container *ngFor="let user of birthdayUsers">
         <ng-container *ngIf="authenticatedUserId === user.id; else otherUserBirthday">
-          <!-- Special message for the authenticated user -->
+          <!-- Special message for the authenticated user on their birthday -->
           <p class="highlight">Joyeux anniversaire <span class="user-name">{{ user.fullName }}</span> ! 🎉</p>
+          <p class="view-wishes" (click)="navigateToWishes()">Consulter les wishes !</p>
         </ng-container>
         <ng-template #otherUserBirthday>
-          <!-- Message for other users with a birthday today -->
-          <p>
-            C'est l'anniversaire de <span class="user-name">{{ user.fullName }}</span>,
-            souhaitez-lui un joyeux anniversaire !
-            <button class="wish-button" (click)="wishHappyBirthday(user)">Souhaiter</button>
-          </p>
+          <!-- Conditionally display based on whether the user has been wished -->
+          <ng-container *ngIf="!hasWished(user); else wishedMessage">
+            <!-- Message for other users with a birthday today -->
+            <p>
+              C'est l'anniversaire de <span class="user-name">{{ user.fullName }}</span>,
+              souhaitez-lui un joyeux anniversaire !
+              <button class="wish-button" (click)="openWishModal(user)">Souhaiter</button>
+            </p>
+          </ng-container>
+          <ng-template #wishedMessage>
+            <p class="wished-confirmation">
+              Vous avez souhaité un joyeux anniversaire à <span class="user-name">{{ user.fullName }}</span> !
+            </p>
+          </ng-template>
         </ng-template>
       </ng-container>
     </section>
   </ng-container>
 
-  
+  <!-- Wish Modal -->
+  <div class="wish-modal" *ngIf="isWishModalOpen">
+    <div class="modal-content">
+      <span class="close-button" (click)="closeWishModal()">×</span>
+      <h3>Souhaiter un joyeux anniversaire à {{ selectedUser?.fullName }}</h3>
+      <textarea [(ngModel)]="wishMessage" placeholder="Écrivez votre message..." rows="4" class="wish-textarea"></textarea>
+      
+      <div class="modal-actions">
+        <button class="send-button" (click)="sendWish()">Envoyer</button>
+        <button class="cancel-button" (click)="closeWishModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
 </aside>

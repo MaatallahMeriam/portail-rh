@@ -235,6 +235,7 @@ public class DemandeServiceImpl implements DemandeService {
         }
 
         Demande updatedDemande = demandeRepository.save(demande);
+        notificationService.notifyRequesterStatusChange(demande, nouveauStatut.toString());
         return mapToDTO(updatedDemande);
     }
 
@@ -322,16 +323,8 @@ public class DemandeServiceImpl implements DemandeService {
 
         Demande updatedDemande = demandeRepository.save(demande);
 
-        // Notify the user who submitted the request
-        Users user = updatedDemande.getUser();
-        String userMessage = String.format("Votre demande de %s a été acceptée", updatedDemande.getType().toString().toLowerCase());
-        notificationService.createNotificationForUser(user, userMessage, updatedDemande.getType().toString(), updatedDemande.getId());
-
-        // If the user is a collaborator (not RH or MANAGER), notify all RH users
-        if (user.getRole() != Users.Role.RH && user.getRole() != Users.Role.MANAGER) {
-            String rhMessage = String.format("La demande de %s de %s a été acceptée", updatedDemande.getType().toString().toLowerCase(), user.getNom());
-            notificationService.createNotificationForRoleUsers(Users.Role.RH, rhMessage, updatedDemande.getType().toString(), updatedDemande.getId());
-        }
+        // Notify only the user who submitted the request
+        notificationService.notifyRequesterStatusChange(updatedDemande, "acceptée");
 
         return mapToDTO(updatedDemande);
     }
@@ -359,16 +352,8 @@ public class DemandeServiceImpl implements DemandeService {
 
         Demande updatedDemande = demandeRepository.save(demande);
 
-        // Notify the user who submitted the request
-        Users user = updatedDemande.getUser();
-        String userMessage = String.format("Votre demande de %s a été refusée", updatedDemande.getType().toString().toLowerCase());
-        notificationService.createNotificationForUser(user, userMessage, updatedDemande.getType().toString(), updatedDemande.getId());
-
-        // If the user is a collaborator (not RH or MANAGER), notify all RH users
-        if (user.getRole() != Users.Role.RH && user.getRole() != Users.Role.MANAGER) {
-            String rhMessage = String.format("La demande de %s de %s a été refusée", updatedDemande.getType().toString().toLowerCase(), user.getNom());
-            notificationService.createNotificationForRoleUsers(Users.Role.RH, rhMessage, updatedDemande.getType().toString(), updatedDemande.getId());
-        }
+        // Notify only the user who submitted the request
+        notificationService.notifyRequesterStatusChange(updatedDemande, "refusée");
 
         return mapToDTO(updatedDemande);
     }

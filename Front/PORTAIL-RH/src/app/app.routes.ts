@@ -4,6 +4,7 @@ import { GestionProfileAdminComponent } from './pages/admin-space/component/gest
 import { DetailsIdeeComponent } from './pages/collab-space/components/details-idee/details-idee.component';
 import { DetailsIdeeComponentRH } from './pages/rh-space/components/details-idee-rh/details-idee.component';
 import { DetailsIdeeManagerComponent } from './pages/manager-space/components/details-idee-manager/details-idee-manager.component';
+import { WishListComponent } from './pages/collab-space/components/wish-list/wish-list.component';
 
 import { DetailsEquipeComponent } from './pages/rh-space/components/details-equipe/details-equipe.component';
 import { LoginComponent } from './shared/components/login/login.component';
@@ -93,6 +94,7 @@ export const routes: Routes = [
   {path:'membre-equipe',component:DetailsMembreEqComponent},
   {path:'profile-collab',component:GestionProfileComponent},
   { path: 'details-idee-manager/:id', component: DetailsIdeeManagerComponent },
+  {path : 'wishes-list',component :WishListComponent},
 
   {path:'trait-dmd',component:TraitDmdComponent},
   {path:'trait-dmd-rh',component:TraitDmdRhComponent},

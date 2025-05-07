@@ -38,7 +38,20 @@
                                 <div class="comment-content">
                                     <span class="comment-user">{{ comment.userNom }} {{ comment.userPrenom }}</span>
                                     <span class="comment-time">{{ comment.createdAt | date: 'short' }}</span>
-                                    <p>{{ comment.content }}</p>
+                                    <ng-container *ngIf="editingCommentId === comment.id; else showContent">
+                                        <textarea [(ngModel)]="editedCommentContent" placeholder="Modifier votre commentaire..." rows="2" class="edit-comment-input"></textarea>
+                                        <div class="comment-actions">
+                                            <button mat-flat-button  (click)="updateComment(comment.id!)">Enregistrer</button>
+                                            <button mat-flat-button  (click)="cancelEditingComment()">Annuler</button>
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #showContent>
+                                        <p>{{ comment.content }}</p>
+                                        <div class="comment-actions" *ngIf="userId && comment.userId.toString() === userId">
+                                            <mat-icon class="action-icon edit-icon" (click)="startEditingComment(comment)">edit</mat-icon>
+                                            <mat-icon class="action-icon delete-icon" (click)="deleteComment(comment.id!)">delete</mat-icon>
+                                        </div>
+                                    </ng-template>
                                 </div>
                             </div>
                             <div *ngIf="comments.length === 0" class="no-comments">
@@ -47,7 +60,7 @@
                         </div>
                         <div class="comment-form">
                             <textarea [(ngModel)]="newComment" placeholder="Ajouter un commentaire..." rows="2"></textarea>
-                            <button mat-flat-button color="primary" (click)="addComment()">Commenter</button>
+                            <button mat-flat-button  (click)="addComment()">Commenter</button>
                         </div>
                     </div>
                 </div>

@@ -1,0 +1,258 @@
+.collab-home {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #f9f9f9;
+    position: relative;
+  }
+  
+  .main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+    left: 0;
+    width: 250px;
+    background: #f4f4f4;
+    transition: width 0.3s ease;
+  }
+  
+  .feed {
+    position: fixed;
+    top: 85px;
+    left: 270px;
+    right: 30px;
+    bottom: 10px;
+    overflow-y: auto;
+    max-width: 1250px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+  
+    &.sidebar-collapsed {
+      left: 100px;
+      max-width: calc(100% - 100px);
+    }
+  
+    .wishes-header {
+      margin-bottom: 30px;
+      text-align: center;
+  
+      h2 {
+        font-size: 1.8rem;
+        color: #cc0171;
+        margin: 0;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+      }
+    }
+  
+    .wishes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+      gap: 15px; /* Reduced gap for better spacing */
+      padding: 10px;
+      max-height: calc(100% - 80px);
+      overflow-y: auto;
+  
+      .wish-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 10px; /* Reduced padding */
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        min-height: 180px; /* Reduced height */
+  
+        &:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 5px 12px rgba(0, 0, 0, 0.12);
+        }
+  
+        .wish-photo {
+          margin-bottom: 8px;
+  
+          .user-photo {
+            width: 70px; /* Reduced photo size */
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #F5AF06;
+          }
+        }
+  
+        .wish-details {
+          .wish-name {
+            font-size: 0.95rem; /* Reduced font size */
+            color: #230046;
+            font-weight: 500;
+            margin: 0 0 6px;
+            line-height: 1.2;
+          }
+  
+          .wish-message {
+            font-size: 0.85rem; /* Reduced font size */
+            color: #666;
+            margin: 0;
+            word-wrap: break-word;
+            line-height: 1.3;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+  
+      /* Define specific positions for a 3x3 grid */
+      .card-position-0 { grid-column: 1; grid-row: 1; }
+      .card-position-1 { grid-column: 2; grid-row: 1; }
+      .card-position-2 { grid-column: 3; grid-row: 1; }
+      .card-position-3 { grid-column: 1; grid-row: 2; }
+      .card-position-4 { grid-column: 2; grid-row: 2; }
+      .card-position-5 { grid-column: 3; grid-row: 2; }
+      .card-position-6 { grid-column: 1; grid-row: 3; }
+      .card-position-7 { grid-column: 2; grid-row: 3; }
+      .card-position-8 { grid-column: 3; grid-row: 3; }
+    }
+  }
+  
+  .feed::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .feed::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+  }
+  
+  .feed::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  @media screen and (max-width: 1300px) {
+    .app-sidebar {
+      width: 200px;
+    }
+  
+    .feed {
+      left: 220px;
+      right: 30px;
+      max-width: calc(100% - 250px);
+  
+      &.sidebar-collapsed {
+        left: 100px;
+        max-width: calc(100% - 100px);
+      }
+    }
+  }
+  
+  @media screen and (max-width: 1024px) {
+    .app-sidebar {
+      width: 200px;
+    }
+  
+    .feed {
+      left: 220px;
+      right: 30px;
+      max-width: calc(100% - 250px);
+  
+      &.sidebar-collapsed {
+        left: 100px;
+        max-width: calc(100% - 100px);
+      }
+  
+      .wishes-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 cards per row on medium screens */
+      }
+    }
+  }
+  
+  @media screen and (max-width: 768px) {
+    .app-sidebar {
+      display: none;
+    }
+  
+    .feed {
+      left: 0;
+      right: 30px;
+      max-width: calc(100% - 60px);
+  
+      &.sidebar-collapsed {
+        left: 20px;
+        right: 20px;
+        max-width: calc(100% - 40px);
+      }
+  
+      .wishes-grid {
+        grid-template-columns: 1fr; /* 1 card per row on small screens */
+        gap: 10px;
+  
+        .wish-card {
+          min-height: 160px;
+  
+          .wish-photo .user-photo {
+            width: 60px;
+            height: 60px;
+          }
+  
+          .wish-details .wish-name {
+            font-size: 0.9rem;
+          }
+  
+          .wish-details .wish-message {
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .feed {
+      left: 0;
+      right: 0;
+      max-width: 100%;
+      padding: 10px;
+  
+      &.sidebar-collapsed {
+        left: 20px;
+        right: 0;
+        max-width: calc(100% - 20px);
+      }
+  
+      .wishes-header h2 {
+        font-size: 1.4rem;
+      }
+  
+      .wishes-grid .wish-card {
+        width: 100%;
+        padding: 8px;
+        min-height: 140px;
+  
+        .wish-photo .user-photo {
+          width: 50px;
+          height: 50px;
+        }
+  
+        .wish-details .wish-name {
+          font-size: 0.85rem;
+        }
+  
+        .wish-details .wish-message {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }

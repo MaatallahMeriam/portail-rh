@@ -1,6 +1,7 @@
 package com.example.PORTAIL_RH.user_service.user_service.Controller;
 
 import com.example.PORTAIL_RH.user_service.conges_service.DTO.UserCongesDTO;
+import com.example.PORTAIL_RH.user_service.user_service.DTO.BirthdayWishDTO;
 import com.example.PORTAIL_RH.user_service.user_service.DTO.UsersDTO;
 import com.example.PORTAIL_RH.user_service.dossier_service.Entity.DossierUser;
 import com.example.PORTAIL_RH.user_service.dossier_service.DTO.ResponseDossier;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/users")
@@ -37,6 +39,7 @@ public class UsersController {
         List<UsersDTO> users = usersService.getAllActiveUsersWithNoEquipe();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
+
     @PostMapping("/{id}/profile-photo")
     public ResponseEntity<UsersDTO> updateProfilePhoto(
             @PathVariable Long id,
@@ -44,6 +47,7 @@ public class UsersController {
         UsersDTO updatedUser = usersService.updateProfilePhoto(id, image);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
+
     @GetMapping("/get/deactivated")
     public ResponseEntity<List<UsersDTO>> getAllDeactivatedUsers() {
         List<UsersDTO> users = usersService.getAllDeactivatedUsers();
@@ -61,11 +65,13 @@ public class UsersController {
         UsersDTO updatedUser = usersService.updateUser(id, userDTO);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
+
     @PutMapping("/{id}/activate")
     public ResponseEntity<UsersDTO> activateUser(@PathVariable Long id) {
         UsersDTO activatedUser = usersService.activateUser(id);
         return new ResponseEntity<>(activatedUser, HttpStatus.OK);
     }
+
     @PutMapping("/{id}/deactivate")
     public ResponseEntity<UsersDTO> deactivateUser(@PathVariable Long id) {
         UsersDTO deactivatedUser = usersService.deactivateUser(id);
@@ -117,5 +123,27 @@ public class UsersController {
     public ResponseEntity<List<UserCongesDTO>> getUserConges(@PathVariable Long id) {
         List<UserCongesDTO> conges = usersService.getUserConges(id);
         return new ResponseEntity<>(conges, HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/wish-birthday")
+    public ResponseEntity<Void> sendBirthdayWish(
+            @PathVariable Long id,
+            @RequestParam("message") String message,
+            @RequestParam(value = "icon", required = false) String icon,
+            @RequestParam(value = "image", required = false) MultipartFile image) throws Exception {
+        usersService.sendBirthdayWish(id, message, icon, image);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/wishes")
+    public ResponseEntity<List<BirthdayWishDTO>> getBirthdayWishes(@PathVariable Long id) {
+        List<BirthdayWishDTO> wishes = usersService.getBirthdayWishes(id);
+        return new ResponseEntity<>(wishes, HttpStatus.OK);
+    }
+
+    @GetMapping("/{senderId}/wished-users-today")
+    public ResponseEntity<Set<Long>> getWishedUsersToday(@PathVariable Long senderId) {
+        Set<Long> wishedUserIds = usersService.getWishedUserIdsToday(senderId);
+        return new ResponseEntity<>(wishedUserIds, HttpStatus.OK);
     }
 }

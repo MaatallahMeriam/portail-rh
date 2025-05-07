@@ -1,159 +1,346 @@
 .right-sidebar {
-    position: fixed;
-    right: 0;
-    top: 65px;
-    width: 250px;
-    background: #817a90;
-    color: white;
-    padding: 20px;
+  position: fixed;
+  right: 0;
+  top: 65px;
+  width: 250px;
+  background: #817a90;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  border-left: 0.2px solid rgba(0, 0, 0, 0.084);
+  transition: width 0.3s ease-in-out;
+}
+
+.calendar {
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.birthday-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #bab5b6;
+  color: #fff;
+  font-family: 'Amaranth', sans-serif;
+  font-size: 12px;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  height: 85px;
+  animation: fadeInScale 0.5s ease-in-out;
+
+  p {
     display: flex;
-    flex-direction: column;
-    height: 100vh;
-    border-left: 0.2px solid rgba(0, 0, 0, 0.084);
-    transition: width 0.3s ease-in-out;
-  }
-  
-  .calendar {
-    width: 100%;
-    background-color: white;
-    border-radius: 8px;
-  }
-  
-  .birthday-message {
-    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    margin-top: 15px;
-    padding: 10px;
-    background-color: #bab5b6;
-    color: #fff;
-    font-family: 'Amaranth', sans-serif;
-    font-size: 12px;
-    text-align: center;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); // Enhanced shadow for alert effect
-    height: 50px;
-    animation: fadeInScale 0.5s ease-in-out; // Add animation
-  
-    // Style the paragraph to handle wrapping and button
-    p {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: 5px;
-      margin: 0;
-      line-height: 1.2;
-    }
-  
-    // Highlight style for the authenticated user's birthday message
-    &.highlight {
-      background-color: #ff6b6b; // Brighter color to highlight the authenticated user's birthday
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); // Even more pronounced shadow
-    }
+    gap: 5px;
+    margin: 0;
+    line-height: 1.2;
   }
-  
-  .user-name {
-    font-weight: bold;
+
+  &.highlight {
+    background-color: #ff6b6b;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.wished-confirmation {
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.3;
+  padding: 5px;
+  width: 100%; /* Ensure it takes full width */
+}
+
+.view-wishes {
+  color: #230046;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 12px;
+  margin-top: 5px;
+
+  &:hover {
+    color: #E5007F;
+  }
+}
+
+.user-name {
+  font-weight: bold;
+  color: #230046;
+}
+
+.wish-button {
+  background: linear-gradient(50deg, #230046, #817a90,);
+  color: white;
+  margin-top: 3px;
+  border: none;
+  border-radius: 20px;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-family: 'Amaranth', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(35, 0, 70, 0.3);  }
+}
+
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Wish Modal Styles */
+.wish-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  animation: fadeInScale 0.3s ease-in-out;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
     color: #230046;
   }
-  
-  // Style for the "Souhaiter" button
-  .wish-button {
-    background-color: #56142f;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 10px;
+}
+
+.modal-content h3 {
+  color: #5b2e91;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.wish-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #5b2e91;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: #f9f9f9;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  resize: vertical;
+  margin-bottom: 15px;
+
+  &:focus {
+    border-color: #230046;
+    box-shadow: 0 0 5px rgba(35, 0, 70, 0.3);
+    outline: none;
+  }
+}
+
+.icon-gallery {
+  margin-bottom: 15px;
+
+  h4 {
+    color: #5b2e91;
     font-family: 'Amaranth', sans-serif;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+
+  .icons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  span {
+    font-size: 1.5rem;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-  
+    transition: transform 0.2s ease;
+
     &:hover {
-      background-color: #3e0f22;
+      transform: scale(1.2);
+    }
+
+    &.selected {
+      border: 2px solid #5b2e91;
+      border-radius: 5px;
+      padding: 2px;
     }
   }
-  
-  
-  // Animation for the birthday message
-  @keyframes fadeInScale {
-    0% {
-      opacity: 0;
-      transform: scale(0.9);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
+}
+
+.image-upload {
+  margin-bottom: 15px;
+
+  h4 {
+    color: #5b2e91;
+    font-family: 'Amaranth', sans-serif;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
   }
-  
-  @media screen and (max-width: 1024px) {
-    .right-sidebar {
-      width: 200px;
-    }
-    .logout {
-      margin-left: 20px;
-    }
+
+  input[type="file"] {
+    display: block;
+    margin-bottom: 10px;
   }
-  
-  @media screen and (max-width: 768px) {
-    .right-sidebar {
-      width: 180px;
-    }
-    .logout {
-      justify-content: flex-start;
-      margin-left: 10px;
-      margin-top: 100px;
-    }
-  
-    .logout button {
-      font-size: 14px;
-      padding: 6px 10px;
-    }
-  
-    .birthday-message {
-      font-size: 11px;
-      height: auto;
-      min-height: 50px;
-      padding: 8px;
-  
-      .wish-button {
-        font-size: 9px;
-        padding: 3px 6px;
-      }
-    }
-  }
-  
-  @media screen and (max-width: 480px) {
-    .right-sidebar {
-      width: 50px;
-      position: relative;
-      height: auto;
-    }
-    .logout {
-      justify-content: center;
-      margin-left: 0;
-      margin-top: 50px;
+
+  .image-preview {
+    max-width: 150px;
+    max-height: 150px;
+    margin-top: 10px;
+
+    img {
       width: 100%;
-    }
-  
-    .logout button {
-      font-size: 14px;
-      padding: 6px 8px;
-      width: 90%;
-      text-align: center;
-    }
-  
-    .birthday-message {
-      font-size: 10px;
-      height: auto;
-      min-height: 40px;
-      padding: 6px;
-  
-      .wish-button {
-        font-size: 8px;
-        padding: 2px 4px;
-      }
+      height: 100%;
+      object-fit: cover;
+      border-radius: 5px;
     }
   }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.send-button {
+  background-color: #230046;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #5b2e91;
+  }
+}
+
+.cancel-button {
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #b3b3b3;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .right-sidebar {
+    width: 200px;
+  }
+  .logout {
+    margin-left: 20px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .right-sidebar {
+    width: 180px;
+  }
+  .logout {
+    justify-content: flex-start;
+    margin-left: 10px;
+    margin-top: 100px;
+  }
+
+  .logout button {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+
+  .birthday-message {
+    font-size: 11px;
+    height: auto;
+    min-height: 50px;
+    padding: 8px;
+
+    .wish-button {
+      font-size: 9px;
+      padding: 3px 6px;
+    }
+  }
+
+  .modal-content {
+    width: 95%;
+    max-width: 400px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .right-sidebar {
+    width: 50px;
+    position: relative;
+    height: auto;
+  }
+  .logout {
+    justify-content: center;
+    margin-left: 0;
+    margin-top: 50px;
+    width: 100%;
+  }
+
+  .logout button {
+    font-size: 14px;
+    padding: 6px 8px;
+    width: 90%;
+    text-align: center;
+  }
+
+  .birthday-message {
+    font-size: 10px;
+    height: auto;
+    min-height: 40px;
+    padding: 6px;
+
+    .wish-button {
+      font-size: 8px;
+      padding: 2px 4px;
+    }
+  }
+
+  .modal-content {
+    width: 90%;
+    max-width: 300px;
+  }
+}

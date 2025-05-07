@@ -1,12 +1,6 @@
 package com.example.PORTAIL_RH.feed_service.Reaction_service.Service.IMPL;
 
-import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.CommentDTO;
-import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.CommentRequest;
-import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.ReactionDTO;
-import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.ReactionRequest;
-import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.ReactionSummaryDTO;
-import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.IdeaRatingDTO;
-import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.IdeaRatingRequest;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.*;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Comment;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Reaction;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.IdeaRating;
@@ -267,7 +261,31 @@ public class ReactionServiceImpl implements ReactionService {
                 .map(this::mapToIdeaRatingDTO)
                 .collect(Collectors.toList());
     }
+    @Override
+    @Transactional
+    public CommentDTO updateComment(Long commentId, CommentUpdateRequest updateRequest) {
+        if (commentId == null || updateRequest.getUserId() == null || updateRequest.getPublicationId() == null || updateRequest.getContent() == null || updateRequest.getContent().trim().isEmpty()) {
+            throw new IllegalArgumentException("Comment ID, User ID, Publication ID, and Content cannot be null or empty");
+        }
 
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found with ID: " + commentId));
+
+        if (!comment.getUser().getId().equals(updateRequest.getUserId())) {
+            throw new SecurityException("You can only update your own comments");
+        }
+
+        Publication publication = publicationRepository.findById(updateRequest.getPublicationId())
+                .orElseThrow(() -> new RuntimeException("Publication not found with ID: " + updateRequest.getPublicationId()));
+
+        if (!comment.getPublication().getId().equals(updateRequest.getPublicationId())) {
+            throw new IllegalArgumentException("Comment does not belong to the specified publication");
+        }
+
+        comment.setContent(updateRequest.getContent());
+        Comment updatedComment = commentRepository.save(comment);
+        return mapToCommentDTO(updatedComment);
+    }
     @Override
     @Transactional
     public void deleteIdeaRating(Long userId, Long publicationId) {

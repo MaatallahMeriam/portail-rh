@@ -61,6 +61,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         // Récupérer l'utilisateur qui a soumis la demande
         Users user = demande.getUser();
+        String userFullName = user.getPrenom() + " " + user.getNom();
 
         // Si c'est une demande de congé, envoyer uniquement au manager de l'équipe de l'utilisateur
         if (demande.getType() == Demande.DemandeType.CONGES) {
@@ -75,8 +76,8 @@ public class NotificationServiceImpl implements NotificationService {
                 throw new RuntimeException("Aucun manager assigné à l'équipe de l'utilisateur");
             }
 
-            // Créer le message de notification
-            String message = String.format("Nouvelle demande de %s", demande.getType().toString().toLowerCase());
+            // Créer le message de notification avec le nom du demandeur
+            String message = String.format("Membre %s a soumis une demande de congé", userFullName);
 
             // Créer et sauvegarder la notification pour le manager
             Notification notification = new Notification();
@@ -96,9 +97,10 @@ public class NotificationServiceImpl implements NotificationService {
                     notificationDTO
             );
         } else {
-            // Pour les autres types de demandes (DOCUMENT, LOGISTIQUE), envoyer à tous les RH
+            // Pour les demandes LOGISTIQUE ou DOCUMENT, envoyer à tous les RH
             List<Users> targetUsers = usersRepository.findByRole(targetRole);
-            String message = String.format("Nouvelle demande de %s", demande.getType().toString().toLowerCase());
+            String message = String.format("Nouvelle demande de %s soumise par %s",
+                    demande.getType().toString().toLowerCase(), userFullName);
 
             for (Users targetUser : targetUsers) {
                 Notification notification = new Notification();
@@ -162,6 +164,32 @@ public class NotificationServiceImpl implements NotificationService {
                     notificationDTO
             );
         }
+    }
+
+    // New method to notify the requester about status change
+    @Transactional
+    public void notifyRequesterStatusChange(Demande demande, String status) {
+        Users user = demande.getUser();
+        String type = demande.getType().toString();
+        String message = String.format("Votre demande de %s a été %s",
+                type.toLowerCase(), status.toLowerCase());
+
+        Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setMessage(message);
+        notification.setType(type);
+        notification.setDemandeId(demande.getId());
+        notification.setRead(false);
+        notification.setTriggeredByUser(null); // No specific user triggered this
+        notificationRepository.save(notification);
+
+        // Envoyer via WebSocket
+        NotificationDTO notificationDTO = mapToDTO(notification);
+        messagingTemplate.convertAndSendToUser(
+                String.valueOf(user.getId()),
+                "/notifications",
+                notificationDTO
+        );
     }
 
     @Override

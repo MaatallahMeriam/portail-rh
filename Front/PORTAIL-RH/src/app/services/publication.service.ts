@@ -15,7 +15,7 @@ export interface PublicationDTO {
     idee?: string | null;
     topic?: string | null;
     image?: string | null;
-    averageRate?: number | null; // Changé de averageRating à averageRate
+    averageRate?: number | null;
     createdAt: string;
     titre?: string | null;
     description?: string | null;
@@ -33,6 +33,12 @@ export interface CommentDTO {
 }
 
 export interface CommentRequest {
+    userId: number;
+    publicationId: number;
+    content: string;
+}
+
+export interface CommentUpdateRequest {
     userId: number;
     publicationId: number;
     content: string;
@@ -255,6 +261,17 @@ export class PublicationService {
             return throwError(() => new Error('Le commentaire ne peut pas être vide.'));
         }
         return this.http.post<CommentDTO>(`${this.reactionApiUrl}/comment`, commentRequest, {
+            headers: this.getJsonHeaders()
+        }).pipe(
+            catchError(this.handleError)
+        );
+    }
+
+    updateComment(commentId: number, updateRequest: CommentUpdateRequest): Observable<CommentDTO> {
+        if (!updateRequest.content.trim()) {
+            return throwError(() => new Error('Le commentaire ne peut pas être vide.'));
+        }
+        return this.http.put<CommentDTO>(`${this.reactionApiUrl}/comment/${commentId}`, updateRequest, {
             headers: this.getJsonHeaders()
         }).pipe(
             catchError(this.handleError)

@@ -8,6 +8,7 @@ import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.ReactionSummaryD
 import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.IdeaRatingDTO;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.IdeaRatingRequest;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Service.ReactionService;
+import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.CommentUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +62,18 @@ public class ReactionController {
         try {
             CommentDTO commentDTO = reactionService.createComment(commentRequest);
             return new ResponseEntity<>(commentDTO, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/comment/{commentId}")
+    public ResponseEntity<CommentDTO> updateComment(
+            @PathVariable Long commentId,
+            @RequestBody CommentUpdateRequest updateRequest) {
+        try {
+            CommentDTO commentDTO = reactionService.updateComment(commentId, updateRequest);
+            return new ResponseEntity<>(commentDTO, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }

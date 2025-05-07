@@ -14,7 +14,7 @@ export class AuthService {
   private readonly INACTIVITY_DURATION = 30 * 60 * 1000; // 30 minutes
   private readonly WARNING_DURATION = 60 * 1000; // 1 minute warning
   private destroy$ = new Subject<void>();
-  private cachedUser: { id: number; nom: string } | null = null;
+  private cachedUser: { id: number; nom: string; mail?: string } | null = null;
 
   constructor(private http: HttpClient, private router: Router) {
     this.setupInactivityListener();
@@ -26,6 +26,7 @@ export class AuthService {
         if (response && response.token) {
           localStorage.setItem('token', response.token);
           this.startInactivityTimer();
+          this.cachedUser = null; // Reset cache to force re-parsing
         }
         return response;
       }),
@@ -49,6 +50,7 @@ export class AuthService {
         if (response && response.token) {
           localStorage.setItem('token', response.token);
           this.startInactivityTimer();
+          this.cachedUser = null; // Reset cache to force re-parsing
         }
         return response;
       }),
@@ -59,14 +61,41 @@ export class AuthService {
   getUserRole(): string | null {
     const token = localStorage.getItem('token');
     if (!token) {
-      console.log('No token found in localStorage'); // Debug
+      console.log('No token found in localStorage');
       return null;
     }
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log('Token payload:', payload); // Debug
+      console.log('Token payload:', payload);
       return payload.role || null;
+    } catch (e) {
+      console.error('Erreur lors du décodage du token', e);
+      return null;
+    }
+  }
+
+  getUserEmailFromToken(): string | null {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log('No token found in localStorage');
+      return null;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      console.log('Token payload:', payload);
+      const email = payload.sub || payload.email || payload.mail;
+      if (!email) {
+        console.error('Email not found in token payload');
+        return null;
+      }
+      if (this.cachedUser) {
+        this.cachedUser.mail = email;
+      } else {
+        this.cachedUser = { id: payload.id, nom: payload.nom || 'Unknown', mail: email };
+      }
+      return email;
     } catch (e) {
       console.error('Erreur lors du décodage du token', e);
       return null;
@@ -75,18 +104,18 @@ export class AuthService {
 
   getUserNameFromToken(): string | null {
     if (this.cachedUser) {
-      console.log('Returning cached user name:', this.cachedUser.nom); // Debug
+      console.log('Returning cached user name:', this.cachedUser.nom);
       return this.cachedUser.nom;
     }
     const token = localStorage.getItem('token');
     if (!token) {
-      console.log('No token found in localStorage'); // Debug
+      console.log('No token found in localStorage');
       return null;
     }
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log('Token payload:', payload); // Debug
+      console.log('Token payload:', payload);
       this.cachedUser = { id: payload.id, nom: payload.nom || payload.prenom + ' ' + payload.nom || 'Unknown' };
       return this.cachedUser.nom || null;
     } catch (e) {
@@ -101,13 +130,13 @@ export class AuthService {
     }
     const token = localStorage.getItem('token');
     if (!token) {
-      console.log('No token found in localStorage'); // Debug
+      console.log('No token found in localStorage');
       return null;
     }
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log('Token payload:', payload); // Debug
+      console.log('Token payload:', payload);
       this.cachedUser = { id: payload.id, nom: payload.nom || 'Unknown' };
       return payload.id || null;
     } catch (e) {
@@ -116,14 +145,18 @@ export class AuthService {
     }
   }
 
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
   isLoggedIn(): boolean {
     const isLoggedIn = !!localStorage.getItem('token');
-    console.log('isLoggedIn:', isLoggedIn); // Debug
+    console.log('isLoggedIn:', isLoggedIn);
     return isLoggedIn;
   }
 
   logout(): void {
-    console.log('Logging out'); // Debug
+    console.log('Logging out');
     this.cachedUser = null;
     localStorage.removeItem('token');
     this.stopInactivityTimer();
@@ -199,7 +232,7 @@ export class AuthService {
     } else {
       errorMessage = `Erreur serveur : ${error.status} - ${error.message}`;
     }
-    console.error('Error:', errorMessage); // Debug
+    console.error('Error:', errorMessage);
     return throwError(() => new Error(errorMessage));
   }
 }

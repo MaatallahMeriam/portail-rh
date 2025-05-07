@@ -71,7 +71,6 @@
     height: 50px;
     border-radius: 50%;
     object-fit: cover;
-   
     border-color: #230046;
 }
 
@@ -80,7 +79,6 @@
     color: #5b2e91;
     font-weight: 500;
     margin-top: -50px;
-    
 }
 
 .user-details .post-date {
@@ -197,7 +195,7 @@
 
 .evaluation-section h3 {
     font-size: 1.2rem;
-    color: #E5007F;;
+    color: #E5007F;
     margin-bottom: 10px;
     font-weight: 600;
 }
@@ -276,6 +274,54 @@
     margin: 5px 0;
 }
 
+.comment-actions {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.action-icon {
+    font-size: 1rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.edit-icon {
+    height: 18px;
+    width: 18px;
+    color: #5b2e91;
+}
+
+.edit-icon:hover {
+    color: #230046;
+}
+
+.delete-icon {
+    color: #E5007F;
+}
+
+.delete-icon:hover {
+    color: #b30061;
+}
+
+.edit-comment-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #5b2e91;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: #f9f9f9;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    resize: vertical;
+}
+
+.edit-comment-input:focus {
+    border-color: #230046;
+    box-shadow: 0 0 5px rgba(35, 0, 70, 0.3);
+    outline: none;
+}
+
 .comment-form {
     display: flex;
     gap: 10px;
@@ -289,13 +335,22 @@
     font-size: 0.9rem;
 }
 
+.comment-actions button,
 .comment-form button {
-    padding: 6px 13px;
+    width: 64px;         /* largeur fixe */
+    height: 24px;        /* hauteur fixe */
+    font-size: 11px;
     background-color: #230046;
     color: white;
-    border-radius: 25px;
+    border-radius: 20px;
     cursor: pointer;
+    padding: 0;          /* enlève le padding pour respecter la taille exacte */
+    overflow: hidden;    /* empêche le texte de dépasser */
+    white-space: nowrap; /* empêche les sauts de ligne */
+    text-overflow: ellipsis; /* ajoute "..." si le texte est trop long */
 }
+
+
 
 .feed::-webkit-scrollbar {
     width: 8px;

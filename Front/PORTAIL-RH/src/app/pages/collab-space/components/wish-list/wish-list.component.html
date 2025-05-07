@@ -1,0 +1,29 @@
+<div class="collab-home">
+    <app-header></app-header>
+  
+    <div class="main-content">
+      <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+      
+      <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+        <div class="wishes-header">
+          <h2>Chér(e) X, EXCELLIA team vous souhaite tout le bonheur du monde !</h2>
+        </div>
+        <div class="wishes-grid">
+          <ng-container *ngIf="(wishes$ | async) as wishes; else noWishes">
+            <div *ngFor="let wish of wishes; let i = index" class="wish-card" [ngClass]="'card-position-' + (i % 9)">
+              <div class="wish-photo">
+                <img [src]="wish.senderPhotoUrl || 'assets/icons/user-login-icon-14.png'" alt="Sender Photo" class="user-photo">
+              </div>
+              <div class="wish-details">
+                <p class="wish-name">{{ wish.senderPrenom }} {{ wish.senderNom }}</p>
+                <p class="wish-message">{{ wish.message }}</p>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noWishes>
+            <p>Aucun souhait d'anniversaire pour le moment.</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
