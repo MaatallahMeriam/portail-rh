@@ -1,0 +1,70 @@
+// Excellia Solutions Brand Colors
+$primary-color: #230046;       // Dark Purple
+$primary-light: lighten($primary-color, 20%);
+$primary-dark: darken($primary-color, 10%);
+
+$secondary-color: #F8F9FA;     // Light Gray (Off-white)
+
+$accent-color: #E5007F;        // Pink
+$accent-light: lighten($accent-color, 20%);
+$accent-dark: darken($accent-color, 10%);
+
+$gradient-start: #FF6B00;      // Orange
+$gradient-end: #ff00ea;        // Magenta
+
+// Semantic colors
+$success-color: #28a745;
+$info-color: #17a2b8;
+$warning-color: #ffc107;
+$danger-color: #dc3545;
+
+// Text colors
+$text-primary: #333333;
+$text-secondary: #666666;
+$text-placeholder: #999999;
+$text-light: #ffffff;
+
+// Background colors
+$background-light: #f9f9f9;
+$background-dark: #333333;
+$card-background: #ffffff;
+$input-background: #f5f5f5;
+
+// Border colors
+$border-color: #e0e0e0;
+$border-light: #eeeeee;
+$border-dark: #cccccc;
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-xxl: 48px;
+
+// Border radius
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 24px;
+
+// Shadows
+$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.1);
+
+// Transitions
+$transition-fast: all 0.2s ease;
+$transition-medium: all 0.3s ease;
+$transition-slow: all 0.5s ease;
+
+// Z-index
+$z-index-dropdown: 100;
+$z-index-sticky: 200;
+$z-index-fixed: 300;
+$z-index-modal-backdrop: 900;
+$z-index-modal: 1000;
+$z-index-popover: 1100;
+$z-index-tooltip: 1200;

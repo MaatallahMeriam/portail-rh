@@ -1,0 +1,27 @@
+<div class="image-modal-backdrop" (click)="closeModal()">
+    <div class="image-modal-content" (click)="stopPropagation($event)">
+      <div class="image-container" [class.zoomed]="isZoomed">
+        <div class="loading-indicator" *ngIf="isLoading">
+          <div class="spinner-large"></div>
+          <span>Chargement de l'image...</span>
+        </div>
+        
+        <img 
+          [src]="imageUrl" 
+          [alt]="'Image en plein écran'" 
+          class="modal-image"
+          [class.hidden]="isLoading"
+          (load)="onImageLoad()"
+          (click)="toggleZoom()">
+      </div>
+      
+      <div class="modal-controls">
+        <button class="modal-control-button zoom" (click)="toggleZoom()">
+          <mat-icon>{{ isZoomed ? 'zoom_out' : 'zoom_in' }}</mat-icon>
+        </button>
+        <button class="modal-control-button close" (click)="closeModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>

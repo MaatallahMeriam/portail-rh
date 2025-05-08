@@ -78,10 +78,30 @@ export class IdeeRhComponent implements OnInit {
   }
 
   getImageUrl(imagePath: string | null | undefined): string {
+    const defaultImage = 'assets/icons/user-login-icon-14.png';
+
     if (!imagePath) {
-      return 'assets/icons/user-login-icon-14.png';
+      console.warn('Image path is undefined or null');
+      return defaultImage;
     }
-    return `${this.backendBaseUrl}/${imagePath}`;
+
+    if (imagePath.startsWith(this.backendBaseUrl)) {
+      return imagePath;
+    }
+
+    const fullUrl = `${this.backendBaseUrl}/${imagePath}`;
+    console.log('Constructed image URL:', fullUrl);
+
+    const img = new Image();
+    img.onload = () => {
+      console.log('Image loaded successfully:', fullUrl);
+    };
+    img.onerror = () => {
+      console.error('Failed to load image:', fullUrl);
+    };
+    img.src = fullUrl;
+
+    return fullUrl;
   }
 
   loadIdeas(): void {
@@ -390,6 +410,6 @@ export class IdeeRhComponent implements OnInit {
   }
 
   navigateTo(ideaId: number): void {
-    this.router.navigate(['/details-idee-rh', ideaId]);
+    this.router.navigate(['/details-idee-collab', ideaId]);
   }
 }

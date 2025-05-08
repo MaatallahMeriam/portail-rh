@@ -9,8 +9,6 @@ import { Chart, DoughnutController, ArcElement, Tooltip, Legend } from "chart.js
   template: `
     <div class="widget-container">
       <div class="widget-header">
-        <h3>Taux des absences :</h3>
-        <button class="menu-button">⋮</button>
       </div>
       <div class="chart-container">
         <canvas #chartCanvas></canvas>
@@ -46,8 +44,8 @@ import { Chart, DoughnutController, ArcElement, Tooltip, Legend } from "chart.js
     .widget-header h3 {
       margin: 0;
       font-size: 16px;
-      font-weight: 600;
-      color : #56142F
+      font-weight: bold;
+      color : #E5007F;
 
     }
     

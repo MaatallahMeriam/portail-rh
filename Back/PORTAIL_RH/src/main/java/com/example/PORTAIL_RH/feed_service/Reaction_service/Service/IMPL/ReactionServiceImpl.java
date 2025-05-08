@@ -55,12 +55,18 @@ public class ReactionServiceImpl implements ReactionService {
         dto.setUserId(comment.getUser().getId());
         dto.setUserNom(comment.getUser().getNom());
         dto.setUserPrenom(comment.getUser().getPrenom());
+
+
+
         String imageUrl = comment.getUser().getImage() != null
                 ? ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/" + comment.getUser().getImage().replace("\\", "/"))
                 .toUriString()
                 : null;
         dto.setUserPhoto(imageUrl);
+
+
+
         dto.setPublicationId(comment.getPublication().getId());
         dto.setContent(comment.getContent());
         dto.setCreatedAt(comment.getCreatedAt());

@@ -1,0 +1,200 @@
+// Responsive breakpoints
+$breakpoints: (
+  'small': 576px,
+  'medium': 768px,
+  'large': 992px,
+  'xlarge': 1200px
+);
+
+@mixin respond-to($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (max-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @warn "Invalid breakpoint: #{$breakpoint}. Available breakpoints are: #{map-keys($breakpoints)}.";
+  }
+}
+
+// Flexbox mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// Typography mixins
+@mixin heading-large {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  
+  @include respond-to('medium') {
+    font-size: 1.75rem;
+  }
+  
+  @include respond-to('small') {
+    font-size: 1.5rem;
+  }
+}
+
+@mixin heading-medium {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+  
+  @include respond-to('medium') {
+    font-size: 1.25rem;
+  }
+  
+  @include respond-to('small') {
+    font-size: 1.1rem;
+  }
+}
+
+@mixin heading-small {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+  
+  @include respond-to('small') {
+    font-size: 1rem;
+  }
+}
+
+@mixin body-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  
+  @include respond-to('small') {
+    font-size: 0.9rem;
+  }
+}
+
+@mixin small-text {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  
+  @include respond-to('small') {
+    font-size: 0.8rem;
+  }
+}
+
+// Animation mixins
+@mixin fade-in($duration: 0.3s) {
+  animation: fadeIn $duration ease forwards;
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+@mixin slide-in-up($duration: 0.3s, $distance: 20px) {
+  animation: slideInUp $duration ease forwards;
+  
+  @keyframes slideInUp {
+    from { 
+      opacity: 0;
+      transform: translateY($distance);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+// Card mixins
+@mixin card-style {
+  background-color: $card-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  transition: $transition-medium;
+  
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-2px);
+  }
+}
+
+// Button mixins
+@mixin button-primary {
+  background-color: $primary-color;
+  color: white;
+  border: none;
+  border-radius: $border-radius-md;
+  padding: $spacing-sm $spacing-lg;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition-medium;
+  
+  &:hover:not(:disabled) {
+    background-color: darken($primary-color, 10%);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-secondary {
+  background-color: transparent;
+  color: $primary-color;
+  border: 1px solid $primary-color;
+  border-radius: $border-radius-md;
+  padding: $spacing-sm $spacing-lg;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition-medium;
+  
+  &:hover:not(:disabled) {
+    background-color: rgba($primary-color, 0.1);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Form mixins
+@mixin input-style {
+  width: 100%;
+  padding: $spacing-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-md;
+  transition: $transition-medium;
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+  }
+}
+
+// Utility mixins
+@mixin truncate($lines: 1) {
+  @if $lines == 1 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  } @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}

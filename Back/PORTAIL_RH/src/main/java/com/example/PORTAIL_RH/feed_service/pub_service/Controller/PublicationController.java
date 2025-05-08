@@ -61,6 +61,49 @@ public class PublicationController {
         }
     }
 
+    @PostMapping(value = "/feed/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PublicationDTO> createFeedWithDocument(
+            @RequestParam("userId") Long userId,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "media", required = false) MultipartFile media,
+            @RequestParam(value = "document", required = false) MultipartFile document) {
+        try {
+            PublicationDTO createdFeed = publicationService.createFeedWithDocument(userId, content, media, document);
+            return new ResponseEntity<>(createdFeed, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PutMapping(value = "/feed/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PublicationDTO> updateFeedWithDocument(
+            @PathVariable Long id,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "media", required = false) MultipartFile media,
+            @RequestParam(value = "document", required = false) MultipartFile document) {
+        try {
+            PublicationDTO updatedFeed = publicationService.updateFeedWithDocument(id, content, media, document);
+            return new ResponseEntity<>(updatedFeed, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping(value = "/feed/{id}/document", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<byte[]> downloadFeedDocument(@PathVariable("id") Long publicationId) {
+        try {
+            byte[] document = publicationService.downloadFeedDocument(publicationId);
+            if (document.length == 0) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=\"document\"")
+                    .body(document);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
     @GetMapping
     public ResponseEntity<List<PublicationDTO>> getAllPublications() {
         List<PublicationDTO> publications = publicationService.getAllPublications();
@@ -192,6 +235,4 @@ public class PublicationController {
         ReactionDTO createdReaction = publicationService.createReaction(reactionRequest);
         return new ResponseEntity<>(createdReaction, HttpStatus.CREATED);
     }
-
-
 }

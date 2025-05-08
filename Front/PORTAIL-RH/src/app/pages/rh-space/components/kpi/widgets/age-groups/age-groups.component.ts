@@ -36,8 +36,8 @@ import { UserService, UserDTO } from "../../../../../../services/users.service";
     .widget-header h3 {
       margin: 0;
       font-size: 16px;
-      font-weight: 600;
-      color: #56142F;
+      font-weight: bold;
+      color: #E5007F;
     }
     
     .chart-container {

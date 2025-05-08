@@ -1,159 +1,202 @@
 .collab-home {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: white;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+}
+
+.app-sidebar {
+  position: fixed;
+  left: 0;
+  top: 70px;
+  bottom: 0;
+  width: 250px;
+  background: #ffffff;
+  z-index: 100;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.feed {
+  position: fixed;
+  top: 70px;
+  bottom: 0;
+  left: 250px;
+  width: calc(100% - 250px);
+  overflow-y: auto;
+  background: white;
+  transition: all 0.3s ease;
+  padding: 24px;
+
+  &.sidebar-collapsed {
+    left: 70px;
+    width: calc(100% - 70px);
   }
-  
-  .main-content {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-    padding: 0;
+
+  &::-webkit-scrollbar {
+    width: 8px;
   }
-  
-  .app-sidebar  {
-    position: fixed;
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(86, 20, 47, 0.2);
+    border-radius: 4px;
+
+    &:hover {
+      background-color: rgba(86, 20, 47, 0.4);
+    }
+  }
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.dashboard-row, .dashboard-row2, .dashboard-row3 {
+  display: grid;
+  gap: 24px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.dashboard-row {
+  grid-template-columns: 2fr 1fr; /* Age Groups (wide) + Birthday */
+}
+
+.dashboard-row2 {
+  grid-template-columns: 1fr 1fr; /* Productivity + Top 3 Reviews */
+  margin-bottom: 24px;
+}
+
+.dashboard-row3 {
+  grid-template-columns: repeat(3, 1fr); /* Absence Rate + Onsite Work + Turnover Rate */
+  margin-bottom: 24px;
+}
+
+.dashboard-widget {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
     left: 0;
-    top: 70px;
-    bottom: 0;
-    width: 250px;
-    background: #f4f4f4;
-    z-index: 100;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #E91E63, #FF6B00);
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
-  
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &.wide {
+    grid-column: span 2;
+  }
+}
+
+// Responsive breakpoints
+@media (max-width: 1473px) {
+  .app-sidebar {
+    width: 220px;
+  }
+
   .feed {
-    position: fixed;
-    top: 70px;
-    bottom: 0;
-    left: 250px;
-    width: calc(100% - 250px);
-    overflow-y: auto;
-    background: #fff;
-    transition: all 0.3s ease-in-out;
-  
+    left: 220px;
+    width: calc(100% - 220px);
+    padding: 20px;
+
     &.sidebar-collapsed {
       left: 70px;
       width: calc(100% - 70px);
     }
   }
-  
-  .feed::-webkit-scrollbar {
+
+  .dashboard-row2 {
+    grid-template-columns: 1fr 1fr; /* Keep 2 columns for Productivity + Top 3 Reviews */
+  }
+
+  .dashboard-row3 {
+    grid-template-columns: repeat(2, 1fr); /* Reduce to 2 columns for Absence Rate + Onsite Work + Turnover */
+  }
+}
+
+@media (max-width: 1200px) {
+  .dashboard-row {
+    grid-template-columns: 1fr 1fr; /* Age Groups + Birthday */
+  }
+
+  .dashboard-widget.wide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-sidebar {
     display: none;
   }
-  
-  .feed::-webkit-scrollbar-thumb {
-    background-color: #aaa;
-    border-radius: 5px;
+
+  .feed {
+    left: 0;
+    width: 100%;
+    padding: 16px;
   }
-  
-  .feed::-webkit-scrollbar-track {
-    background: transparent;
+
+  .dashboard-row, .dashboard-row2, .dashboard-row3 {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
-  
-  @media screen and (max-width: 1473px) {
-    .app-sidebar {
-      width: 220px;
-    }
-  
-    .feed {
-      left: 220px;
-      width: calc(100% - 220px);
-  
-      &.sidebar-collapsed {
-        left: 70px;
-        width: calc(100% - 70px);
-      }
-    }
+
+  .dashboard-widget.wide {
+    grid-column: span 1;
   }
-  
-  @media screen and (max-width: 1024px) {
-    .app-sidebar {
-      width: 200px;
-    }
-  
-    .feed {
-      left: 200px;
-      width: calc(100% - 200px);
-  
-      &.sidebar-collapsed {
-        left: 70px;
-        width: calc(100% - 70px);
-      }
-    }
+}
+
+@media (max-width: 480px) {
+  .feed {
+    padding: 12px;
   }
-  
-  @media screen and (max-width: 768px) and (min-width: 481px) {
-    .app-sidebar {
-      display: none;
-    }
-  
-    .feed {
-      left: 0;
-      width: 100%;
-  
-      &.sidebar-collapsed {
-        left: 70px;
-        width: calc(100% - 70px);
-      }
-    }
-  }
-  
-  @media screen and (max-width: 480px) {
-    .app-sidebar {
-      display: none;
-    }
-  
-    .feed {
-      left: 0;
-      width: 100%;
-  
-      &.sidebar-collapsed {
-        left: 70px;
-        width: calc(100% - 70px);
-      }
-    }
-  }
-  
+
   .dashboard-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    gap: 16px;
   }
-  
-  .dashboard-row {
-    display: flex;
-    gap: 20px;
-    width: 100%;
-  }
-  
-  .dashboard-row2 {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    display: flex;
-    gap: 20px;
-    width: 100%;
-  }
-  
-  .dashboard-widget {
-    flex: 1;
-    min-width: 0;
-  }
-  
-  .wide {
-    flex: 2;
-  }
-  
-  @media (max-width: 768px) {
-    .dashboard-row {
-      flex-direction: column;
-    }
-  
-    .dashboard-row2 {
-      flex-direction: column;
-    }
-  }
+}

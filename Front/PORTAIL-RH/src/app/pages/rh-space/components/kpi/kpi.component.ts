@@ -7,14 +7,23 @@ import { OnsiteWorkComponent } from "./widgets/onsite-work/onsite-work.component
 import { BirthdayComponent } from "./widgets/birthday/birthday.component"
 import { AgeGroupsComponent } from "./widgets/age-groups/age-groups.component"
 import { TurnoverComponent } from "./widgets/turnover/turnover.component"
+import { TopUsersWithReviewsComponent } from "./widgets/reviews/top-users-with-reviews.component";
+import { ProductivityComponent } from "./widgets/productivity/productivity.component";
+
 @Component({
   selector: 'app-kpi',
   standalone: true,
-  imports: [HeaderComponent, AbsenceRateComponent,
+  imports: [
+    HeaderComponent,
+    AbsenceRateComponent,
     OnsiteWorkComponent,
+    TopUsersWithReviewsComponent,
     BirthdayComponent,
     AgeGroupsComponent,
-    TurnoverComponent, SidebarComponent],
+    TurnoverComponent,
+    ProductivityComponent,
+    SidebarComponent
+  ],
   templateUrl: './kpi.component.html',
   styleUrl: './kpi.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

@@ -5,7 +5,7 @@
         <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
         
         <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
-            <app-feed></app-feed>
+            <app-feed [isSidebarCollapsed]="isSidebarCollapsed"></app-feed>
         </div>
 
         <app-right-side-manager></app-right-side-manager>

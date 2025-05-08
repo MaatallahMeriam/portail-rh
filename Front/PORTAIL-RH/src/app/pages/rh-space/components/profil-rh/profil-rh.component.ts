@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { SidebarComponent } from '../sidebar-RH/sidebar.component';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
-import { UserService, UserDTO } from '../../../../services/users.service';
+import { UserService, UserDTO ,UserUpdateBasicDTO} from '../../../../services/users.service';
 import { AuthService } from '../../../../shared/services/auth.service';
 import { FileService } from '../../../../services/file.service'; // Service pour gérer les fichiers
 import { DemandeService, UserDemandeDetailsDTO } from '../../../../services/demande.service'; // Service pour gérer les demandes
@@ -47,7 +47,7 @@ export class ProfilRhComponent implements OnInit {
   newProfilePhotoFile: File | null = null;
   userId: number | null = null;
   dossierId: number | null = null;
-  editingField: keyof UserDTO | null = null;
+  editingField: keyof UserUpdateBasicDTO | null = null; // Updated to keyof UserUpdateBasicDTO
   editingValue: string = '';
   showSaveAnimation: boolean = false;
   activeTab: 'personal' | 'dossier' | 'history' = 'personal';
@@ -95,7 +95,7 @@ export class ProfilRhComponent implements OnInit {
           image: userData.image || ''
         };
         this.dossierId = userData.dossierId || null;
-        this.profilePicture = this.user.image || this.profilePicture;
+        this.updateProfilePicture(userData.image);
       },
       error: (err) => {
         console.error('Error fetching user data:', err);
@@ -124,6 +124,38 @@ export class ProfilRhComponent implements OnInit {
     });
   }
 
+  private updateProfilePicture(imagePath: string | null | undefined): void {
+    const url = this.getImageUrl(imagePath);
+    this.profilePicture = url;
+
+    const img = new Image();
+    img.onload = () => {
+      console.log('Image loaded successfully:', url);
+    };
+    img.onerror = () => {
+      console.error('Failed to load image:', url);
+      this.profilePicture = 'assets/icons/user-login-icon-14.png';
+      Swal.fire({
+        icon: 'warning',
+        title: 'Erreur',
+        text: 'Impossible de charger l\'image de profil. Utilisation de l\'image par défaut.',
+      });
+    };
+    img.src = url;
+  }
+
+  private getImageUrl(imagePath: string | null | undefined): string {
+    if (!imagePath) {
+      return 'assets/icons/user-login-icon-14.png';
+    }
+
+    if (imagePath.startsWith('http://localhost:8080/')) {
+      return imagePath;
+    }
+
+    return `http://localhost:8080/${imagePath.replace(/\\/g, '/')}`;
+  }
+
   triggerFileInput(): void {
     this.fileInput.nativeElement.click();
   }
@@ -141,24 +173,30 @@ export class ProfilRhComponent implements OnInit {
         this.userService.uploadProfilePhoto(this.userId!, file).subscribe({
           next: (updatedUser: UserDTO) => {
             this.user = updatedUser;
-            this.profilePicture = updatedUser.image || this.profilePicture;
+            this.updateProfilePicture(updatedUser.image);
+            this.showSaveAnimation = false;
+            Swal.fire({
+              icon: 'success',
+              title: 'Succès',
+              text: 'Photo de profil mise à jour avec succès.',
+            });
           },
           error: (err) => {
             console.error('Error uploading profile photo:', err);
             this.showSaveAnimation = false;
+            this.updateProfilePicture(this.user.image);
             Swal.fire({
               icon: 'error',
               title: 'Erreur',
               text: 'Impossible de mettre à jour la photo de profil.',
             });
-            this.profilePicture = this.user.image || this.profilePicture;
           }
         });
       };
       reader.readAsDataURL(file);
     } else {
       this.newProfilePhotoFile = null;
-      this.profilePicture = this.user.image || this.profilePicture;
+      this.updateProfilePicture(this.user.image);
     }
   }
 
@@ -176,7 +214,18 @@ export class ProfilRhComponent implements OnInit {
   }
 
   editField(fieldName: keyof UserDTO): void {
-    this.editingField = fieldName;
+    // Only allow editing of fields that exist in UserUpdateBasicDTO
+    const validFields: (keyof UserUpdateBasicDTO)[] = ['userName', 'nom', 'prenom', 'mail', 'numero', 'dateNaissance'];
+    if (!validFields.includes(fieldName as keyof UserUpdateBasicDTO)) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Mise à jour non disponible',
+        text: `La modification de ${this.fieldDisplayName(fieldName)} n\'est pas prise en charge via cet écran. Veuillez contacter un administrateur.`,
+      });
+      return;
+    }
+
+    this.editingField = fieldName as keyof UserUpdateBasicDTO;
     if (fieldName === 'dateNaissance') {
       if (this.user?.dateNaissance) {
         const [day, month, year] = this.user.dateNaissance.split('/');
@@ -192,7 +241,7 @@ export class ProfilRhComponent implements OnInit {
   saveEdit(): void {
     if (!this.user || !this.editingField || !this.userId) return;
 
-    let updateData: Partial<UserDTO> = {};
+    const updateData: UserUpdateBasicDTO = {};
 
     if (this.editingField === 'dateNaissance') {
       try {
@@ -221,9 +270,10 @@ export class ProfilRhComponent implements OnInit {
       updateData[this.editingField] = this.editingValue;
     }
 
-    this.userService.updateUser(this.userId, updateData).subscribe({
+    this.userService.updateUserBasicInfo(this.userId, updateData).subscribe({
       next: (updatedUser) => {
         this.user = updatedUser;
+        this.updateProfilePicture(updatedUser.image);
         this.editingField = null;
         this.editingValue = '';
         Swal.fire({

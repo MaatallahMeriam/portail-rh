@@ -24,6 +24,7 @@ import com.example.PORTAIL_RH.user_service.user_service.Repo.UsersRepository;
 import com.example.PORTAIL_RH.feed_service.pub_service.Service.PublicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Date;
 
@@ -39,8 +40,9 @@ public class PublicationServiceImpl implements PublicationService {
     @Autowired
     private UsersRepository usersRepository;
 
-    private static final String UPLOAD_DIR = "uploads/news/";
-    private static final String UPLOAD_DIR_IDEE = "uploads/idee/";
+    private static final String UPLOAD_DIR = "Uploads/news/"; // Adjusted to match WebConfig case
+    private static final String UPLOAD_DIR_IDEE = "Uploads/idee/";
+    private static final String UPLOAD_DIR_MEDIA = "Uploads/feed/";
 
     private PublicationDTO mapToDTO(Publication publication) {
         PublicationDTO dto = new PublicationDTO();
@@ -49,19 +51,47 @@ public class PublicationServiceImpl implements PublicationService {
         dto.setUserId(publication.getUser().getId());
         dto.setUserNom(publication.getUser().getNom());
         dto.setUserPrenom(publication.getUser().getPrenom());
-        dto.setUserPhoto(publication.getUser().getImage());
+
+        // Map user photo URL
+        String userPhotoUrl = publication.getUser().getImage() != null
+                ? ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/" + publication.getUser().getImage().replace("\\", "/"))
+                .toUriString()
+                : null;
+        dto.setUserPhoto(userPhotoUrl);
+
         dto.setCreatedAt(publication.getCreatedAt());
 
         if (publication instanceof FeedPost feed) {
-            dto.setMediaUrl(feed.getMediaUrl());
+            String mediaUrl = feed.getMediaUrl() != null
+                    ? ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/Uploads/feed/" + feed.getMediaUrl().substring(UPLOAD_DIR_MEDIA.length()).replace("\\", "/"))
+                    .toUriString()
+                    : null;
+            dto.setMediaUrl(mediaUrl);
             dto.setContent(feed.getContent());
+            if (feed.getDocument() != null) {
+                dto.setDocumentDownloadUrl(ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path("/api/publications/feed/" + publication.getId() + "/document")
+                        .toUriString());
+            }
         } else if (publication instanceof NewsPost news) {
-            dto.setImageUrl(news.getImageUrl());
+            String imageUrl = news.getImageUrl() != null
+                    ? ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/Uploads/news/" + news.getImageUrl().substring(UPLOAD_DIR.length()).replace("\\", "/"))
+                    .toUriString()
+                    : null;
+            dto.setImageUrl(imageUrl);
             dto.setTitre(news.getTitre());
             dto.setDescription(news.getDescription());
         } else if (publication instanceof IdeeBoitePost idee) {
+            String imageUrl = idee.getImage() != null
+                    ? ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/Uploads/idee/" + idee.getImage().substring(UPLOAD_DIR_IDEE.length()).replace("\\", "/"))
+                    .toUriString()
+                    : null;
+            dto.setImage(imageUrl);
             dto.setIdee(idee.getIdee());
-            dto.setImage(idee.getImage());
             dto.setTopic(idee.getTopic());
             dto.setAverageRate(idee.getAverageRate());
         }
@@ -81,28 +111,22 @@ public class PublicationServiceImpl implements PublicationService {
     @Override
     public PublicationDTO createNewsWithImage(MultipartFile image, String titre, String description, Long userId) {
         try {
-            // Vérifier l'utilisateur
             Users user = usersRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Générer un nom de fichier unique
             String uniqueFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
             Path filePath = Paths.get(UPLOAD_DIR + uniqueFileName);
-
-            // Créer le dossier s'il n'existe pas et sauvegarder l'image
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, image.getBytes());
 
-            // Créer une nouvelle NewsPost
             NewsPost news = new NewsPost();
-            news.setImageUrl(filePath.toString());
+            news.setImageUrl(uniqueFileName); // Store only the filename
             news.setTitre(titre);
             news.setDescription(description);
             news.setUser(user);
             news.setType(Publication.PublicationType.NEWS);
             news.setCreatedAt(new Date());
 
-            // Sauvegarder la news
             Publication savedNews = publicationRepository.save(news);
             user.addPublication(savedNews);
             usersRepository.save(user);
@@ -116,28 +140,22 @@ public class PublicationServiceImpl implements PublicationService {
     @Override
     public PublicationDTO createIdeeBoiteWithImage(MultipartFile image, String idee, String topic, Long userId) {
         try {
-            // Vérifier l'utilisateur
             Users user = usersRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Générer un nom de fichier unique
             String uniqueFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
             Path filePath = Paths.get(UPLOAD_DIR_IDEE + uniqueFileName);
-
-            // Créer le dossier s'il n'existe pas et sauvegarder l'image
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, image.getBytes());
 
-            // Créer une nouvelle IdeeBoitePost
             IdeeBoitePost ideePost = new IdeeBoitePost();
-            ideePost.setImage(filePath.toString());
+            ideePost.setImage(uniqueFileName);
             ideePost.setIdee(idee);
             ideePost.setTopic(topic);
             ideePost.setUser(user);
             ideePost.setType(Publication.PublicationType.BOITE_IDEE);
             ideePost.setCreatedAt(new Date());
 
-            // Sauvegarder l'idée
             Publication savedIdee = publicationRepository.save(ideePost);
             user.addPublication(savedIdee);
             usersRepository.save(user);
@@ -286,7 +304,7 @@ public class PublicationServiceImpl implements PublicationService {
                 Path filePath = Paths.get(UPLOAD_DIR + uniqueFileName);
                 Files.createDirectories(filePath.getParent());
                 Files.write(filePath, image.getBytes());
-                news.setImageUrl(filePath.toString());
+                news.setImageUrl(uniqueFileName);
             }
 
             Publication updatedPublication = publicationRepository.save(news);
@@ -356,6 +374,40 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     @Override
+    public PublicationDTO createFeedWithDocument(Long userId, String content, MultipartFile media, MultipartFile document) {
+        try {
+            Users user = usersRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            FeedPost feed = new FeedPost();
+            feed.setContent(content);
+            feed.setUser(user);
+            feed.setType(Publication.PublicationType.FEED);
+            feed.setCreatedAt(new Date());
+
+            if (media != null && !media.isEmpty()) {
+                String uniqueFileName = UUID.randomUUID() + "_" + media.getOriginalFilename();
+                Path filePath = Paths.get(UPLOAD_DIR_MEDIA + uniqueFileName);
+                Files.createDirectories(filePath.getParent());
+                Files.write(filePath, media.getBytes());
+                feed.setMediaUrl(uniqueFileName);
+            }
+
+            if (document != null && !document.isEmpty()) {
+                feed.setDocument(document.getBytes());
+            }
+
+            Publication savedFeed = publicationRepository.save(feed);
+            user.addPublication(savedFeed);
+            usersRepository.save(user);
+
+            return mapToDTO(savedFeed);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la création du FeedPost avec document", e);
+        }
+    }
+
+    @Override
     public PublicationDTO updateFeed(Long id, PublicationRequest publicationRequest) {
         Publication publication = publicationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Feed not found"));
@@ -370,8 +422,52 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     @Override
+    public PublicationDTO updateFeedWithDocument(Long id, String content, MultipartFile media, MultipartFile document) {
+        try {
+            Publication publication = publicationRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Feed not found"));
+            if (!(publication instanceof FeedPost)) {
+                throw new IllegalArgumentException("Publication is not a FeedPost");
+            }
+            FeedPost feed = (FeedPost) publication;
+
+            if (content != null) {
+                feed.setContent(content);
+            }
+
+            if (media != null && !media.isEmpty()) {
+                String uniqueFileName = UUID.randomUUID() + "_" + media.getOriginalFilename();
+                Path filePath = Paths.get(UPLOAD_DIR_MEDIA + uniqueFileName);
+                Files.createDirectories(filePath.getParent());
+                Files.write(filePath, media.getBytes());
+                feed.setMediaUrl(uniqueFileName);
+            }
+
+            if (document != null && !document.isEmpty()) {
+                feed.setDocument(document.getBytes());
+            }
+
+            Publication updatedPublication = publicationRepository.save(feed);
+            return mapToDTO(updatedPublication);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la mise à jour du FeedPost avec document", e);
+        }
+    }
+
+    @Override
     public void deleteFeed(Long id) {
         deletePublication(id);
+    }
+
+    @Override
+    public byte[] downloadFeedDocument(Long publicationId) {
+        Publication publication = publicationRepository.findById(publicationId)
+                .orElseThrow(() -> new RuntimeException("FeedPost not found"));
+        if (!(publication instanceof FeedPost)) {
+            throw new IllegalArgumentException("Publication is not a FeedPost");
+        }
+        FeedPost feed = (FeedPost) publication;
+        return feed.getDocument() != null ? feed.getDocument() : new byte[0];
     }
 
     @Override

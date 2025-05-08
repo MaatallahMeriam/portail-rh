@@ -31,21 +31,23 @@
   }
   
   .feed {
-    position: fixed;
-    top: 70px;
-    left: 250px;
-    right: 250px;
-    bottom: 0;
-    overflow-y: auto;
-    max-width: 1050px;
+    position: fixed; 
+    top: 70px; 
+    left: 240px; 
+    right: 250px; 
+    bottom: 0; 
+    overflow-y: auto; 
+    max-width: 1050px; 
     background: #fff;
-    transition: all 0.3s ease-in-out;
-  
+    transition: all 0.3s ease-in-out; // Smooth transition for changes
+
+
     &.sidebar-collapsed {
-      left: 70px;
-      right: 250px;
-      max-width: calc(100% - 320px);
+    left: 70px; 
+    right: 240px; 
+    max-width: 1300px; 
     }
+
   
     &::-webkit-scrollbar {
       display: none;

@@ -45,8 +45,6 @@ export class GestionNewsComponent {
   searchText: string = '';
   isSidebarCollapsed = false;
 
-  private backendBaseUrl = 'http://localhost:8080';
-
   customOptions: any = {
     loop: true,
     autoplay: true,
@@ -81,13 +79,37 @@ export class GestionNewsComponent {
     this.loadNews();
   }
 
-  getImageUrl(imagePath: string): string {
-    return `${this.backendBaseUrl}/${imagePath}`;
+  getImageUrl(imagePath: string | undefined): string {
+    const defaultImage = 'assets/images/news-placeholder.jpg';
+
+    if (!imagePath) {
+      console.warn('Image path is undefined or null');
+      return defaultImage;
+    }
+
+    if (imagePath.startsWith('http://localhost:8080/')) {
+      return imagePath;
+    }
+
+    const fullUrl = `http://localhost:8080/Uploads/news/${imagePath.replace(/\\/g, '/')}`;
+    console.log('Constructed image URL:', fullUrl);
+
+    const img = new Image();
+    img.onload = () => {
+      console.log('Image loaded successfully:', fullUrl);
+    };
+    img.onerror = () => {
+      console.error('Failed to load image:', fullUrl);
+    };
+    img.src = fullUrl;
+
+    return fullUrl;
   }
 
   loadNews() {
     this.newsService.getAllNews().subscribe({
       next: (news) => {
+        console.log('Loaded news:', news); // Debug log
         this.News = news;
         this.filteredNews = [...news];
       },

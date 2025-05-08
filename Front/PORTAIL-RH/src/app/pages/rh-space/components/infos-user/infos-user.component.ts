@@ -5,7 +5,7 @@ import { SidebarComponent } from '../sidebar-RH/sidebar.component';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
 import { RightSidebarComponent } from '../../../../shared/components/right-sidebar/right-sidebar.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserService, UserDTO } from '../../../../services/users.service';
+import { UserService, UserDTO, UserUpdateFullDTO } from '../../../../services/users.service';
 import { FileService } from '../../../../services/file.service';
 import { MatIconModule } from '@angular/material/icon';
 import html2canvas from 'html2canvas';
@@ -30,7 +30,7 @@ export class InfosUserComponent implements OnInit {
   userId: number | null = null;
   dossierId: number | null = null;
   showBadgeMenu = false;
-  editingField: keyof UserDTO | null = null;
+  editingField: keyof UserUpdateFullDTO | null = null; // Updated to keyof UserUpdateFullDTO
   editingValue: string = '';
   isSidebarCollapsed = false;
 
@@ -49,9 +49,11 @@ export class InfosUserComponent implements OnInit {
       }
     });
   }
+
   onSidebarStateChange(isCollapsed: boolean): void {
     this.isSidebarCollapsed = isCollapsed;
   }
+
   loadUserDetails(userId: number): void {
     this.userService.getUserById(userId).subscribe({
       next: (user: UserDTO) => {
@@ -145,11 +147,20 @@ export class InfosUserComponent implements OnInit {
   }
 
   editField(fieldName: keyof UserDTO): void {
-    this.editingField = fieldName;
+    const validFields: (keyof UserUpdateFullDTO)[] = ['userName', 'nom', 'prenom', 'mail', 'numero', 'dateNaissance', 'poste', 'departement', 'role'];
+    if (!validFields.includes(fieldName as keyof UserUpdateFullDTO)) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Mise à jour non disponible',
+        text: `La modification de ${this.fieldDisplayName(fieldName)} n\'est pas prise en charge via cet écran.`,
+      });
+      return;
+    }
+
+    this.editingField = fieldName as keyof UserUpdateFullDTO;
     if (fieldName === 'active') {
       this.editingValue = this.user?.active ? 'true' : 'false';
     } else if (fieldName === 'dateNaissance') {
-      // Convert DD/MM/YYYY to YYYY-MM-DD for the date input
       if (this.user?.dateNaissance) {
         const [day, month, year] = this.user.dateNaissance.split('/');
         this.editingValue = `${year}-${month}-${day}`;
@@ -164,11 +175,9 @@ export class InfosUserComponent implements OnInit {
   saveEdit(): void {
     if (!this.user || !this.editingField || !this.userId) return;
 
-    let updateData: Partial<UserDTO> = {};
+    const updateData: UserUpdateFullDTO = {};
 
-    if (this.editingField === 'active') {
-      updateData[this.editingField] = this.editingValue === 'true';
-    } else if (this.editingField === 'dateNaissance') {
+    if (this.editingField === 'dateNaissance') {
       try {
         const date = new Date(this.editingValue);
         if (isNaN(date.getTime())) {
@@ -179,7 +188,6 @@ export class InfosUserComponent implements OnInit {
           });
           return;
         }
-        // Convert back to DD/MM/YYYY format for the backend
         const day = date.getDate().toString().padStart(2, '0');
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const year = date.getFullYear();
@@ -196,7 +204,7 @@ export class InfosUserComponent implements OnInit {
       updateData[this.editingField] = this.editingValue;
     }
 
-    this.userService.updateUser(this.userId, updateData).subscribe({
+    this.userService.updateUserFullInfo(this.userId, updateData).subscribe({
       next: (updatedUser) => {
         this.user = updatedUser;
         this.editingField = null;

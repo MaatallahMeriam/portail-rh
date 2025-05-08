@@ -1,25 +1,25 @@
 <div class="collab-home">
-    <app-header></app-header>
+  <app-header></app-header>
 
-    <div class="main-content">
-        <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+  <div class="main-content">
+    <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
 
-          <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
-            <div class="dashboard-container">
-                <div class="dashboard-row">
-                  <app-age-groups class="dashboard-widget wide"></app-age-groups>
-                  
-                  <app-birthday class="dashboard-widget"></app-birthday>
-                </div>
-                <div class="dashboard-row2">
-                  <app-absence-rate class="dashboard-widget"></app-absence-rate>
-                  <app-onsite-work class="dashboard-widget"></app-onsite-work>
-                  <app-turnover class="dashboard-widget"></app-turnover>
-                </div>
-              </div>
-
-              
-
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <div class="dashboard-container">
+        <div class="dashboard-row">
+          <app-age-groups class="dashboard-widget "></app-age-groups>
+          <app-birthday class="dashboard-widget"></app-birthday>
         </div>
+        <div class="dashboard-row2">
+          <app-productivity class="dashboard-widget"></app-productivity>
+          <app-top-users-with-reviews class="dashboard-widget"></app-top-users-with-reviews>
+        </div>
+        <div class="dashboard-row3">
+          <app-absence-rate class="dashboard-widget"></app-absence-rate>
+          <app-onsite-work class="dashboard-widget"></app-onsite-work>
+          <app-turnover class="dashboard-widget"></app-turnover>
+        </div>
+      </div>
     </div>
+  </div>
 </div>

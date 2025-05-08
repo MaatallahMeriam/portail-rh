@@ -5,6 +5,8 @@ import com.example.PORTAIL_RH.user_service.user_service.DTO.BirthdayWishDTO;
 import com.example.PORTAIL_RH.user_service.user_service.DTO.UsersDTO;
 import com.example.PORTAIL_RH.user_service.dossier_service.Entity.DossierUser;
 import com.example.PORTAIL_RH.user_service.dossier_service.DTO.ResponseDossier;
+import com.example.PORTAIL_RH.user_service.user_service.Entity.UserUpdateBasicDTO;
+import com.example.PORTAIL_RH.user_service.user_service.Entity.UserUpdateFullDTO;
 import com.example.PORTAIL_RH.user_service.user_service.Service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,23 @@ public class UsersController {
 
     @Autowired
     private UsersService usersService;
+
+
+    @PutMapping("/{id}/update-basic")
+    public ResponseEntity<UsersDTO> updateUserBasicInfo(
+            @PathVariable Long id,
+            @RequestBody UserUpdateBasicDTO dto) {
+        UsersDTO updatedUser = usersService.updateUserBasicInfo(id, dto);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/update-full")
+    public ResponseEntity<UsersDTO> updateUserFullInfo(
+            @PathVariable Long id,
+            @RequestBody UserUpdateFullDTO dto) {
+        UsersDTO updatedUser = usersService.updateUserFullInfo(id, dto);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
 
     @GetMapping("/get")
     public ResponseEntity<List<UsersDTO>> getAllUsers() {

@@ -1,51 +1,50 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { UserService, BirthdayUser } from "../../../../../../services/users.service";
-
+import { MatIconModule } from "@angular/material/icon";
 import Swal from 'sweetalert2';
 
 @Component({
   selector: "app-birthday",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   template: `
     <div class="widget-container">
-  <div class="widget-header">
-    <h3>Anniversaire :</h3>
-    <button class="menu-button">⋮</button>
-  </div>
-  <div class="birthday-content">
-    @if (todaysBirthday) {
-      <div class="featured-user">
-        <img [src]="todaysBirthday.avatar" [alt]="'Photo de ' + todaysBirthday.fullName" class="featured-avatar">
-        <div class="featured-info">
-          <div class="user-name">{{ todaysBirthday.fullName }}</div>
-          <button class="birthday-button" (click)="wishHappyBirthday(todaysBirthday.id)">
-            Souhaitez lui un joyeux anniversaire !
-          </button>
-        </div>
+      <div class="widget-header">
+        <h3>Anniversaires </h3>
       </div>
-    }
-    @if (upcomingBirthdays.length > 0) {
-      <div class="upcoming-birthdays">
-        @for (user of upcomingBirthdays; track user.id) {
-          <div class="upcoming-user">
-            <img [src]="user.avatar" [alt]="'Photo de ' + user.fullName" class="upcoming-avatar">
-            <div class="upcoming-info">
-              <div class="user-name">{{ user.fullName }}</div>
-              <div class="user-birthdate">date d'anniversaire : {{ user.birthdate }}</div>
+      <div class="birthday-content">
+        @if (todaysBirthday) {
+          <div class="featured-user">
+            <img [src]="todaysBirthday.avatar" [alt]="'Photo de ' + todaysBirthday.fullName" class="featured-avatar">
+            <div class="featured-info">
+              <div class="user-name">{{ todaysBirthday.fullName }} <mat-icon>cake</mat-icon></div>
+              <button class="birthday-button" (click)="wishHappyBirthday(todaysBirthday.id)">
+                Souhaitez lui un joyeux anniversaire !
+              </button>
             </div>
           </div>
         }
+        @if (upcomingBirthdays.length > 0) {
+          <div class="upcoming-birthdays">
+            @for (user of upcomingBirthdays; track user.id) {
+              <div class="upcoming-user">
+                <img [src]="user.avatar" [alt]="'Photo de ' + user.fullName" class="upcoming-avatar">
+                <div class="upcoming-info">
+                  <div class="user-name">{{ user.fullName }} <mat-icon>cake</mat-icon></div>
+                  <div class="user-birthdate">Date d'anniversaire : {{ user.birthdate }} (dans {{ user.daysUntilBirthday }} jours)</div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+        @if (!todaysBirthday && upcomingBirthdays.length === 0) {
+          <div class="no-birthdays">
+            Aucun anniversaire à venir pour le moment.
+          </div>
+        }
       </div>
-    }
-    @if (!todaysBirthday && upcomingBirthdays.length === 0) {
-      <div class="no-birthdays">
-        Aucun anniversaire à venir pour le moment.
-      </div>
-    }
-  </div>
-</div>
+    </div>
   `,
   styles: [`
     .widget-container {
@@ -65,15 +64,8 @@ import Swal from 'sweetalert2';
     .widget-header h3 {
       margin: 0;
       font-size: 16px;
-      font-weight: 600;
-      color: #56142F;
-    }
-    
-    .menu-button {
-      background: none;
-      border: none;
-      font-size: 20px;
-      cursor: pointer;
+      font-weight: bold;
+      color: #E5007F;
     }
     
     .birthday-content {
@@ -103,6 +95,14 @@ import Swal from 'sweetalert2';
     
     .user-name {
       font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .user-name mat-icon {
+      color: #F5AF06;
+      font-size: 18px;
     }
     
     .birthday-button {
@@ -118,7 +118,7 @@ import Swal from 'sweetalert2';
     .upcoming-birthdays {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 15px;
     }
     
     .upcoming-user {
@@ -128,10 +128,12 @@ import Swal from 'sweetalert2';
     }
     
     .upcoming-avatar {
-      width: 40px;
-      height: 40px;
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
       object-fit: cover;
+      border: 2px solid #F5AF06;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     
     .upcoming-info {
@@ -144,12 +146,28 @@ import Swal from 'sweetalert2';
       color: #666;
     }
 
-          .todays-birthdays {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        margin-bottom: 15px;
-      }
+    .todays-birthdays {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .upcoming-info .user-name {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .upcoming-info .user-name mat-icon {
+      color: #F5AF06;
+      font-size: 18px;
+    }
+    
+    .no-birthdays {
+      text-align: center;
+      color: #666;
+    }
   `],
 })
 export class BirthdayComponent implements OnInit {

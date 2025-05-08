@@ -19,9 +19,8 @@ import { HeaderComponent } from '../../shared/components/header/header.component
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class CollabSpaceComponent {
-  isSidebarCollapsed = false; // Track sidebar state
+  isSidebarCollapsed = false; 
 
-  // Update state when sidebar emits a change
   onSidebarStateChange(isCollapsed: boolean) {
     this.isSidebarCollapsed = isCollapsed;
   }

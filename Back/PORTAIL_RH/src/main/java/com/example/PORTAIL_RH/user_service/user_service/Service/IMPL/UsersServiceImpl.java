@@ -8,6 +8,8 @@ import com.example.PORTAIL_RH.user_service.user_service.DTO.BirthdayWishDTO;
 import com.example.PORTAIL_RH.user_service.user_service.DTO.UsersDTO;
 import com.example.PORTAIL_RH.user_service.equipe_service.Entity.Equipe;
 import com.example.PORTAIL_RH.user_service.user_service.Entity.BirthdayWish;
+import com.example.PORTAIL_RH.user_service.user_service.Entity.UserUpdateBasicDTO;
+import com.example.PORTAIL_RH.user_service.user_service.Entity.UserUpdateFullDTO;
 import com.example.PORTAIL_RH.user_service.user_service.Entity.Users;
 import com.example.PORTAIL_RH.user_service.dossier_service.Entity.DossierUser;
 import com.example.PORTAIL_RH.user_service.dossier_service.DTO.ResponseDossier;
@@ -84,6 +86,67 @@ public class UsersServiceImpl implements UsersService {
 
     @Autowired
     private BirthdayWishRepository birthdayWishRepository;
+
+
+    @Override
+    public UsersDTO updateUserFullInfo(Long id, UserUpdateFullDTO dto) {
+        Users user = usersRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Champs communs
+        if (dto.getUserName() != null) user.setUserName(dto.getUserName());
+        if (dto.getNom() != null) user.setNom(dto.getNom());
+        if (dto.getPrenom() != null) user.setPrenom(dto.getPrenom());
+        if (dto.getAdresse() != null) user.setAdresse(dto.getAdresse());
+
+        if (dto.getMail() != null) user.setMail(dto.getMail());
+        if (dto.getNumero() != null) user.setNumero(dto.getNumero());
+        if (dto.getDateNaissance() != null) {
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                user.setDateNaissance(dateFormat.parse(dto.getDateNaissance()));
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid date format for dateNaissance. Expected format: dd/MM/yyyy");
+            }
+        }
+
+        // Champs supplémentaires
+        if (dto.getPoste() != null) user.setPoste(dto.getPoste());
+        if (dto.getDepartement() != null) user.setDepartement(dto.getDepartement());
+        if (dto.getRole() != null) user.setRole(Users.Role.valueOf(dto.getRole()));
+
+        Users updatedUser = usersRepository.save(user);
+        return mapToDTO(updatedUser);
+    }
+
+    @Override
+    public UsersDTO updateUserBasicInfo(Long id, UserUpdateBasicDTO dto) {
+        Users user = usersRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (dto.getUserName() != null) user.setUserName(dto.getUserName());
+        if (dto.getNom() != null) user.setNom(dto.getNom());
+        if (dto.getPrenom() != null) user.setPrenom(dto.getPrenom());
+        if (dto.getMail() != null) user.setMail(dto.getMail());
+        if (dto.getNumero() != null) user.setNumero(dto.getNumero());
+        if (dto.getAdresse() != null) user.setAdresse(dto.getAdresse());
+
+
+        if (dto.getDateNaissance() != null) {
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                user.setDateNaissance(dateFormat.parse(dto.getDateNaissance()));
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid date format for dateNaissance. Expected format: dd/MM/yyyy");
+            }
+        }
+
+        Users updatedUser = usersRepository.save(user);
+        return mapToDTO(updatedUser);
+    }
+
+
+
 
     @Override
     public UsersDTO mapToDTO(Users user) {

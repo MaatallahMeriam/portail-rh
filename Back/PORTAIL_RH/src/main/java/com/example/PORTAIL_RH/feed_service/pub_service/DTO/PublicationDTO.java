@@ -25,4 +25,5 @@ public class PublicationDTO {
     private String image;
     private String topic;
     private Integer averageRate;
+    private String documentDownloadUrl; // New field for document download URL
 }

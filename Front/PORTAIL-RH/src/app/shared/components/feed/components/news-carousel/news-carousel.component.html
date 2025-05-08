@@ -1,0 +1,40 @@
+<div class="news-carousel-container">
+  <div class="section-header">
+    <h2>Actualités</h2>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="carousel-wrapper">
+    <ng-container *ngIf="news && news.length > 0; else noNewsTemplate">
+      <owl-carousel-o [options]="customOptions">
+        <ng-container *ngFor="let newsItem of news">
+          <ng-template carouselSlide>
+            <div class="news-card">
+              <div class="news-image-container">
+                <img [src]="getImageUrl(newsItem.imageUrl)" [alt]="newsItem.titre" class="news-image">
+                <div class="news-badge">Nouveauté</div>
+              </div>
+              <div class="news-content">
+                <h3 class="news-title">{{ newsItem.titre }}</h3>
+                <p class="news-description" *ngIf="expandedNews[newsItem.id || 0]">
+                  {{ newsItem.description }}
+                </p>
+                <button class="news-read-more" (click)="toggleDescription(newsItem.id || 0)">
+                  Lire plus
+                  <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </div>
+          </ng-template>
+        </ng-container>
+      </owl-carousel-o>
+    </ng-container>
+    
+    <ng-template #noNewsTemplate>
+      <div class="no-news">
+        <mat-icon>info</mat-icon>
+        <p>Aucune actualité disponible pour le moment.</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

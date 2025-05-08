@@ -1,0 +1,237 @@
+@import '../../../../styles/variables';
+@import '../../../../styles/mixins';
+
+.news-carousel-container {
+  margin-bottom: $spacing-lg;
+}
+
+.section-header {
+  margin-bottom: $spacing-md;
+  
+  h2 {
+    color: $primary-color;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: $spacing-xs;
+    position: relative;
+  }
+  
+  .section-divider {
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(to right, $primary-color, #F5AF06, #E5007F);
+    border-radius: 2px;
+  }
+}
+
+.carousel-wrapper {
+  position: relative;
+  border-radius: $border-radius-lg;
+}
+
+.news-card {
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+  background-color: $card-background;
+  box-shadow: $shadow-md;
+  margin-bottom: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: $shadow-lg;
+    
+    .news-image {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.news-image-container {
+  position: relative;
+  height: 120px;
+  overflow: hidden;
+}
+
+.news-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.news-badge {
+  position: absolute;
+  top: $spacing-sm;
+  right: $spacing-sm;
+  background: $accent-color;
+  color: white;
+  padding: 4px 10px;
+  border-radius: $border-radius-sm;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: $shadow-sm;
+}
+
+.news-content {
+  padding: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.news-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: $spacing-sm;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+}
+
+.news-description {
+  color: $text-secondary;
+  font-size: 0.9rem;
+  margin-bottom: $spacing-md;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+.news-read-more {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: $primary-color;
+  font-weight: 500;
+  font-size: 0.9rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: color 0.3s ease;
+  
+  mat-icon {
+    font-size: 1rem;
+    height: 1rem;
+    width: 1rem;
+    transition: transform 0.3s ease;
+  }
+  
+  &:hover {
+    color: $accent-color;
+    
+    mat-icon {
+      transform: translateX(3px);
+    }
+  }
+}
+
+.no-news {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: $card-background;
+  padding: $spacing-xl;
+  border-radius: $border-radius-lg;
+  text-align: center;
+  
+  mat-icon {
+    font-size: 2rem;
+    height: 2rem;
+    width: 2rem;
+    color: $text-secondary;
+    margin-bottom: $spacing-sm;
+  }
+  
+  p {
+    color: $text-secondary;
+    font-style: italic;
+  }
+}
+
+// Custom styling for owl-carousel navigation
+::ng-deep .owl-nav {
+  position: absolute;
+  top: 40%; // Adjusted from 50% to move arrows upward
+  width: 100%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  
+  button {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba($primary-color, 0.7) !important;
+    border-radius: 50% !important;
+    color: white !important;
+    pointer-events: auto;
+    transition: background 0.3s ease;
+    
+    &:hover {
+      background: $primary-color !important;
+    }
+    
+    &.disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+}
+
+::ng-deep .owl-dots {
+  margin-top: $spacing-sm !important;
+  
+  .owl-dot {
+    span {
+      background: rgba($primary-color, 0.3) !important;
+      transition: all 0.3s ease !important;
+    }
+    
+    &.active span, &:hover span {
+      background: $primary-color !important;
+    }
+  }
+}
+
+// Responsive adjustments
+@include respond-to('medium') {
+  .news-image-container {
+    height: 180px;
+  }
+}
+
+@include respond-to('small') {
+  .news-image-container {
+    height: 160px;
+  }
+  
+  .news-content {
+    padding: $spacing-sm;
+  }
+  
+  .news-title {
+    font-size: 1rem;
+  }
+  
+  .news-description {
+    font-size: 0.85rem;
+    -webkit-line-clamp: 2;
+  }
+}

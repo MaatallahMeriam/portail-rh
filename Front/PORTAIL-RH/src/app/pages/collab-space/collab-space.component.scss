@@ -33,7 +33,7 @@
 .feed {
     position: fixed; 
     top: 70px; 
-    left: 250px; 
+    left: 240px; 
     right: 250px; 
     bottom: 0; 
     overflow-y: auto; 
@@ -43,9 +43,9 @@
 }
 
 .feed.sidebar-collapsed {
-    left: 100px; 
-    right: 250px; 
-    max-width: 1200px; 
+    left: 70px; 
+    right: 240px; 
+    max-width: 1300px; 
 }
 
 .feed::-webkit-scrollbar {

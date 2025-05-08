@@ -46,6 +46,27 @@ export interface UserDTO {
   equipeId?: number;
 }
 
+export interface UserUpdateBasicDTO {
+  userName?: string;
+  nom?: string;
+  prenom?: string;
+  mail?: string;
+  numero?: string;
+  dateNaissance?: string;
+}
+
+export interface UserUpdateFullDTO {
+  userName?: string;
+  nom?: string;
+  prenom?: string;
+  mail?: string;
+  numero?: string;
+  dateNaissance?: string;
+  poste?: string;
+  departement?: string;
+  role?: string;
+}
+
 export interface UserCongesDTO {
   id: number;
   userId: number;
@@ -267,40 +288,66 @@ export class UserService {
     );
   }
 
+  updateUserBasicInfo(userId: number, updateData: UserUpdateBasicDTO): Observable<UserDTO> {
+    return this.http.put<UserDTO>(`${this.apiUrl}/users/${userId}/update-basic`, updateData, this.getAuthHeaders()).pipe(
+      catchError((error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur lors de la mise à jour des informations de base de l\'utilisateur.',
+        });
+        return throwError(error);
+      })
+    );
+  }
+
+  updateUserFullInfo(userId: number, updateData: UserUpdateFullDTO): Observable<UserDTO> {
+    return this.http.put<UserDTO>(`${this.apiUrl}/users/${userId}/update-full`, updateData, this.getAuthHeaders()).pipe(
+      catchError((error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur lors de la mise à jour complète de l\'utilisateur.',
+        });
+        return throwError(error);
+      })
+    );
+  }
+
   getBirthdays(): Observable<BirthdayUser[]> {
     return this.getAllActiveUsers().pipe(
       map(users => {
         const today = new Date();
         const currentYear = today.getFullYear();
-        const currentMonth = today.getMonth() + 1;
+        const currentMonth = today.getMonth();
         const currentDay = today.getDate();
         const birthdayUsers = users.map(user => {
           const birthDate = new Date(user.dateNaissance);
-          const birthMonth = birthDate.getMonth() + 1;
+          const birthMonth = birthDate.getMonth();
           const birthDay = birthDate.getDate();
           const isTodayBirthday = birthMonth === currentMonth && birthDay === currentDay;
           let nextBirthdayYear = currentYear;
           if (birthMonth < currentMonth || (birthMonth === currentMonth && birthDay < currentDay)) {
             nextBirthdayYear++;
           }
-          const nextBirthday = new Date(nextBirthdayYear, birthMonth - 1, birthDay);
-          const todayForComparison = new Date(currentYear, today.getMonth(), today.getDate());
+          const nextBirthday = new Date(nextBirthdayYear, birthMonth, birthDay);
+          const todayForComparison = new Date(currentYear, currentMonth, currentDay);
           const daysUntilBirthday = Math.round(
             (nextBirthday.getTime() - todayForComparison.getTime()) / (1000 * 60 * 60 * 24)
           );
           return {
             id: user.id,
             fullName: `${user.prenom} ${user.nom}`,
-            birthdate: `${birthDay}/${birthMonth}`,
+            birthdate: `${birthDay.toString().padStart(2, '0')}/${(birthMonth + 1).toString().padStart(2, '0')}`,
             avatar: user.image || 'assets/icons/user-login-icon-14.png',
             isTodayBirthday,
-            daysUntilBirthday
+            daysUntilBirthday: daysUntilBirthday > 0 ? daysUntilBirthday : 365 + daysUntilBirthday
           };
         });
         const todaysBirthdays = birthdayUsers.filter(user => user.isTodayBirthday);
         const upcoming = birthdayUsers
-          .filter(user => !user.isTodayBirthday)
-          .sort((a, b) => a.daysUntilBirthday - b.daysUntilBirthday)
+          .filter(user => !user.isTodayBirthday && user.daysUntilBirthday !== undefined && user.daysUntilBirthday > 0)
+          .sort((a, b) => a.daysUntilBirthday! - b.daysUntilBirthday!)
           .slice(0, 3);
         return [...todaysBirthdays, ...upcoming];
       })

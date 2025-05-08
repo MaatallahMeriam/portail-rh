@@ -1,0 +1,201 @@
+<div class="post-card" (clickOutside)="closeDropdown()" [class.sidebar-collapsed]="isSidebarCollapsed">
+  <!-- Post Header -->
+  <div class="post-header">
+    <div class="post-author">
+      <img [src]="getImageUrl(post.userPhoto)" [alt]="post.userNom" class="author-avatar">
+      <div class="author-info">
+        <h3 class="author-name">{{ post.userNom }} {{ post.userPrenom }}</h3>
+        <span class="post-time">{{ timeAgo }}</span>
+      </div>
+    </div>
+    
+    <!-- Post Actions Menu (for own posts) -->
+    <div class="post-actions" *ngIf="isOwnPost">
+      <button class="action-button" (click)="toggleDropdown()">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      
+      <div class="action-dropdown" *ngIf="isDropdownOpen">
+        <button class="dropdown-item" (click)="startEditing()">
+          <mat-icon>edit</mat-icon>
+          <span>Modifier</span>
+        </button>
+        <button class="dropdown-item delete" (click)="deletePost()">
+          <mat-icon>delete</mat-icon>
+          <span>Supprimer</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Post Content (Display or Edit Mode) -->
+  <div class="post-content" *ngIf="!isEditing">
+    <p class="post-text" *ngIf="post.content">{{ post.content }}</p>
+    
+    <!-- Media (Image/Video) -->
+    <div class="post-media" *ngIf="post.mediaUrl" (click)="viewImage()">
+      <img [src]="getImageUrl(post.mediaUrl)" alt="Post media" class="post-image">
+      <div class="media-overlay">
+        <mat-icon>zoom_in</mat-icon>
+      </div>
+    </div>
+    
+    <!-- Document (PDF/DOC/DOCX) -->
+    <div class="post-document" *ngIf="post.documentDownloadUrl && !post.mediaUrl" (click)="downloadDocument()">
+      <mat-icon class="document-icon">description</mat-icon>
+      <span class="document-label">Document</span>
+    </div>
+  </div>
+  
+  <!-- Edit Form -->
+  <div class="post-edit-form" *ngIf="isEditing">
+    <textarea 
+      [(ngModel)]="editPostContent" 
+      class="edit-textarea"
+      placeholder="Modifier votre publication...">
+    </textarea>
+    
+    <!-- Current Media Display (if exists and no new file selected) -->
+    <div class="current-media" *ngIf="post.mediaUrl && !editSelectedFile">
+      <img [src]="getImageUrl(post.mediaUrl)" alt="Current media" class="current-media-preview">
+      <div class="media-actions">
+        <button class="media-action-button" (click)="viewImage()">
+          <mat-icon>zoom_in</mat-icon>
+        </button>
+      </div>
+    </div>
+    
+    <div class="edit-actions">
+      <div class="file-actions">
+        <ng-container *ngIf="!editSelectedFile; else selectedEditFileTemplate">
+          <label [for]="'edit-file-' + post.id" class="file-select-label">
+            <mat-icon>attach_file</mat-icon>
+            <span>Modifier média</span>
+          </label>
+          <input 
+            [id]="'edit-file-' + post.id" 
+            type="file" 
+            (change)="onEditFileSelected($event)" 
+            accept="image/*,video/*" 
+            class="hidden-input">
+        </ng-container>
+        
+        <ng-template #selectedEditFileTemplate>
+          <div class="selected-file">
+            <span class="file-name">{{ editSelectedFile?.name }}</span>
+            <button class="remove-file-button" (click)="removeEditFile()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </ng-template>
+      </div>
+      
+      <div class="edit-buttons">
+        <button class="cancel-button" (click)="cancelEditing()" [disabled]="isSubmitting">
+          Annuler
+        </button>
+        <button 
+          class="save-button" 
+          (click)="saveEdit()" 
+          [disabled]="(!editPostContent.trim() && !editSelectedFile) || isSubmitting"
+          [class.loading]="isSubmitting">
+          <span *ngIf="!isSubmitting">Enregistrer</span>
+          <span *ngIf="isSubmitting" class="spinner"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Post Interaction Bar -->
+  <div class="post-interactions" *ngIf="!isEditing">
+    <div class="interaction-stats">
+      <div class="likes-count" *ngIf="likeCount > 0">
+        <mat-icon>favorite</mat-icon>
+        <span>{{ likeCount }}</span>
+      </div>
+      <div class="comments-count" *ngIf="comments.length > 0" (click)="toggleCommentSection()">
+        <span>{{ comments.length }} commentaire{{ comments.length > 1 ? 's' : '' }}</span>
+      </div>
+    </div>
+    
+    <div class="interaction-divider"></div>
+    
+    <div class="interaction-buttons">
+      <button 
+        class="interaction-button" 
+        [class.active]="isLiked" 
+        (click)="toggleLike()"
+        [disabled]="isSubmitting">
+        <mat-icon>{{ isLiked ? 'favorite' : 'favorite_border' }}</mat-icon>
+        <span>J'aime</span>
+      </button>
+      
+      <button class="interaction-button" (click)="toggleCommentSection()">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <span>Commenter</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Comments Section -->
+  <div class="comments-section" *ngIf="isCommentSectionOpen && !isEditing">
+    <!-- Comment Form -->
+    <div class="comment-form">
+      <img [src]="getDefaultUserPhoto()" alt="User" class="comment-user-avatar">
+      <div class="comment-input-container">
+        <textarea 
+          [(ngModel)]="newComment" 
+          class="comment-input"
+          placeholder="Ajouter un commentaire...">
+        </textarea>
+        <button 
+          class="comment-submit" 
+          [disabled]="!newComment.trim() || isSubmitting"
+          [class.loading]="isSubmitting"
+          (click)="addComment()">
+          <mat-icon *ngIf="!isSubmitting">send</mat-icon>
+          <span *ngIf="isSubmitting" class="spinner small"></span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Comments List -->
+    <div class="comments-list" *ngIf="comments.length > 0">
+      <div class="comment" *ngFor="let comment of comments; let i = index">
+        <img [src]="getImageUrl(comment.userPhoto)" [alt]="comment.userNom" class="comment-avatar">
+        <div class="comment-content">
+          <div class="comment-header">
+            <span class="comment-author">{{ comment.userNom }} {{ comment.userPrenom }}</span>
+            <div class="comment-time-actions">
+              <span class="comment-time">{{ comment.createdAt | date:'short' }}</span>
+              <div class="comment-actions" *ngIf="!isEditingComment[i] && userId === comment.userId.toString()">
+                <button class="comment-action-button" (click)="editComment(i)" [disabled]="isSubmitting">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button class="comment-action-button delete" (click)="deleteComment(i)" [disabled]="isSubmitting">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+          <p class="comment-text" *ngIf="!isEditingComment[i]">{{ comment.content }}</p>
+          <div class="comment-edit" *ngIf="isEditingComment[i]">
+            <textarea [(ngModel)]="editedCommentContent[i]" class="comment-edit-textarea" placeholder="Modifier votre commentaire..."></textarea>
+            <div class="comment-edit-actions">
+              <button class="comment-edit-save" (click)="saveEditedComment(i)" [disabled]="!editedCommentContent[i]?.trim() || isSubmitting">
+                <mat-icon>save</mat-icon>
+              </button>
+              <button class="comment-edit-cancel" (click)="cancelEditComment(i)" [disabled]="isSubmitting">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="no-comments" *ngIf="comments.length === 0">
+      <p>Aucun commentaire pour le moment. Soyez le premier à commenter !</p>
+    </div>
+  </div>
+</div>

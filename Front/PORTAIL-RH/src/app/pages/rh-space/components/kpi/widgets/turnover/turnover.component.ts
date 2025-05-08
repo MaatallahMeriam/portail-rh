@@ -34,7 +34,7 @@ import { KpiService, Kpi } from '../../../../../../services/kpi.service';
         border: none;
         font-size: 20px;
         cursor: pointer;
-        color: #56142f;
+        color: #E91E63;
       }
 
       .menu-container {
@@ -67,7 +67,7 @@ import { KpiService, Kpi } from '../../../../../../services/kpi.service';
 
       .form-group label {
         font-size: 14px;
-        color: #56142f;
+        color: #E5007F;
         font-weight: 500;
       }
 
@@ -113,8 +113,8 @@ import { KpiService, Kpi } from '../../../../../../services/kpi.service';
       .widget-header h3 {
         margin: 0;
         font-size: 20px;
-        font-weight: 600;
-        color: #56142f;
+        font-weight: bold;
+        color: #E5007F;
       }
 
       .date-mesure {

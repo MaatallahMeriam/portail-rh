@@ -19,6 +19,7 @@ export interface PublicationDTO {
     createdAt: string;
     titre?: string | null;
     description?: string | null;
+    documentDownloadUrl?: string | null; // Added to reflect the backend DTO
 }
 
 export interface CommentDTO {
@@ -87,17 +88,20 @@ export class PublicationService {
     }
 
     private validateFile(file: File): boolean {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']; // Added document types
+        const maxSize = 10 * 1024 * 1024; // Increased to 10MB to accommodate documents
         return allowedTypes.includes(file.type) && file.size <= maxSize;
     }
 
-    createFeedPost(userId: string, content: string, media?: File): Observable<PublicationDTO> {
+    createFeedPost(userId: string, content: string, media?: File, document?: File): Observable<PublicationDTO> {
         if (!content.trim()) {
             return throwError(() => new Error('Le contenu ne peut pas être vide.'));
         }
         if (media && !this.validateFile(media)) {
-            return throwError(() => new Error('Fichier invalide. Seuls les fichiers JPEG, PNG ou GIF de moins de 5 Mo sont acceptés.'));
+            return throwError(() => new Error('Fichier média invalide. Seuls les fichiers JPEG, PNG, GIF, PDF, DOC ou DOCX de moins de 10 Mo sont acceptés.'));
+        }
+        if (document && !this.validateFile(document)) {
+            return throwError(() => new Error('Fichier document invalide. Seuls les fichiers PDF, DOC ou DOCX de moins de 10 Mo sont acceptés.'));
         }
 
         const formData = new FormData();
@@ -106,7 +110,10 @@ export class PublicationService {
         if (media) {
             formData.append('media', media, media.name);
         }
-        return this.http.post<PublicationDTO>(`${this.apiUrl}/feed`, formData, {
+        if (document) {
+            formData.append('document', document, document.name);
+        }
+        return this.http.post<PublicationDTO>(`${this.apiUrl}/feed/upload`, formData, {
             headers: this.getMultipartHeaders()
         }).pipe(
             catchError(this.handleError)
@@ -119,9 +126,12 @@ export class PublicationService {
         );
     }
 
-    updateFeedPost(id: number, userId: string, content?: string, media?: File): Observable<PublicationDTO> {
+    updateFeedPost(id: number, userId: string, content?: string, media?: File, document?: File): Observable<PublicationDTO> {
         if (media && !this.validateFile(media)) {
-            return throwError(() => new Error('Fichier invalide. Seuls les fichiers JPEG, PNG ou GIF de moins de 5 Mo sont acceptés.'));
+            return throwError(() => new Error('Fichier média invalide. Seuls les fichiers JPEG, PNG, GIF, PDF, DOC ou DOCX de moins de 10 Mo sont acceptés.'));
+        }
+        if (document && !this.validateFile(document)) {
+            return throwError(() => new Error('Fichier document invalide. Seuls les fichiers PDF, DOC ou DOCX de moins de 10 Mo sont acceptés.'));
         }
 
         const formData = new FormData();
@@ -132,7 +142,10 @@ export class PublicationService {
         if (media) {
             formData.append('media', media, media.name);
         }
-        return this.http.put<PublicationDTO>(`${this.apiUrl}/feed/${id}`, formData, {
+        if (document) {
+            formData.append('document', document, document.name);
+        }
+        return this.http.put<PublicationDTO>(`${this.apiUrl}/feed/${id}/upload`, formData, {
             headers: this.getMultipartHeaders()
         }).pipe(
             catchError(this.handleError)
@@ -310,6 +323,14 @@ export class PublicationService {
 
     deletePublication(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+            catchError(this.handleError)
+        );
+    }
+
+    downloadFeedDocument(publicationId: number): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/feed/${publicationId}/document`, {
+            responseType: 'blob'
+        }).pipe(
             catchError(this.handleError)
         );
     }

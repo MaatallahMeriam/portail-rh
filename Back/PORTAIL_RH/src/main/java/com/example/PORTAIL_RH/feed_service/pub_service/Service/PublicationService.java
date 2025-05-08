@@ -40,4 +40,9 @@ public interface PublicationService {
 
     // Gestion des réactions
     ReactionDTO createReaction(ReactionRequest reactionRequest);
+
+    // New methods for document handling in FeedPost
+    PublicationDTO createFeedWithDocument(Long userId, String content, MultipartFile media, MultipartFile document);
+    PublicationDTO updateFeedWithDocument(Long id, String content, MultipartFile media, MultipartFile document);
+    byte[] downloadFeedDocument(Long publicationId);
 }
