@@ -10,7 +10,7 @@ export interface RegisterRequest {
   nom: string;
   prenom: string;
   mail: string;
-  password: string;
+  password?: string; // Champ optionnel pour correspondre à NewRegisterRequest
   dateNaissance: string;
   poste: string;
   departement: string;
@@ -107,7 +107,7 @@ export class UserService {
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   registerUser(registerRequest: RegisterRequest): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>(`${this.apiUrl}/auth/register`, registerRequest).pipe(
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/auth/register-new`, registerRequest).pipe(
       catchError((error) => {
         Swal.fire({
           icon: 'error',

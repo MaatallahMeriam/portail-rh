@@ -149,12 +149,7 @@
 <div class="edit-modal" *ngIf="editingField">
   <div class="modal-content">
     <h3>Modifier {{ fieldDisplayName(editingField) }}</h3>
-    <ng-container *ngIf="editingField === 'active'; else textInput">
-      <select [(ngModel)]="editingValue">
-        <option value="true">Actif</option>
-        <option value="false">Inactif</option>
-      </select>
-    </ng-container>
+    
     <ng-template #textInput>
       <input
         [type]="editingField === 'dateNaissance' ? 'date' : 'text'"

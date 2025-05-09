@@ -40,8 +40,6 @@ export class GestionDossierComponent {
   nom: string = '';
   prenom: string = '';
   mail: string = '';
-  password: string = '';
-  confirmPassword: string = '';
   dateNaissance: string = '';
   poste: string = '';
   departement: string = '';
@@ -96,10 +94,6 @@ export class GestionDossierComponent {
     // Vous pouvez ajouter une logique ici si un clic sur la ligne doit faire quelque chose
   }
 
-  get passwordMismatch(): boolean {
-    return this.password !== this.confirmPassword && this.confirmPassword.length > 0;
-  }
-
   loadUsers() {
     this.userService.getAllActiveUsers().subscribe({
       next: (users) => {
@@ -149,8 +143,6 @@ export class GestionDossierComponent {
     this.nom = '';
     this.prenom = '';
     this.mail = '';
-    this.password = '';
-    this.confirmPassword = '';
     this.dateNaissance = '';
     this.poste = '';
     this.departement = '';
@@ -171,7 +163,6 @@ export class GestionDossierComponent {
       !this.nom ||
       !this.prenom ||
       !this.mail ||
-      !this.password ||
       !this.dateNaissance ||
       !this.poste ||
       !this.departement ||
@@ -185,21 +176,11 @@ export class GestionDossierComponent {
       return;
     }
 
-    if (this.passwordMismatch) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Erreur',
-        text: 'Les mots de passe ne correspondent pas.',
-      });
-      return;
-    }
-
     const registerRequest: RegisterRequest = {
       userName: this.userName,
       nom: this.nom,
       prenom: this.prenom,
       mail: this.mail,
-      password: this.password,
       dateNaissance: this.dateNaissance,
       poste: this.poste,
       departement: this.departement,
@@ -211,7 +192,7 @@ export class GestionDossierComponent {
         Swal.fire({
           icon: 'success',
           title: 'Succès',
-          text: response.message || 'Utilisateur enregistré avec succès !',
+          text: response.message || 'Utilisateur enregistré avec succès ! Un mot de passe a été envoyé par e-mail.',
         });
         this.newUserId = response.id;
         this.showFirstForm = false;

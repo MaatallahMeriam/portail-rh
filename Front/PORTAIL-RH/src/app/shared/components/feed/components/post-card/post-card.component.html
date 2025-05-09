@@ -182,8 +182,8 @@
           <div class="comment-edit" *ngIf="isEditingComment[i]">
             <textarea [(ngModel)]="editedCommentContent[i]" class="comment-edit-textarea" placeholder="Modifier votre commentaire..."></textarea>
             <div class="comment-edit-actions">
-              <button class="comment-edit-save" (click)="saveEditedComment(i)" [disabled]="!editedCommentContent[i]?.trim() || isSubmitting">
-                <mat-icon>save</mat-icon>
+              <button class="comment-edit-save" (click)="saveEditedComment(i)" [disabled]="!editedCommentContent[i].trim() || isSubmitting">
+                  <mat-icon>save</mat-icon>
               </button>
               <button class="comment-edit-cancel" (click)="cancelEditComment(i)" [disabled]="isSubmitting">
                 <mat-icon>cancel</mat-icon>
