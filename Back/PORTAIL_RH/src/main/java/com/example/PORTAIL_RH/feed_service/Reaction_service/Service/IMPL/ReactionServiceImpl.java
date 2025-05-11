@@ -4,6 +4,7 @@ import com.example.PORTAIL_RH.feed_service.Reaction_service.DTO.*;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Comment;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Reaction;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.IdeaRating;
+import com.example.PORTAIL_RH.feed_service.pub_service.Entity.FeedPost;
 import com.example.PORTAIL_RH.feed_service.pub_service.Entity.Publication;
 import com.example.PORTAIL_RH.feed_service.pub_service.Entity.IdeeBoitePost;
 import com.example.PORTAIL_RH.user_service.user_service.Entity.Users;
@@ -13,6 +14,10 @@ import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.IdeaRatingRepos
 import com.example.PORTAIL_RH.feed_service.pub_service.Repo.PublicationRepository;
 import com.example.PORTAIL_RH.user_service.user_service.Repo.UsersRepository;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Service.ReactionService;
+import com.example.PORTAIL_RH.notification_service.Entity.ReactionNotification;
+import com.example.PORTAIL_RH.notification_service.DTO.ReactionNotificationDTO;
+import com.example.PORTAIL_RH.notification_service.Repo.ReactionNotificationRepository;
+import com.example.PORTAIL_RH.notification_service.Service.NotificationWebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +45,37 @@ public class ReactionServiceImpl implements ReactionService {
     @Autowired
     private PublicationRepository publicationRepository;
 
+    @Autowired
+    private ReactionNotificationRepository reactionNotificationRepository;
+
+    @Autowired
+    private NotificationWebSocketService notificationWebSocketService;
+
+    private String getFirstTwoWords(Publication publication) {
+        String content = publication instanceof FeedPost ? ((FeedPost) publication).getContent() : null;
+        if (content == null || content.trim().isEmpty()) {
+            return "...";
+        }
+        String[] words = content.trim().split("\\s+");
+        return words.length > 1 ? words[0] + " " + words[1] : words[0];
+    }
+
+    private ReactionNotificationDTO mapToReactionNotificationDTO(ReactionNotification notification) {
+        ReactionNotificationDTO dto = new ReactionNotificationDTO();
+        dto.setId(notification.getId());
+        dto.setRecipientId(notification.getRecipient().getId());
+        dto.setActorId(notification.getActorId());
+        dto.setActorNom(notification.getActorNom());
+        dto.setActorPrenom(notification.getActorPrenom());
+        dto.setActorPhoto(notification.getActorPhoto());
+        dto.setMessage(notification.getMessage());
+        dto.setType(notification.getType());
+        dto.setPublicationId(notification.getPublicationId());
+        dto.setCreatedAt(notification.getCreatedAt());
+        dto.setRead(notification.isRead());
+        return dto;
+    }
+
     private ReactionDTO mapToDTO(Reaction reaction) {
         ReactionDTO dto = new ReactionDTO();
         dto.setId(reaction.getId());
@@ -56,16 +92,12 @@ public class ReactionServiceImpl implements ReactionService {
         dto.setUserNom(comment.getUser().getNom());
         dto.setUserPrenom(comment.getUser().getPrenom());
 
-
-
         String imageUrl = comment.getUser().getImage() != null
                 ? ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/" + comment.getUser().getImage().replace("\\", "/"))
                 .toUriString()
                 : null;
         dto.setUserPhoto(imageUrl);
-
-
 
         dto.setPublicationId(comment.getPublication().getId());
         dto.setContent(comment.getContent());
@@ -108,6 +140,25 @@ public class ReactionServiceImpl implements ReactionService {
             reaction.setPublication(publication);
             user.addReaction(reaction);
             publication.addReaction(reaction);
+
+            // Create notification for the publication owner
+            if (!user.getId().equals(publication.getUser().getId())) { // Don't notify if user likes their own post
+                ReactionNotification notification = new ReactionNotification();
+                notification.setRecipient(publication.getUser());
+                notification.setActorId(user.getId());
+                notification.setActorNom(user.getNom());
+                notification.setActorPrenom(user.getPrenom());
+                notification.setActorPhoto(user.getImage());
+                notification.setMessage(String.format("%s %s a réagi à votre publication : %s",
+                        user.getNom(), user.getPrenom(), getFirstTwoWords(publication)));
+                notification.setType("LIKE");
+                notification.setPublicationId(publication.getId());
+                reactionNotificationRepository.save(notification);
+
+                // Send WebSocket notification
+                notificationWebSocketService.sendReactionNotification(
+                        publication.getUser().getId(), mapToReactionNotificationDTO(notification));
+            }
         }
 
         Reaction savedReaction = reactionRepository.save(reaction);
@@ -183,6 +234,26 @@ public class ReactionServiceImpl implements ReactionService {
         comment.setContent(commentRequest.getContent());
 
         Comment savedComment = commentRepository.save(comment);
+
+        // Create notification for the publication owner
+        if (!user.getId().equals(publication.getUser().getId())) { // Don't notify if user comments on their own post
+            ReactionNotification notification = new ReactionNotification();
+            notification.setRecipient(publication.getUser());
+            notification.setActorId(user.getId());
+            notification.setActorNom(user.getNom());
+            notification.setActorPrenom(user.getPrenom());
+            notification.setActorPhoto(user.getImage());
+            notification.setMessage(String.format("%s %s a commenté votre publication : %s",
+                    user.getNom(), user.getPrenom(), getFirstTwoWords(publication)));
+            notification.setType("COMMENT");
+            notification.setPublicationId(publication.getId());
+            reactionNotificationRepository.save(notification);
+
+            // Send WebSocket notification
+            notificationWebSocketService.sendReactionNotification(
+                    publication.getUser().getId(), mapToReactionNotificationDTO(notification));
+        }
+
         return mapToCommentDTO(savedComment);
     }
 
@@ -267,6 +338,7 @@ public class ReactionServiceImpl implements ReactionService {
                 .map(this::mapToIdeaRatingDTO)
                 .collect(Collectors.toList());
     }
+
     @Override
     @Transactional
     public CommentDTO updateComment(Long commentId, CommentUpdateRequest updateRequest) {
@@ -292,6 +364,7 @@ public class ReactionServiceImpl implements ReactionService {
         Comment updatedComment = commentRepository.save(comment);
         return mapToCommentDTO(updatedComment);
     }
+
     @Override
     @Transactional
     public void deleteIdeaRating(Long userId, Long publicationId) {

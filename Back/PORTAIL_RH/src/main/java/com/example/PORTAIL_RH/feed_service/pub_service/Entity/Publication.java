@@ -20,6 +20,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Publication {
 
+
     public enum PublicationType {
         FEED, NEWS, BOITE_IDEE
     }
