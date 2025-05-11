@@ -1,0 +1,27 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <div class="feed">
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="hasPointedToday" class="alert alert-success">
+        Vous avez déjà pointé pour aujourd'hui.
+      </div>
+
+      <div *ngIf="!hasPointedToday && isTeletravailDay">
+        <h3>Votre QR Code pour le pointage</h3>
+        <img *ngIf="qrCode" [src]="qrCode" alt="QR Code" class="qr-code" />
+        <p class="pointage-link" (click)="sendPointageEmail()">Envoyer le lien de pointage par email</p>
+      </div>
+
+      <div *ngIf="!hasPointedToday && !isTeletravailDay">
+        <p>Aucun télétravail prévu aujourd'hui.</p>
+      </div>
+    </div>
+
+    <app-right-sidebar></app-right-sidebar>
+  </div>
+</div>

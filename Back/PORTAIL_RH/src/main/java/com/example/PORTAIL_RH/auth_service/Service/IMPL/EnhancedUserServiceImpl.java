@@ -25,7 +25,8 @@ public class EnhancedUserServiceImpl implements EnhancedUserService {
 
     @Autowired
     private UsersRepository usersRepository;
-
+    @Autowired
+    private PasswordGenerator passwordGenerator;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -77,7 +78,7 @@ public class EnhancedUserServiceImpl implements EnhancedUserService {
         // Générer un mot de passe si aucun n'est fourni
         String password = registerRequest.getPassword();
         if (password == null || password.isEmpty()) {
-            password = PasswordGenerator.generateRandomPassword();
+            password = passwordGenerator.generateRandomPassword();
             if (!emailService.sendPasswordEmail(user.getMail(), user.getUserName(), password)) {
                 throw new RuntimeException("L'envoi de l'e-mail a échoué. Veuillez réessayer plus tard.");
             }

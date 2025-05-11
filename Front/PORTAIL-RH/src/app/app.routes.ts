@@ -5,6 +5,7 @@ import { DetailsIdeeComponent } from './pages/collab-space/components/details-id
 import { DetailsIdeeComponentRH } from './pages/rh-space/components/details-idee-rh/details-idee.component';
 import { DetailsIdeeManagerComponent } from './pages/manager-space/components/details-idee-manager/details-idee-manager.component';
 import { WishListComponent } from './pages/collab-space/components/wish-list/wish-list.component';
+import { QrPointageComponent } from './shared/components/qr-pointage/qr-pointage.component';
 
 import { DetailsEquipeComponent } from './pages/rh-space/components/details-equipe/details-equipe.component';
 import { LoginComponent } from './shared/components/login/login.component';
@@ -67,6 +68,8 @@ import { TraitDmdDetailsComponent } from './pages/rh-space/components/trait-dmd-
 import { PlanningManagerComponent } from './pages/manager-space/components/planning-manager/planning-manager.component';
 
 export const routes: Routes = [
+    {path:'pointage',component:QrPointageComponent},
+
     {path:'profil-rh',component:ProfilRhComponent},
     {path:'profil-manager',component:ProfilManagerComponent},
     {path:'membre-rh',component:ListMemberRhComponent},

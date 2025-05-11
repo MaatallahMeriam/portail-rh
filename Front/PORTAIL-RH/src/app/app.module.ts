@@ -16,7 +16,7 @@ import{AcceuilComponent} from './shared/components/acceuil/acceuil.component';
 import { MatBadgeModule } from '@angular/material/badge';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { AuthInterceptor } from '../../src/app/@core/interceptors/auth.interceptor'; // Ajuste le chemin
-
+import { HttpClient } from '@angular/common/http';
 @NgModule({
   declarations: [],
   imports: [

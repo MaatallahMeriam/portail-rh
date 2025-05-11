@@ -3,7 +3,6 @@ package com.example.PORTAIL_RH.document_service.Controller;
 import com.example.PORTAIL_RH.document_service.dto.DocumentDTO;
 import com.example.PORTAIL_RH.document_service.dto.DocumentUpdateRequest;
 import com.example.PORTAIL_RH.document_service.Service.DocumentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,8 +17,12 @@ import java.util.List;
 @RequestMapping("/api/documents")
 public class DocumentController {
 
-    @Autowired
     private DocumentService documentService;
+
+    // Ajout d'un setter pour l'injection manuelle
+    public void setDocumentService(DocumentService documentService) {
+        this.documentService = documentService;
+    }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DocumentDTO> uploadDocument(
@@ -71,7 +74,6 @@ public class DocumentController {
     public ResponseEntity<Resource> downloadDocument(@PathVariable Long id) {
         Resource fileResource = documentService.downloadDocumentById(id);
 
-        // Retrieve the document to get the original filename and type
         DocumentDTO documentDTO = documentService.getDocumentById(id);
 
         return ResponseEntity.ok()

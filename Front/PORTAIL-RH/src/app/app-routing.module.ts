@@ -62,9 +62,10 @@ import { DetailsIdeeComponent } from './pages/collab-space/components/details-id
 import { DetailsIdeeComponentRH } from './pages/rh-space/components/details-idee-rh/details-idee.component';
 import { DetailsIdeeManagerComponent } from './pages/manager-space/components/details-idee-manager/details-idee-manager.component';
 import { WishListComponent } from './pages/collab-space/components/wish-list/wish-list.component';
-
+import { QrPointageComponent } from './shared/components/qr-pointage/qr-pointage.component';
 
 const routes: Routes = [
+  {path:'pointage',component:QrPointageComponent},
   { path: 'details-idee-rh/:id', component: DetailsIdeeComponentRH },
   { path: 'details-idee-manager/:id', component: DetailsIdeeManagerComponent },
 {path : 'wishes-list',component :WishListComponent},
