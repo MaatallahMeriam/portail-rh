@@ -71,13 +71,13 @@
     }
 
     .feed {
-        left: 200px; 
-        right: 0; 
-        max-width: calc(100% - 200px);
+        left: 240px; 
+        right: 250px; 
+        max-width: calc(100% - 240px);
     }
 
     .feed.sidebar-collapsed {
-        left: 100px; 
+        left: 70px; 
         max-width: calc(100% - 100px);
     }
 }
@@ -92,14 +92,15 @@
     }
 
     .feed {
-        left: 200px; 
-        right: 0; 
-        max-width: calc(100% - 200px);
+        left: 220px; 
+        right: 200px; 
+        max-width: calc(100% - 220px);
     }
 
     .feed.sidebar-collapsed {
-        left: 100px; 
-        max-width: calc(100% - 100px);
+        left: 70px; 
+        right: 180px;
+        max-width: calc(100% - 200px);
     }
 }
 
@@ -112,16 +113,16 @@
         width: 180px;
     }
 
-    .feed {
-        left: 0px; 
+    .feed { 
+        left: 100px; 
         right: 80px; 
-        max-width: calc(100% - 220px);
+        max-width: calc(100% - 100px);
     }
 
     .feed.sidebar-collapsed {
         left: 0px; 
-        right: 80px; 
-        max-width: calc(100% - 220px);
+        right: 50px; 
+        max-width: calc(100% - 150px);
     }
 }
 

@@ -1,13 +1,16 @@
 package com.example.PORTAIL_RH.teletravail_service.service.impl;
 
+import com.example.PORTAIL_RH.notification_service.Service.NotificationService;
+import com.example.PORTAIL_RH.teletravail_service.dto.TeletravailPointageDTO;
 import com.example.PORTAIL_RH.teletravail_service.entity.TeletravailPointage;
 import com.example.PORTAIL_RH.teletravail_service.entity.UserTeletravail;
+import com.example.PORTAIL_RH.user_service.equipe_service.Entity.Equipe;
+import com.example.PORTAIL_RH.utils.EnhancedEmailService;
 import com.example.PORTAIL_RH.teletravail_service.repo.TeletravailPointageRepository;
 import com.example.PORTAIL_RH.teletravail_service.repo.UserTeletravailRepository;
 import com.example.PORTAIL_RH.teletravail_service.service.TeletravailPointageService;
 import com.example.PORTAIL_RH.user_service.user_service.Entity.Users;
 import com.example.PORTAIL_RH.user_service.user_service.Repo.UsersRepository;
-import com.example.PORTAIL_RH.utils.EnhancedEmailService;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
@@ -15,6 +18,8 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,9 +35,12 @@ import java.time.LocalTime;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TeletravailPointageServiceImpl implements TeletravailPointageService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TeletravailPointageServiceImpl.class);
 
     @Autowired
     private TeletravailPointageRepository pointageRepository;
@@ -46,8 +54,11 @@ public class TeletravailPointageServiceImpl implements TeletravailPointageServic
     @Autowired
     private EnhancedEmailService emailService;
 
+
+    @Autowired
+    private NotificationService notificationService;
     @Value("${app.qrcode.url}")
-    private String qrCodeBaseUrl; // Ex: http://localhost:8080/api/teletravail/pointage/confirm
+    private String qrCodeBaseUrl;
 
     @Value("${farid.app.jwtSecret}")
     private String jwtSecretBase64;
@@ -59,18 +70,16 @@ public class TeletravailPointageServiceImpl implements TeletravailPointageServic
         this.jwtSecret = Base64.getDecoder().decode(jwtSecretBase64);
     }
 
-    // Générer un token JWT pour le pointage
     private String generatePointageToken(Long userId, LocalDate date) {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .claim("date", date.toString())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) // 24h
+                .setExpiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
-    // Générer une image QR code
     @Override
     public String generateQRCode(Long userId, LocalDate date) throws Exception {
         String token = generatePointageToken(userId, date);
@@ -85,20 +94,12 @@ public class TeletravailPointageServiceImpl implements TeletravailPointageServic
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
-    // Envoyer le QR code par email
     private boolean sendQRCodeEmail(Users user, String qrCodeBase64, String token) {
-        String htmlContent = "<h3>Bonjour, " + user.getPrenom() + " " + user.getNom() + " !</h3>" +
-                "<p>Vous êtes en télétravail aujourd’hui. Veuillez scanner le QR code ci-dessous pour confirmer votre pointage :</p>" +
-                "<img src='data:image/png;base64," + qrCodeBase64 + "' alt='QR Code' />" +
-                "<p>Si vous ne pouvez pas scanner, <a href='" + qrCodeBaseUrl + "?token=" + token + "'>cliquez ici</a> pour confirmer.</p>" +
-                "<p>Cordialement,<br>L'équipe PORTAIL_RH</p>" +
-                "<strong>Contact : contact@excellia.tn</strong>";
-
-        return emailService.sendPasswordEmail(user.getMail(), user.getUserName(), htmlContent);
+        String confirmationUrl = qrCodeBaseUrl + "?token=" + token;
+        return emailService.sendPointageEmail(user.getMail(), user.getPrenom() + " " + user.getNom(), qrCodeBase64, confirmationUrl);
     }
 
-    // Scheduler pour générer et envoyer les QR codes quotidiennement
-    @Scheduled(cron = "0 0 6 * * ?") // Chaque jour à 6h
+    @Scheduled(cron = "0 0 6 * * ?")
     @Transactional
     @Override
     public void generateAndSendQRCodes() throws Exception {
@@ -114,7 +115,6 @@ public class TeletravailPointageServiceImpl implements TeletravailPointageServic
         }
     }
 
-    // Valider et enregistrer le pointage
     @Transactional
     @Override
     public void recordPointage(String token) {
@@ -136,14 +136,6 @@ public class TeletravailPointageServiceImpl implements TeletravailPointageServic
             UserTeletravail userTeletravail = userTeletravailRepository.findByUserIdAndJoursChoisisContaining(userId, date.toString())
                     .orElseThrow(() -> new IllegalStateException("Aujourd’hui n’est pas un jour de télétravail."));
 
-            // Comment out the time window check for testing
-            /*
-            LocalTime now = LocalTime.now();
-            if (now.isBefore(LocalTime.of(8, 0)) || now.isAfter(LocalTime.of(12, 0))) {
-                throw new IllegalStateException("Pointage hors plage horaire (8h-12h).");
-            }
-            */
-
             LocalTime now = LocalTime.now();
             TeletravailPointage pointage = new TeletravailPointage();
             pointage.setUser(user);
@@ -151,12 +143,41 @@ public class TeletravailPointageServiceImpl implements TeletravailPointageServic
             pointage.setPointageDate(date);
             pointage.setPointageTime(now);
             pointageRepository.save(pointage);
+            logger.info("Pointage enregistré pour userId={} à la date={}", userId, date);
+
+            // Nouvelle logique : Notifier le manager
+            notifyManagerOfPointage(user, date);
         } catch (Exception e) {
+            logger.error("Erreur lors de l'enregistrement du pointage : {}", e.getMessage(), e);
             throw new IllegalStateException("Token invalide ou expiré : " + e.getMessage());
         }
     }
 
-    // Récupérer le QR code pour affichage dans le portail
+    private void notifyManagerOfPointage(Users user, LocalDate date) {
+        try {
+            // Récupérer l'équipe de l'utilisateur
+            Equipe equipe = user.getEquipe();
+            if (equipe != null) {
+                Users manager = equipe.getManager();
+                if (manager != null) {
+                    String message = String.format("Votre membre %s %s a bien effectué son pointage TT le %s",
+                            user.getPrenom(), user.getNom(), date.toString());
+                    logger.info("Pointage notification for user: userId={}, prenom={}, nom={}, image={}",
+                            user.getId(), user.getPrenom(), user.getNom(), user.getImage());
+                    // Appeler le service de notification avec triggeredByUser
+                    notificationService.createNotificationForUser(manager, message, "POINTAGE", null, user);
+                    logger.info("Notification envoyée au manager {} pour le pointage de {}", manager.getId(), user.getId());
+                } else {
+                    logger.warn("Aucun manager assigné à l'équipe de l'utilisateur {}", user.getId());
+                }
+            } else {
+                logger.warn("Aucune équipe assignée à l'utilisateur {}", user.getId());
+            }
+        } catch (Exception e) {
+            logger.error("Erreur lors de l'envoi de la notification au manager : {}", e.getMessage(), e);
+        }
+    }
+
     @Override
     public String getQRCodeForUser(Long userId, LocalDate date) throws Exception {
         UserTeletravail userTeletravail = userTeletravailRepository.findByUserIdAndJoursChoisisContaining(userId, date.toString())
@@ -167,15 +188,27 @@ public class TeletravailPointageServiceImpl implements TeletravailPointageServic
         return null;
     }
 
-    // Récupérer les pointages pour une période
     @Override
-    public List<TeletravailPointage> getPointagesForPeriod(LocalDate start, LocalDate end) {
-        return pointageRepository.findAll().stream()
-                .filter(p -> !p.getPointageDate().isBefore(start) && !p.getPointageDate().isAfter(end))
-                .toList();
+    public List<TeletravailPointageDTO> getPointagesForPeriod(LocalDate start, LocalDate end, Long userId) {
+        try {
+            List<TeletravailPointage> pointages = pointageRepository.findByUserIdAndPointageDateBetween(userId, start, end);
+            logger.info("Requête exécutée pour userId={}, start={}, end={}", userId, start, end); // Log détaillé
+            logger.info("Pointages récupérés pour userId={} pour la période {} à {} : {} éléments", userId, start, end, pointages.size());
+            return pointages.stream().map(p -> {
+                TeletravailPointageDTO dto = new TeletravailPointageDTO();
+                dto.setId(p.getId());
+                dto.setUserId(p.getUser().getId());
+                dto.setUserTeletravailId(p.getUserTeletravail().getId());
+                dto.setPointageDate(p.getPointageDate());
+                dto.setPointageTime(p.getPointageTime());
+                return dto;
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            logger.error("Erreur lors de la récupération des pointages pour userId={} : {}", userId, e.getMessage(), e);
+            throw new RuntimeException("Erreur lors de la récupération des pointages : " + e.getMessage());
+        }
     }
 
-    // Envoyer l'email de pointage à la demande
     @Override
     public boolean sendPointageEmail(Long userId, LocalDate date) throws Exception {
         UserTeletravail userTeletravail = userTeletravailRepository.findByUserIdAndJoursChoisisContaining(userId, date.toString())

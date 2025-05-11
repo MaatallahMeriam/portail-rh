@@ -9,9 +9,10 @@ export interface TeletravailPointage {
   id: number;
   userId: number;
   userTeletravailId: number;
-  pointageDate: string; // Format: YYYY-MM-DD
-  pointageTime: string; // Format: HH:MM:SS
+  pointageDate: string;
+  pointageTime: string;
 }
+
 @Injectable({
   providedIn: 'root'
 })
@@ -28,50 +29,49 @@ export class TeletravailPointageService {
     });
   }
 
-  // Récupérer le QR code pour un utilisateur
   getQRCode(userId: number): Observable<string> {
     return this.http.get(`${this.apiUrl}/qrcode?userId=${userId}`, { responseType: 'text', headers: this.getHeaders() }).pipe(
       catchError(this.handleError)
     );
   }
 
-  // Confirmer un pointage via un token
   confirmPointage(token: string): Observable<string> {
     return this.http.get(`${this.apiUrl}/confirm?token=${token}`, { responseType: 'text', headers: this.getHeaders() }).pipe(
       catchError(this.handleError)
     );
   }
 
-  // Récupérer les pointages pour une période
-  getPointages(startDate: string, endDate: string): Observable<TeletravailPointage[]> {
-    return this.http.get<TeletravailPointage[]>(`${this.apiUrl}?startDate=${startDate}&endDate=${endDate}`, { headers: this.getHeaders() }).pipe(
-      map(pointages => pointages.map(p => ({
+  getPointages(startDate: string, endDate: string, userId: number): Observable<TeletravailPointage[]> {
+  const url = `${this.apiUrl}?startDate=${startDate}&endDate=${endDate}&userId=${userId}`;
+  console.log('Requête envoyée:', url); // Log pour débogage
+  return this.http.get<TeletravailPointage[]>(url, { headers: this.getHeaders() }).pipe(
+    map(pointages => pointages.map(p => {
+      const date = p.pointageDate ? p.pointageDate : '';
+      const time = p.pointageTime ? p.pointageTime.substring(0, 8) : '';
+      return {
         ...p,
-        pointageDate: p.pointageDate.split('T')[0], // Normaliser le format date
-        pointageTime: p.pointageTime.substring(0, 8) // HH:MM:SS
-      }))),
-      catchError(this.handleError)
-    );
-  }
+        pointageDate: date,
+        pointageTime: time
+      };
+    })),
+    catchError(this.handleError)
+  );
+}
 
-  // Demander l'envoi de l'email de pointage
   sendPointageEmail(userId: number): Observable<string> {
     return this.http.post(`${this.apiUrl}/send-email?userId=${userId}`, {}, { responseType: 'text', headers: this.getHeaders() }).pipe(
       catchError(this.handleError)
     );
   }
 
-  // Gestion des erreurs
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Une erreur est survenue. Veuillez réessayer plus tard.';
     if (error.error instanceof ErrorEvent) {
-      // Erreur côté client
       errorMessage = `Erreur : ${error.error.message}`;
     } else {
-      // Erreur côté serveur
-      errorMessage = `Code : ${error.status}, Message : ${error.error || error.message}`;
+      errorMessage = `Code : ${error.status}, Message : ${error.error?.message || error.message}`;
     }
-    console.error(errorMessage);
+    console.error('Erreur HTTP:', error);
     return throwError(() => new Error(errorMessage));
   }
 }

@@ -1,0 +1,29 @@
+<div class="collab-home">
+  <app-header></app-header>
+  <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+
+  <div class="main-content">
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="hasPointedToday" class="pointage-card-confirm">
+        <h3>Confirmation de pointage</h3>
+        <p class="confirmation-message">Vous avez bien confirmé votre présence TT aujourd'hui ! Bon travail.</p>
+      </div>
+
+      <div *ngIf="!hasPointedToday && isTeletravailDay" class="pointage-card">
+        <h3>Votre QR Code pour le pointage</h3>
+        <img *ngIf="qrCode" [src]="qrCode" alt="QR Code" class="qr-code" />
+        <p class="pointage-link" (click)="sendPointageEmail()">Envoyer le lien de pointage par email</p>
+      </div>
+
+      <div *ngIf="!hasPointedToday && !isTeletravailDay" class="pointage-card-confirm">
+        <p>Aucun télétravail prévu aujourd'hui.</p>
+      </div>
+    </div>
+
+    <app-right-sidebar></app-right-sidebar>
+  </div>
+</div>

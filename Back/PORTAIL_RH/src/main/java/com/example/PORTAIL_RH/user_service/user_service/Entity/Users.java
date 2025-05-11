@@ -80,6 +80,7 @@ public class Users {
     private Set<IdeaRating> ratings = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private Set<UserTeletravail> userTeletravail = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

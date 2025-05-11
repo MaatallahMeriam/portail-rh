@@ -63,9 +63,13 @@ import { DetailsIdeeComponentRH } from './pages/rh-space/components/details-idee
 import { DetailsIdeeManagerComponent } from './pages/manager-space/components/details-idee-manager/details-idee-manager.component';
 import { WishListComponent } from './pages/collab-space/components/wish-list/wish-list.component';
 import { QrPointageComponent } from './shared/components/qr-pointage/qr-pointage.component';
+import { PointageCollabComponent } from './pages/collab-space/components/pointage-collab/pointage-collab.component';
+import { PointageManagerComponent } from './pages/manager-space/components/pointage-manager/pointage-manager.component';
 
 const routes: Routes = [
-  {path:'pointage',component:QrPointageComponent},
+  {path:'pointage-manager',component: PointageManagerComponent},
+
+  {path:'pointage-collab',component: PointageCollabComponent},
   { path: 'details-idee-rh/:id', component: DetailsIdeeComponentRH },
   { path: 'details-idee-manager/:id', component: DetailsIdeeManagerComponent },
 {path : 'wishes-list',component :WishListComponent},

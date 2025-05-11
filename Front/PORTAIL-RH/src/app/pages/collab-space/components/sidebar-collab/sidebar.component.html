@@ -1,63 +1,69 @@
 <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
-    <div class="sidebar-header">
-        <div class="logo-container">
-          <span class="logo-text" *ngIf="!isSidebarCollapsed">Espace Collaborateurs</span>
-          <span class="logo-icon-text" *ngIf="isSidebarCollapsed">EC</span>
-        </div>
-      <button class="toggle-btn" (click)="toggleSidebar()">
-        <span class="toggle-icon">{{ isSidebarCollapsed ? '☰' : '✕' }}</span>
-      </button>
+  <div class="sidebar-header">
+    <div class="logo-container">
+      <span class="logo-text" *ngIf="!isSidebarCollapsed">Espace Collaborateurs</span>
+      <span class="logo-icon-text" *ngIf="isSidebarCollapsed">EC</span>
     </div>
+    <button class="toggle-btn" (click)="toggleSidebar()">
+      <span class="toggle-icon">{{ isSidebarCollapsed ? '☰' : '✕' }}</span>
+    </button>
+  </div>
+
+  <div class="menu-label" *ngIf="!isSidebarCollapsed">MENU</div>
   
-    <div class="menu-label" *ngIf="!isSidebarCollapsed">MENU</div>
-    
-    <nav class="sidebar-nav">
-      <div *ngFor="let item of menuItems" class="nav-item-container">
-        <!-- Items with children -->
-        <div *ngIf="item.children" class="nav-item parent">
-          <a (click)="toggleSubmenu(item, $event)" class="nav-link" [class.active]="item.expanded">
-            <span class="icon-container">
-              <i class="bi bi-{{ item.icon }}"></i>
-            </span>
-            <span class="nav-text" *ngIf="!isSidebarCollapsed">{{ item.label }}</span>
-            <span class="arrow" *ngIf="!isSidebarCollapsed">
-              <i class="bi" [class.bi-chevron-down]="item.expanded" [class.bi-chevron-right]="!item.expanded"></i>
-            </span>
-          </a>
-          
-          <div class="submenu" [class.expanded]="item.expanded && !isSidebarCollapsed">
-            <a *ngFor="let child of item.children" 
-               (click)="navigateTo(child.route)"
-               class="nav-link submenu-link">
-              <span class="icon-container">
-                <i class="bi bi-{{ child.icon }}"></i>
-              </span>
-              <span class="nav-text" *ngIf="!isSidebarCollapsed">{{ child.label }}</span>
-            </a>
-          </div>
-        </div>
+  <nav class="sidebar-nav">
+    <div *ngFor="let item of menuItems" class="nav-item-container">
+      <!-- Items with children -->
+      <div *ngIf="item.children" class="nav-item parent">
+        <a (click)="toggleSubmenu(item, $event)" class="nav-link" [class.active]="item.expanded">
+          <span class="icon-container">
+            <i class="bi bi-{{ item.icon }}"></i>
+          </span>
+          <span class="nav-text" *ngIf="!isSidebarCollapsed">
+            {{ item.label }}
+            <span *ngIf="item.hasNotification" class="notification-badge"></span>
+          </span>
+          <span class="arrow" *ngIf="!isSidebarCollapsed">
+            <i class="bi" [class.bi-chevron-down]="item.expanded" [class.bi-chevron-right]="!item.expanded"></i>
+          </span>
+        </a>
         
-        <!-- Regular items -->
-        <div *ngIf="!item.children" class="nav-item">
-          <a (click)="navigateTo(item.route)" class="nav-link">
+        <div class="submenu" [class.expanded]="item.expanded && !isSidebarCollapsed">
+          <a *ngFor="let child of item.children" 
+             (click)="navigateTo(child.route)"
+             class="nav-link submenu-link">
             <span class="icon-container">
-              <i class="bi bi-{{ item.icon }}"></i>
+              <i class="bi bi-{{ child.icon }}"></i>
             </span>
-            <span class="nav-text" *ngIf="!isSidebarCollapsed">{{ item.label }}</span>
+            <span class="nav-text" *ngIf="!isSidebarCollapsed">{{ child.label }}</span>
           </a>
         </div>
       </div>
-    </nav>
-    
-    <div class="sidebar-footer" *ngIf="!isSidebarCollapsed">
-      <div class="user-info">
-        <div class="user-avatar">
-          <i class="bi bi-person-circle"></i>
-        </div>
-        <div class="user-details">
-          <span class="user-name">{{ getUserName() }}</span>
-          <a class="logout" (click)="logout()">Se déconnecter</a>
-        </div>
+      
+      <!-- Regular items -->
+      <div *ngIf="!item.children" class="nav-item">
+        <a (click)="navigateTo(item.route)" class="nav-link">
+          <span class="icon-container">
+            <i class="bi bi-{{ item.icon }}"></i>
+          </span>
+          <span class="nav-text" *ngIf="!isSidebarCollapsed">
+            {{ item.label }}
+            <span *ngIf="item.hasNotification" class="notification-badge"></span>
+          </span>
+        </a>
       </div>
     </div>
+  </nav>
+  
+  <div class="sidebar-footer" *ngIf="!isSidebarCollapsed">
+    <div class="user-info">
+      <div class="user-avatar">
+        <i class="bi bi-person-circle"></i>
+      </div>
+      <div class="user-details">
+        <span class="user-name">{{ getUserName() }}</span>
+        <a class="logout" (click)="logout()">Se déconnecter</a>
+      </div>
+    </div>
+  </div>
 </aside>

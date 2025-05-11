@@ -36,9 +36,10 @@
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.5s ease, transform 0.5s ease;
-
+transition: background-color 0.3s ease;
   &.animate {
     opacity: 1;
+    background-color: rgba(255, 255, 0, 0.2); // Light yellow highlight
     transform: translateY(0);
   }
 }

@@ -32,27 +32,50 @@ public class NotificationServiceImpl implements NotificationService {
     private NotificationDTO mapToDTO(Notification notification) {
         NotificationDTO dto = new NotificationDTO();
         dto.setId(notification.getId());
-        dto.setUserId(notification.getUser().getId());
+        dto.setUserId(notification.getUser().getId()); // This is the recipient (manager for both cases)
         dto.setMessage(notification.getMessage());
         dto.setType(notification.getType());
         dto.setDemandeId(notification.getDemandeId());
         dto.setRead(notification.isRead());
         dto.setCreatedAt(notification.getCreatedAt());
-        // Populate user details (the user who triggered the notification)
         Users triggeredByUser = notification.getTriggeredByUser();
         if (triggeredByUser != null) {
             dto.setUserName(triggeredByUser.getPrenom() + " " + triggeredByUser.getNom());
-            // Construct the full URL for the userImage
             String imageUrl = triggeredByUser.getImage() != null
                     ? ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/" + triggeredByUser.getImage().replace("\\", "/"))
                     .toUriString()
                     : null;
             dto.setUserImage(imageUrl);
+            System.out.println("Mapping Notification to DTO: type=" + notification.getType() +
+                    ", userName=" + dto.getUserName() +
+                    ", userImage=" + dto.getUserImage());
+        } else {
+            System.out.println("No triggeredByUser for notification type=" + notification.getType());
         }
         return dto;
     }
 
+
+    @Transactional
+    public void createNotificationForUser(Users user, String message, String type, Long demandeId, Users triggeredByUser) {
+        Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setMessage(message);
+        notification.setType(type);
+        notification.setDemandeId(demandeId);
+        notification.setRead(false);
+        notification.setTriggeredByUser(triggeredByUser); // This is set correctly
+        notificationRepository.save(notification);
+
+        // Envoyer via WebSocket
+        NotificationDTO notificationDTO = mapToDTO(notification);
+        messagingTemplate.convertAndSendToUser(
+                String.valueOf(user.getId()),
+                "/notifications",
+                notificationDTO
+        );
+    }
     @Override
     @Transactional
     public void createNotificationForRole(Demande demande) {

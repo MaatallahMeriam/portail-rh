@@ -284,7 +284,36 @@ h3 {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 }
+/* Style pour le lien de pointage */
+.pointage-link {
+  text-align: right;
+  margin: 15px 30px 0 0;
+  color: $primary-color;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
 
+  &:hover {
+    color: darken($primary-color, 10%);
+    text-decoration: underline;
+  }
+}
+
+/* Ajustements responsifs */
+@media (max-width: 768px) {
+  .pointage-link {
+    margin: 15px 10px 0 0;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pointage-link {
+    margin: 10px 10px 0 0;
+    font-size: 13px;
+  }
+}
 /* Ajustements responsifs */
 @media (max-width: 1200px) {
   .feed {

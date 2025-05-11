@@ -6,7 +6,8 @@ import { DetailsIdeeComponentRH } from './pages/rh-space/components/details-idee
 import { DetailsIdeeManagerComponent } from './pages/manager-space/components/details-idee-manager/details-idee-manager.component';
 import { WishListComponent } from './pages/collab-space/components/wish-list/wish-list.component';
 import { QrPointageComponent } from './shared/components/qr-pointage/qr-pointage.component';
-
+import { PointageCollabComponent } from './pages/collab-space/components/pointage-collab/pointage-collab.component';
+import { PointageManagerComponent } from './pages/manager-space/components/pointage-manager/pointage-manager.component';
 import { DetailsEquipeComponent } from './pages/rh-space/components/details-equipe/details-equipe.component';
 import { LoginComponent } from './shared/components/login/login.component';
 import { CollabSpaceComponent } from './pages/collab-space/collab-space.component';  
@@ -68,7 +69,8 @@ import { TraitDmdDetailsComponent } from './pages/rh-space/components/trait-dmd-
 import { PlanningManagerComponent } from './pages/manager-space/components/planning-manager/planning-manager.component';
 
 export const routes: Routes = [
-    {path:'pointage',component:QrPointageComponent},
+  {path:'pointage-collab',component: PointageCollabComponent},
+  {path:'pointage-manager',component: PointageManagerComponent},
 
     {path:'profil-rh',component:ProfilRhComponent},
     {path:'profil-manager',component:ProfilManagerComponent},

@@ -1,6 +1,6 @@
 package com.example.PORTAIL_RH.teletravail_service.controller;
 
-import com.example.PORTAIL_RH.teletravail_service.entity.TeletravailPointage;
+import com.example.PORTAIL_RH.teletravail_service.dto.TeletravailPointageDTO;
 import com.example.PORTAIL_RH.teletravail_service.service.TeletravailPointageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,13 +45,14 @@ public class TeletravailPointageController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TeletravailPointage>> getPointages(
+    public ResponseEntity<List<TeletravailPointageDTO>> getPointages(
             @RequestParam String startDate,
-            @RequestParam String endDate) {
+            @RequestParam String endDate,
+            @RequestParam Long userId) { // Assurez-vous que @RequestParam est présent
         try {
             LocalDate start = LocalDate.parse(startDate);
             LocalDate end = LocalDate.parse(endDate);
-            List<TeletravailPointage> pointages = pointageService.getPointagesForPeriod(start, end);
+            List<TeletravailPointageDTO> pointages = pointageService.getPointagesForPeriod(start, end, userId);
             return ResponseEntity.ok(pointages);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -66,8 +67,6 @@ public class TeletravailPointageController {
             if (qrCodeBase64 == null) {
                 return ResponseEntity.badRequest().body("Aucun télétravail prévu aujourd’hui.");
             }
-            // La méthode sendQRCodeEmail est privée, donc nous devons ajouter une méthode publique dans le service
-            // ou gérer l'envoi ici. Pour simplifier, supposons une nouvelle méthode publique dans le service.
             boolean emailSent = pointageService.sendPointageEmail(userId, LocalDate.now());
             if (emailSent) {
                 return ResponseEntity.ok("Email de pointage envoyé avec succès !");

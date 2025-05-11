@@ -1,0 +1,276 @@
+$primary-color: #230046;
+$transition: all 0.3s ease;
+$border-radius: 12px;
+$success-color: #2E7D32;
+$error-color: #D32F2F;
+
+.collab-home {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.pointage-card-confirm {
+  background: white;
+  margin-top: -300px;
+  border-radius: $border-radius;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  transition: $transition;
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+
+  h3 {
+    color: #E5007F;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+
+  p {
+    color: $primary-color;
+    font-size: 16px;
+    margin: 10px 0;
+  }
+}
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.app-sidebar, .app-right-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.app-sidebar {
+  left: 0;
+  width: 250px;
+  background: #f4f4f4;
+}
+
+.app-right-sidebar {
+  right: 0;
+  width: 250px;
+  background: #f4f4f4;
+}
+
+.feed {
+  position: fixed;
+  top: 70px;
+  left: 250px;
+  right: 250px;
+  bottom: 0;
+  overflow-y: auto;
+  background: #fff;
+  transition: $transition;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centre horizontalement */
+  justify-content: center; /* Centre verticalement */
+}
+
+.feed.sidebar-collapsed {
+  left: 100px;
+  right: 250px;
+}
+
+.feed::-webkit-scrollbar {
+  display: none;
+}
+
+.pointage-card {
+  background: white;
+  border-radius: $border-radius;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  margin: 20px 0;
+  transition: $transition;
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+
+  h3 {
+    color: $primary-color;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+
+  p {
+    color: $primary-color;
+    font-size: 16px;
+    margin: 10px 0;
+  }
+}
+
+.confirmation-message {
+  color: $success-color;
+  font-size: 18px;
+  font-weight: 500;
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #d4edda;
+  border-radius: 8px;
+}
+
+.qr-code {
+  max-width: 200px;
+  margin: 20px auto;
+  display: block;
+}
+
+.pointage-link {
+  color: $primary-color;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
+  transition: $transition;
+
+  &:hover {
+    color: #E5007F;
+    text-decoration: underline;
+  }
+}
+
+.alert {
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 5px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: $success-color;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: $error-color;
+}
+
+@media screen and (max-width: 1300px) {
+  .app-sidebar {
+    width: 200px;
+  }
+
+  .app-right-sidebar {
+    display: none;
+  }
+
+  .feed {
+    left: 200px;
+    right: 0;
+  }
+
+  .feed.sidebar-collapsed {
+    left: 100px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .app-sidebar {
+    width: 200px;
+  }
+
+  .app-right-sidebar {
+    display: none;
+  }
+
+  .feed {
+    left: 200px;
+    right: 0;
+  }
+
+  .feed.sidebar-collapsed {
+    left: 100px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .app-sidebar {
+    display: block;
+  }
+
+  .app-right-sidebar {
+    display: none;
+  }
+
+  .feed {
+    left: 0;
+    right: 0;
+    padding: 10px;
+  }
+
+  .feed.sidebar-collapsed {
+    left: 0;
+    right: 0;
+  }
+
+  .pointage-card {
+    max-width: 90%;
+    padding: 15px;
+  }
+
+  .qr-code {
+    max-width: 150px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .app-right-sidebar {
+    display: none;
+  }
+
+  .feed {
+    left: 0;
+    right: 0;
+    padding: 10px;
+  }
+
+  .feed.sidebar-collapsed {
+    left: 0;
+    right: 0;
+  }
+
+  .pointage-card {
+    max-width: 95%;
+    padding: 10px;
+  }
+
+  .qr-code {
+    max-width: 120px;
+  }
+
+  .pointage-link {
+    font-size: 14px;
+  }
+
+  .confirmation-message {
+    font-size: 16px;
+    padding: 8px;
+  }
+
+  .alert {
+    max-width: 95%;
+  }
+}

@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface NotificationService {
     void createNotificationForRole(Demande demande);
-    void createNotificationForUser(Users user, String message, String type, Long demandeId);
+    void createNotificationForUser(Users user, String message, String type, Long demandeId, Users triggeredByUser); // Ajout de la surcharge
     void createNotificationForRoleUsers(Users.Role role, String message, String type, Long demandeId);
-    void notifyRequesterStatusChange(Demande demande, String status); // Added
+    void notifyRequesterStatusChange(Demande demande, String status);
     List<NotificationDTO> getNotificationsByUserId(Long userId, boolean isRead);
     List<NotificationDTO> getNotificationsByUserId(Long userId);
     NotificationDTO markAsRead(Long notificationId);

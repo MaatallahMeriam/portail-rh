@@ -13,7 +13,7 @@ import { AuthService } from '../../../../shared/services/auth.service';
 import { TeletravailService, UserTeletravailDTO } from '../../../../services/teletravail.service';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import Swal from 'sweetalert2';
-
+import { Router } from '@angular/router'; // Importez Router
 @Component({
   selector: 'app-planning-user',
   standalone: true,
@@ -46,7 +46,8 @@ export class PlanningUserComponent implements OnInit {
   constructor(
     private teletravailService: TeletravailService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router 
   ) {}
 
   ngOnInit(): void {
@@ -57,7 +58,9 @@ export class PlanningUserComponent implements OnInit {
     this.isSidebarCollapsed = isCollapsed;
     this.cdr.markForCheck();
   }
-
+navigateToPointage(): void {
+    this.router.navigate(['/pointage-collab']);
+  }
   loadUserPlanning(): void {
     const userId = this.authService.getUserIdFromToken();
     if (!userId) {

@@ -46,7 +46,6 @@ export class QrPointageComponent implements OnInit, OnDestroy {
     }
 
     this.checkTeletravailDay();
-    this.checkPointageStatus();
   }
 
   // Vérifier si aujourd'hui est un jour de télétravail
@@ -74,25 +73,6 @@ export class QrPointageComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Vérifier si un pointage existe pour aujourd'hui
-  private checkPointageStatus(): void {
-    const today = new Date().toISOString().split('T')[0];
-    this.pointageService.getPointages(today, today).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (pointages) => {
-        this.hasPointedToday = pointages.length > 0;
-      },
-      error: (err) => {
-        this.errorMessage = err.message;
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
-          text: this.errorMessage
-        });
-      }
-    });
-  }
 
   // Charger le QR code
   private loadQRCode(): void {

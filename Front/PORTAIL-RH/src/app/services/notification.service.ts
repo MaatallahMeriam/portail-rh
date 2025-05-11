@@ -1,3 +1,4 @@
+// notification.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -8,11 +9,11 @@ export interface Notification {
   userId: number;
   message: string;
   type: string;
-  demandeId: number;
+  demandeId: number | null; // Allow null for POINTAGE notifications
   read: boolean;
   createdAt: string;
-  userName: string; // Added: Full name of the user who triggered the notification
-  userImage?: string; // Added: URL to the user's profile photo
+  userName: string;
+  userImage?: string;
 }
 
 @Injectable({
@@ -31,6 +32,7 @@ export class NotificationService {
       this.ws = webSocket(`ws://localhost:8080/ws`);
       this.ws.subscribe({
         next: (message) => {
+          console.log('Notification reçue via WebSocket :', message); // Debug
           if (message.userId === parseInt(userId)) {
             const currentNotifications = this.notificationsSubject.value;
             this.notificationsSubject.next([message, ...currentNotifications]);

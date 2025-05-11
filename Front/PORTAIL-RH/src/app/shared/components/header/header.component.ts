@@ -1,3 +1,4 @@
+// header.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -31,20 +32,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadUserInfo();
-
-    // Connect to WebSocket and load notifications for all users
     this.notificationService.connectWebSocket();
     this.loadNotifications();
 
     this.subscription.add(
       this.notificationService.notifications$.subscribe((notifications) => {
         this.notifications = notifications;
-        this.notificationCount = notifications.filter((n) => {
-          const isRead = typeof n.read === 'string' ? n.read === 'true' : n.read;
-          return !isRead;
-        }).length;
+        this.notificationCount = notifications.filter((n) => !n.read).length;
         console.log('Notifications mises à jour :', notifications);
-        console.log('Détails des notifications :', JSON.stringify(notifications, null, 2));
         console.log('Nombre de notifications non lues :', this.notificationCount);
       })
     );
@@ -63,17 +58,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
       });
     } else {
       console.warn('Aucun utilisateur authentifié');
-      window.location.href = '/login';
+      this.router.navigate(['/login']);
     }
   }
 
   loadNotifications(): void {
     const userId = this.authService.getUserIdFromToken();
     if (userId) {
-      // Charger toutes les notifications (lues et non lues)
       this.notificationService.getNotifications(userId, null).subscribe({
         next: (notifications) => {
-          console.log('Toutes les notifications chargées :', notifications);
+          console.log('Notifications chargées :', notifications);
           this.notificationService.updateNotifications(notifications);
         },
         error: (error) => {
@@ -86,9 +80,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   showNotifications(): void {
     this.showNotificationsDropdown = !this.showNotificationsDropdown;
 
-    if (this.showNotificationsDropdown) {
+    if (this.showNotificationsDropdown && this.notificationCount > 0) {
       const userId = this.authService.getUserIdFromToken();
-      if (userId && this.notificationCount > 0) {
+      if (userId) {
         this.notificationService.markAllAsRead(userId).subscribe({
           next: () => {
             const updatedNotifications = this.notifications.map((n) => ({
@@ -110,13 +104,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const type = notification.type?.toLowerCase();
     const message = notification.message?.toLowerCase() || '';
 
-    if (type === 'conges') {
+    if (type === 'pointage') {
+      return notification.message; // Use the full message, e.g., "Votre membre John Doe a bien effectué son pointage TT le 2025-05-11"
+    } else if (type === 'conges') {
       if (message.includes('acceptée')) {
         return 'Votre demande de congé a été acceptée';
       } else if (message.includes('refusée')) {
         return 'Votre demande de congé a été refusée';
       } else if (message.includes('membre')) {
-        return notification.message; // Ex: "Membre John Doe a soumis une demande de congé"
+        return notification.message;
       }
       return 'Nouvelle demande de congé';
     } else if (type === 'document') {
@@ -125,28 +121,47 @@ export class HeaderComponent implements OnInit, OnDestroy {
       } else if (message.includes('refusée')) {
         return 'Votre demande de document a été refusée';
       }
-      return notification.message; // Ex: "Nouvelle demande de document soumise par John Doe"
+      return notification.message;
     } else if (type === 'logistique') {
       if (message.includes('acceptée')) {
         return 'Votre demande logistique a été acceptée';
       } else if (message.includes('refusée')) {
         return 'Votre demande logistique a été refusée';
       }
-      return notification.message; // Ex: "Nouvelle demande logistique soumise par John Doe"
+      return notification.message;
     }
     return message || 'Nouvelle notification';
   }
 
   goToDemande(notification: Notification): void {
     const userRole = this.authService.getUserRole();
-    const notificationType = notification.type;
-    const message = notification.message.toLowerCase();
+    const notificationType = notification.type?.toUpperCase();
 
-    // Redirection logic based on user role and notification type
+    if (notificationType === 'POINTAGE') {
+      // For POINTAGE notifications, mark as read without navigation
+      if (!notification.read) {
+        this.notificationService.markAsRead(notification.id).subscribe({
+          next: (updatedNotification) => {
+            const updatedNotifications = this.notifications.map((n) =>
+              n.id === notification.id ? { ...n, read: true } : n
+            );
+            this.notificationService.updateNotifications(updatedNotifications);
+            this.notificationCount = this.notifications.filter((n) => !n.read).length;
+          },
+          error: (error) => {
+            console.error('Erreur lors de la mise à jour de la notification', error);
+          },
+        });
+      }
+      this.showNotificationsDropdown = false;
+      return; // No navigation for POINTAGE
+    }
+
+    // Existing logic for other notification types
     if (userRole === 'RH') {
       if (notificationType === 'DOCUMENT' || notificationType === 'LOGISTIQUE') {
         this.router.navigate(['/valide-dmd']);
-      } else if (notificationType === 'CONGES' && (message.includes('acceptée') || message.includes('refusée'))) {
+      } else if (notificationType === 'CONGES' && (notification.message.toLowerCase().includes('acceptée') || notification.message.toLowerCase().includes('refusée'))) {
         this.router.navigate(['/histo-dmd']);
       } else {
         this.router.navigate(['/trait-dmd-rh'], {
@@ -163,13 +178,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
       }
     }
 
-    // Mark the notification as read if not already read
     if (!notification.read) {
       this.notificationService.markAsRead(notification.id).subscribe({
         next: (updatedNotification) => {
           const updatedNotifications = this.notifications.map((n) =>
-            n.id === notification.id ? { ...n, read: true } : n          );
+            n.id === notification.id ? { ...n, read: true } : n
+          );
           this.notificationService.updateNotifications(updatedNotifications);
+          this.notificationCount = this.notifications.filter((n) => !n.read).length;
         },
         error: (error) => {
           console.error('Erreur lors de la mise à jour de la notification', error);
@@ -177,18 +193,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
       });
     }
 
-    // Close the dropdown
     this.showNotificationsDropdown = false;
   }
 
   navigateToHome(): void {
     const userRole = this.authService.getUserRole();
     if (!userRole) {
-      console.warn('Aucun rôle trouvé pour l\'utilisateur. Redirection vers la page de connexion.');
       this.router.navigate(['/login']);
       return;
     }
-
     switch (userRole) {
       case 'RH':
         this.router.navigate(['/rh-space']);
@@ -203,7 +216,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.router.navigate(['/collab-space']);
         break;
       default:
-        console.warn('Rôle non reconnu :', userRole);
         this.router.navigate(['/login']);
     }
   }
@@ -211,11 +223,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   navigateToTeam(): void {
     const userRole = this.authService.getUserRole();
     if (!userRole) {
-      console.warn('Aucun rôle trouvé pour l\'utilisateur. Redirection vers la page de connexion.');
       this.router.navigate(['/login']);
       return;
     }
-
     switch (userRole) {
       case 'COLLAB':
         this.router.navigate(['/membre-collab']);
@@ -227,7 +237,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.router.navigate(['/details-eq']);
         break;
       default:
-        console.warn('Rôle non reconnu pour la navigation vers la page équipe :', userRole);
         this.router.navigate(['/login']);
     }
   }
@@ -235,11 +244,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   navigateToProfile(): void {
     const userRole = this.authService.getUserRole();
     if (!userRole) {
-      console.warn('Aucun rôle trouvé pour l\'utilisateur. Redirection vers la page de connexion.');
       this.router.navigate(['/login']);
       return;
     }
-
     switch (userRole) {
       case 'COLLAB':
         this.router.navigate(['/profile-collab']);
@@ -254,7 +261,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.router.navigate(['/profil-admin']);
         break;
       default:
-        console.warn('Rôle non reconnu pour la navigation vers le profil :', userRole);
         this.router.navigate(['/login']);
     }
   }
