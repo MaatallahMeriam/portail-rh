@@ -2,6 +2,8 @@ package com.example.PORTAIL_RH.user_service.user_service.Service.IMPL;
 
 import com.example.PORTAIL_RH.KPI_service.Service.KpiService;
 import com.example.PORTAIL_RH.user_service.conges_service.DTO.UserCongesDTO;
+import com.example.PORTAIL_RH.user_service.conges_service.Entity.CongeType;
+import com.example.PORTAIL_RH.user_service.conges_service.Entity.UserConges;
 import com.example.PORTAIL_RH.user_service.conges_service.Repo.UserCongesRepository;
 import com.example.PORTAIL_RH.user_service.conges_service.Service.UserCongesService;
 import com.example.PORTAIL_RH.user_service.user_service.DTO.BirthdayWishDTO;
@@ -23,6 +25,7 @@ import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.ReactionReposit
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.IdeaRatingRepository;
 import com.example.PORTAIL_RH.request_service.Repo.DemandeRepository;
 import com.example.PORTAIL_RH.user_service.user_service.Service.UsersService;
+import com.opencsv.CSVWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
@@ -33,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -118,7 +122,52 @@ public class UsersServiceImpl implements UsersService {
         Users updatedUser = usersRepository.save(user);
         return mapToDTO(updatedUser);
     }
+    @Override
+    public UsersDTO deleteProfilePhoto(Long userId) throws Exception {
+        // Récupérer l'utilisateur
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        // Supprimer le fichier de la photo du système de fichiers (si nécessaire)
+        if (user.getImage() != null && !user.getImage().isEmpty()) {
+            Path filePath = Paths.get(user.getImage());
+            try {
+                Files.deleteIfExists(filePath);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to delete profile photo file: " + e.getMessage());
+            }
+        }
+
+        // Mettre le champ image à null
+        user.setImage(null);
+
+        // Sauvegarder l'utilisateur mis à jour
+        Users updatedUser = usersRepository.save(user);
+
+        // Retourner le DTO mis à jour
+        return mapToDTO(updatedUser);
+    }
+    @Override
+    public boolean updatePassword(Long userId, String oldPassword, String newPassword) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        // Vérifier l'ancien mot de passe
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IllegalArgumentException("L'ancien mot de passe est incorrect.");
+        }
+
+        // Valider le nouveau mot de passe (exemple : minimum 8 caractères)
+        if (newPassword == null || newPassword.length() < 8) {
+            throw new IllegalArgumentException("Le nouveau mot de passe doit contenir au moins 8 caractères.");
+        }
+
+        // Encoder et mettre à jour le nouveau mot de passe
+        user.setPassword(passwordEncoder.encode(newPassword));
+        usersRepository.save(user);
+
+        return true;
+    }
     @Override
     public UsersDTO updateUserBasicInfo(Long id, UserUpdateBasicDTO dto) {
         Users user = usersRepository.findById(id)
@@ -297,7 +346,80 @@ public class UsersServiceImpl implements UsersService {
         Users updatedUser = usersRepository.save(user);
         return mapToDTO(updatedUser);
     }
+    @Override
+    public byte[] exportActiveUsersToCSV() {
+        List<Users> activeUsers = usersRepository.findAllByActiveTrue();
 
+        try (StringWriter stringWriter = new StringWriter();
+             CSVWriter csvWriter = new CSVWriter(stringWriter, ';', CSVWriter.NO_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END)) {
+
+            // Write CSV header
+            String[] header = {"Nom", "Prenom", "Mail", "Numero", "Adresse", "Poste", "Departement", "Nom Equipe"};
+            csvWriter.writeNext(header);
+
+            // Write user data
+            for (Users user : activeUsers) {
+                String equipeName = user.getEquipe() != null ? user.getEquipe().getNom() : "";
+                String[] data = {
+                        user.getNom() != null ? user.getNom() : "",
+                        user.getPrenom() != null ? user.getPrenom() : "",
+                        user.getMail() != null ? user.getMail() : "",
+                        user.getNumero() != null ? user.getNumero() : "",
+                        user.getAdresse() != null ? user.getAdresse() : "",
+                        user.getPoste() != null ? user.getPoste() : "",
+                        user.getDepartement() != null ? user.getDepartement() : "",
+                        equipeName
+                };
+                csvWriter.writeNext(data);
+            }
+
+            // Convert to byte array
+            return stringWriter.toString().getBytes("UTF-8");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate CSV file: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public byte[] exportUserCongesToCSV() {
+        List<Users> activeUsers = usersRepository.findAllByActiveTrue();
+
+        try (StringWriter stringWriter = new StringWriter();
+             CSVWriter csvWriter = new CSVWriter(stringWriter, ';', CSVWriter.NO_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END)) {
+
+            // Write CSV header
+            String[] header = {"Nom", "Prenom", "Departement", "Poste", "Liste de Conges"};
+            csvWriter.writeNext(header);
+
+            // Write user data with their conges
+            for (Users user : activeUsers) {
+                List<UserConges> userCongesList = userCongesRepository.findByUserId(user.getId());
+                String congesListString = userCongesList.stream()
+                        .map(uc -> {
+                            CongeType ct = uc.getCongeType();
+                            return String.format("%s (Solde: %d, Validite: %s)",
+                                    ct.getNom(),
+                                    uc.getSoldeActuel(),
+                                    ct.getValidite() != null ? new SimpleDateFormat("yyyy-MM-dd").format(ct.getValidite()) : "N/A");
+                        })
+                        .collect(Collectors.joining(" | "));
+
+                String[] data = {
+                        user.getNom() != null ? user.getNom() : "",
+                        user.getPrenom() != null ? user.getPrenom() : "",
+                        user.getDepartement() != null ? user.getDepartement() : "",
+                        user.getPoste() != null ? user.getPoste() : "",
+                        congesListString.isEmpty() ? "Aucun congé" : congesListString
+                };
+                csvWriter.writeNext(data);
+            }
+
+            // Convert to byte array
+            return stringWriter.toString().getBytes("UTF-8");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate CSV file: " + e.getMessage());
+        }
+    }
     @Override
     @Transactional
     public void deleteUser(Long id) {

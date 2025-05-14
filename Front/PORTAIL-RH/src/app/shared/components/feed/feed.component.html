@@ -1,3 +1,4 @@
+<!-- src/app/components/feed/feed.component.html -->
 <div class="feed-container">
   <!-- Success Message -->
   <app-success-message *ngIf="successMessage" [message]="successMessage"></app-success-message>
@@ -16,7 +17,7 @@
   <!-- Feed Posts -->
   <div class="feed-posts">
     <ng-container *ngIf="publications.length > 0; else noPostsTemplate">
-      <div class="post-card-container" *ngFor="let post of publications; trackBy: trackByPostId">
+      <div class="post-card-container" *ngFor="let post of publications; trackBy: trackByPostId" [id]="'post-' + post.id">
         <app-post-card
           [post]="post"
           [userId]="userId"

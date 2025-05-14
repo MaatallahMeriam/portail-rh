@@ -5,6 +5,11 @@
     <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
 
     <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <!-- Ajout du <p> pour l'exportation -->
+      <p class="export-users" (click)="exportUsers()">
+        Export utilisateurs
+        <mat-icon class="export-icon">file_download</mat-icon>
+      </p>
       <div class="container">
         <h2 class="title">Liste des utilisateurs</h2>
 

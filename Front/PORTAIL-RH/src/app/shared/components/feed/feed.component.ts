@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CarouselModule } from 'ngx-owl-carousel-o';
@@ -14,6 +14,7 @@ import { AuthService } from '../../../shared/services/auth.service';
 import { UserService, UserDTO } from '../../../services/users.service';
 import { NewsService, NewsDTO } from '../../../services/news.service';
 import { AnimationService } from './services/animation.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-feed',
@@ -27,12 +28,12 @@ import { AnimationService } from './services/animation.service';
     PostCreatorComponent,
     PostCardComponent,
     ImageModalComponent,
-    SuccessMessageComponent
+    SuccessMessageComponent,
   ],
   templateUrl: './feed.component.html',
-  styleUrls: ['./feed.component.scss']
+  styleUrls: ['./feed.component.scss'],
 })
-export class FeedComponent implements OnInit {
+export class FeedComponent implements OnInit, AfterViewInit {
   @Input() isSidebarCollapsed: boolean = false;
 
   publications: PublicationDTO[] = [];
@@ -41,7 +42,7 @@ export class FeedComponent implements OnInit {
   userPhoto: string | null = null;
   successMessage: string | null = null;
   selectedImage: string | null = null;
-  
+
   userLikes: { [id: number]: boolean } = {};
   likeSummaries: { [id: number]: ReactionSummaryDTO } = {};
   openCommentSections: { [id: number]: boolean } = {};
@@ -52,7 +53,8 @@ export class FeedComponent implements OnInit {
     private reactionService: ReactionService,
     private authService: AuthService,
     private userService: UserService,
-    private animationService: AnimationService
+    private animationService: AnimationService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -64,6 +66,16 @@ export class FeedComponent implements OnInit {
     this.loadUserPhoto();
     this.loadNews();
     this.loadPublications();
+  }
+
+  ngAfterViewInit(): void {
+    // Vérifier si un publicationId est passé dans les queryParams
+    this.route.queryParams.subscribe((params) => {
+      const publicationId = params['publicationId'];
+      if (publicationId) {
+        this.scrollToPublication(publicationId);
+      }
+    });
   }
 
   loadUserPhoto(): void {
@@ -94,9 +106,9 @@ export class FeedComponent implements OnInit {
     this.publicationService.getAllFeedPosts().subscribe({
       next: (posts) => {
         this.publications = posts
-          .filter(post => post.id !== undefined)
+          .filter((post) => post.id !== undefined)
           .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) as PublicationDTO[];
-        this.publications.forEach(post => {
+        this.publications.forEach((post) => {
           if (post.id !== undefined) {
             this.loadLikes(post.id);
             this.loadLikeSummary(post.id);
@@ -104,36 +116,36 @@ export class FeedComponent implements OnInit {
         });
         this.animationService.animateItems('.post-card-container');
       },
-      error: (err) => console.error('Error loading publications', err)
+      error: (err) => console.error('Error loading publications', err),
     });
   }
 
   loadLikes(publicationId: number): void {
     this.reactionService.getReactionsByPublicationId(publicationId).subscribe({
       next: (reactions) => {
-        this.userLikes[publicationId] = reactions.some(r => r.userId.toString() === this.userId);
+        this.userLikes[publicationId] = reactions.some((r) => r.userId.toString() === this.userId);
       },
-      error: (err) => console.error(err)
+      error: (err) => console.error(err),
     });
   }
 
   loadLikeSummary(publicationId: number): void {
     this.reactionService.getReactionSummaryByPublicationId(publicationId).subscribe({
-      next: (summary) => this.likeSummaries[publicationId] = summary,
-      error: (err) => console.error(err)
+      next: (summary) => (this.likeSummaries[publicationId] = summary),
+      error: (err) => console.error(err),
     });
   }
 
   onPostCreated(newPost: PublicationDTO): void {
     if (newPost.id !== undefined) {
-      this.showSuccessMessage('Post publiée'); // Show success message
-      this.loadPublications(); // Fully refresh the feed by reloading publications
+      this.showSuccessMessage('Post publiée');
+      this.loadPublications();
     }
   }
 
   onPostUpdated(updatedPost: PublicationDTO): void {
     if (updatedPost.id !== undefined) {
-      const index = this.publications.findIndex(p => p.id === updatedPost.id);
+      const index = this.publications.findIndex((p) => p.id === updatedPost.id);
       if (index !== -1) {
         this.publications[index] = updatedPost;
       }
@@ -142,7 +154,7 @@ export class FeedComponent implements OnInit {
   }
 
   onPostDeleted(postId: number): void {
-    this.publications = this.publications.filter(post => post.id !== postId);
+    this.publications = this.publications.filter((post) => post.id !== postId);
     this.showSuccessMessage('Publication supprimée avec succès !');
   }
 
@@ -172,5 +184,21 @@ export class FeedComponent implements OnInit {
 
   trackByPostId(index: number, post: PublicationDTO): number | undefined {
     return post.id;
+  }
+
+  scrollToPublication(publicationId: string): void {
+    setTimeout(() => {
+      const publicationElement = document.getElementById(`post-${publicationId}`);
+      if (publicationElement) {
+        publicationElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Appliquer l'effet de surbrillance
+        publicationElement.classList.add('highlight');
+        setTimeout(() => {
+          publicationElement.classList.remove('highlight');
+        }, 2000); // Supprimer l'effet après 2 secondes
+      } else {
+        console.warn(`Publication avec l'ID ${publicationId} non trouvée`);
+      }
+    }, 500); // Délai pour s'assurer que les publications sont chargées
   }
 }

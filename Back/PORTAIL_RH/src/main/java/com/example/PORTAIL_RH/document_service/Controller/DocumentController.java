@@ -17,10 +17,10 @@ import java.util.List;
 @RequestMapping("/api/documents")
 public class DocumentController {
 
-    private DocumentService documentService;
+    private final DocumentService documentService;
 
-    // Ajout d'un setter pour l'injection manuelle
-    public void setDocumentService(DocumentService documentService) {
+    // Injection par constructeur
+    public DocumentController(DocumentService documentService) {
         this.documentService = documentService;
     }
 

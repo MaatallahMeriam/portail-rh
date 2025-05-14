@@ -1,133 +1,211 @@
+$primary-color: #2c2984; // Dark purple from EXCELLIA logo
+$secondary-color: #fa0066; // Pink from EXCELLIA logo
+$accent-color: #ffb800; // Yellow from EXCELLIA logo
+$text-dark: #230046;
+$text-light: #ffffff;
+$error-color: #dc2626;
+
 .login-frame {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-image: url('/assets/images/fcd3.jpg'); // Chemin corrigé
-  background-size: cover; // Couvre toute la zone
-  background-position: center; // Centre l'image
-  background-repeat: no-repeat; // Pas de répétition
-  background-color: #d4d2e3; // Couleur de secours
-  position: relative; // Pour gérer les éléments enfants
+  min-height: 100vh;
+  background-image: url('/assets/images/fcd3.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
   overflow: hidden;
 
-  // Optionnel : Ajoute un overlay pour la lisibilité
   &::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.3); // Overlay léger
-    z-index: 0;
+    inset: 0;
+    background: linear-gradient(
+      30deg,
+      rgba($primary-color, 0.20),
+      rgba($secondary-color, 0.12)
+    );
+    z-index: 1;
   }
 }
-.form{
-  margin-top: 30px;
-}
+
 .login-container {
   display: flex;
-  background-color: #230046;
-  border-radius: 15px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  background-color: $text-light;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   width: 900px;
-  position: relative; // Au-dessus de l'overlay
-  z-index: 1;
+  max-width: 95%;
+  position: relative;
+  z-index: 2;
+  margin: 1rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 100%;
+    max-width: 400px;
+  }
 }
 
 .image-section {
   width: 50%;
-  padding: 20px;
+  position: relative;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 200px;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
 }
 
-.image-section img {
-  width: 100%;
-  border-radius: 10px;
+.brand-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  
+  .logo {
+    height: 40px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
 }
 
 .form-section {
   width: 50%;
-  background-color: white;
-  padding: 40px;
+  padding: 2.5rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 2rem;
+  }
 }
 
 h1 {
-  font-size: 35px;
-  font-weight: bold;
-  color: #56142F;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #390969;
+  margin-bottom: 0.5rem;
+  text-align: center;
 }
 
-form {
-  width: 100%;
+.subtitle {
+  color: $text-dark;
+  opacity: 0.8;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
 }
 
 label {
   display: block;
-  font-weight: bold;
-  text-align: left;
-  margin-top: 10px;
+  font-weight: 600;
+  color: $text-dark;
+  margin-bottom: 0.5rem;
+}
+
+.input-container {
+  position: relative;
+
+  .input-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $primary-color;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 input {
   width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
+  padding: 0.75rem 1rem;
+  padding-right: 2.5rem;
+  border: 2px solid rgba($primary-color, 0.1);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: rgba($text-light, 0.8);
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    background-color: $text-light;
+    box-shadow: 0 0 0 4px rgba($primary-color, 0.1);
+  }
+
+  &::placeholder {
+    color: rgba($text-dark, 0.4);
+  }
 }
 
-.checkbox-container {
+.login-button {
+  width: 100%;
+  padding: 0.875rem;
+  background: linear-gradient(100deg, $primary-color, $secondary-color);
+  color: $text-light;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  margin-top: 10px;
-  margin-left: -380px;
+  justify-content: center;
+  gap: 0.5rem;
+
+  i {
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba($primary-color, 0.2);
+
+    i {
+      transform: translateX(4px);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
 
-.checkbox-container label {
-  font-size: 12px;
-  margin-left: -50px;
+.footer-text {
+  margin-top: auto;
+  text-align: center;
+  color: rgba($text-dark, 0.6);
+  font-size: 0.875rem;
 }
 
-.checkbox-container input {
-  margin-right: -320px;
-  margin-top: 14.5px;
-}
-
-button {
-  background-color: #230046;
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 15px;
-  font-size: 16px;
-}
-
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
-}
-
-p {
-  font-size: 14px;
-  margin-top: 15px;
-}
-
-p a {
-  font-weight: bold;
-  color: #56142F;
-  text-decoration: none;
-}
-
-p a:hover {
-  text-decoration: underline;
+// Utility classes
+.text-error {
+  color: $error-color;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
 }

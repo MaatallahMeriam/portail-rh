@@ -190,23 +190,18 @@ public class TeletravailPointageServiceImpl implements TeletravailPointageServic
 
     @Override
     public List<TeletravailPointageDTO> getPointagesForPeriod(LocalDate start, LocalDate end, Long userId) {
-        try {
-            List<TeletravailPointage> pointages = pointageRepository.findByUserIdAndPointageDateBetween(userId, start, end);
-            logger.info("Requête exécutée pour userId={}, start={}, end={}", userId, start, end); // Log détaillé
-            logger.info("Pointages récupérés pour userId={} pour la période {} à {} : {} éléments", userId, start, end, pointages.size());
-            return pointages.stream().map(p -> {
-                TeletravailPointageDTO dto = new TeletravailPointageDTO();
-                dto.setId(p.getId());
-                dto.setUserId(p.getUser().getId());
-                dto.setUserTeletravailId(p.getUserTeletravail().getId());
-                dto.setPointageDate(p.getPointageDate());
-                dto.setPointageTime(p.getPointageTime());
-                return dto;
-            }).collect(Collectors.toList());
-        } catch (Exception e) {
-            logger.error("Erreur lors de la récupération des pointages pour userId={} : {}", userId, e.getMessage(), e);
-            throw new RuntimeException("Erreur lors de la récupération des pointages : " + e.getMessage());
-        }
+        List<TeletravailPointage> pointages = pointageRepository.findByUserIdAndPointageDateBetween(userId, start, end);
+        return pointages.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    private TeletravailPointageDTO convertToDTO(TeletravailPointage pointage) {
+        TeletravailPointageDTO dto = new TeletravailPointageDTO();
+        dto.setId(pointage.getId());
+        dto.setUserId(pointage.getUser().getId());
+        dto.setUserTeletravailId(pointage.getUserTeletravail().getId());
+        dto.setPointageDate(pointage.getPointageDate());
+        dto.setPointageTime(pointage.getPointageTime());
+        return dto;
     }
 
     @Override

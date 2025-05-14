@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de Pointage</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome pour les icônes -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 500px;
+            padding: 20px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .card-body {
+            padding: 30px;
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 3rem;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        .error-icon {
+            font-size: 3rem;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        .btn-home {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn-home:hover {
+            background-color: #0056b3;
+        }
+        .spinner {
+            display: none;
+            margin: 20px auto;
+        }
+        @media (max-width: 576px) {
+            .container {
+                padding: 10px;
+            }
+            .card-body {
+                padding: 20px;
+            }
+            .message {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            Confirmation de Pointage
+        </div>
+        <div class="card-body">
+            <div class="spinner-border text-primary spinner" role="status">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+            <div id="result" style="display: none;">
+                <i id="status-icon" class="fas"></i>
+                <p id="message" class="message"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS et Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Récupérer le token depuis l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    // Fonction pour appeler l'API
+    async function confirmPointage() {
+        const spinner = document.querySelector('.spinner');
+        const resultDiv = document.getElementById('result');
+        const statusIcon = document.getElementById('status-icon');
+        const messageEl = document.getElementById('message');
+
+        spinner.style.display = 'block';
+        resultDiv.style.display = 'none';
+
+        try {
+            const response = await fetch(`/api/teletravail/pointage/confirm?token=${token}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.text();
+            spinner.style.display = 'none';
+            resultDiv.style.display = 'block';
+
+            if (response.ok) {
+                statusIcon.classList.add('fa-check-circle', 'success-icon');
+                messageEl.textContent = data || 'Pointage enregistré avec succès !';
+            } else {
+                statusIcon.classList.add('fa-times-circle', 'error-icon');
+                messageEl.textContent = data || 'Erreur lors de l’enregistrement du pointage.';
+            }
+        } catch (error) {
+            spinner.style.display = 'none';
+            resultDiv.style.display = 'block';
+            statusIcon.classList.add('fa-times-circle', 'error-icon');
+            messageEl.textContent = 'Erreur : Impossible de contacter le serveur.';
+        }
+    }
+
+    // Appeler la fonction au chargement de la page
+    if (token) {
+        confirmPointage();
+    } else {
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('status-icon').classList.add('fa-times-circle', 'error-icon');
+        document.getElementById('message').textContent = 'Aucun token fourni.';
+    }
+</script>
+</body>
+</html>

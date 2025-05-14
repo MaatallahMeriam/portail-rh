@@ -7,6 +7,7 @@ import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.IdeaRating;
 import com.example.PORTAIL_RH.feed_service.pub_service.Entity.FeedPost;
 import com.example.PORTAIL_RH.feed_service.pub_service.Entity.Publication;
 import com.example.PORTAIL_RH.feed_service.pub_service.Entity.IdeeBoitePost;
+import com.example.PORTAIL_RH.notification_service.Service.NotificationService;
 import com.example.PORTAIL_RH.user_service.user_service.Entity.Users;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.CommentRepository;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.ReactionRepository;
@@ -14,9 +15,6 @@ import com.example.PORTAIL_RH.feed_service.Reaction_service.Repo.IdeaRatingRepos
 import com.example.PORTAIL_RH.feed_service.pub_service.Repo.PublicationRepository;
 import com.example.PORTAIL_RH.user_service.user_service.Repo.UsersRepository;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Service.ReactionService;
-import com.example.PORTAIL_RH.notification_service.Entity.ReactionNotification;
-import com.example.PORTAIL_RH.notification_service.DTO.ReactionNotificationDTO;
-import com.example.PORTAIL_RH.notification_service.Repo.ReactionNotificationRepository;
 import com.example.PORTAIL_RH.notification_service.Service.NotificationWebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +44,7 @@ public class ReactionServiceImpl implements ReactionService {
     private PublicationRepository publicationRepository;
 
     @Autowired
-    private ReactionNotificationRepository reactionNotificationRepository;
+    private NotificationService notificationService;
 
     @Autowired
     private NotificationWebSocketService notificationWebSocketService;
@@ -60,21 +58,6 @@ public class ReactionServiceImpl implements ReactionService {
         return words.length > 1 ? words[0] + " " + words[1] : words[0];
     }
 
-    private ReactionNotificationDTO mapToReactionNotificationDTO(ReactionNotification notification) {
-        ReactionNotificationDTO dto = new ReactionNotificationDTO();
-        dto.setId(notification.getId());
-        dto.setRecipientId(notification.getRecipient().getId());
-        dto.setActorId(notification.getActorId());
-        dto.setActorNom(notification.getActorNom());
-        dto.setActorPrenom(notification.getActorPrenom());
-        dto.setActorPhoto(notification.getActorPhoto());
-        dto.setMessage(notification.getMessage());
-        dto.setType(notification.getType());
-        dto.setPublicationId(notification.getPublicationId());
-        dto.setCreatedAt(notification.getCreatedAt());
-        dto.setRead(notification.isRead());
-        return dto;
-    }
 
     private ReactionDTO mapToDTO(Reaction reaction) {
         ReactionDTO dto = new ReactionDTO();
@@ -141,23 +124,18 @@ public class ReactionServiceImpl implements ReactionService {
             user.addReaction(reaction);
             publication.addReaction(reaction);
 
-            // Create notification for the publication owner
-            if (!user.getId().equals(publication.getUser().getId())) { // Don't notify if user likes their own post
-                ReactionNotification notification = new ReactionNotification();
-                notification.setRecipient(publication.getUser());
-                notification.setActorId(user.getId());
-                notification.setActorNom(user.getNom());
-                notification.setActorPrenom(user.getPrenom());
-                notification.setActorPhoto(user.getImage());
-                notification.setMessage(String.format("%s %s a réagi à votre publication : %s",
-                        user.getNom(), user.getPrenom(), getFirstTwoWords(publication)));
-                notification.setType("LIKE");
-                notification.setPublicationId(publication.getId());
-                reactionNotificationRepository.save(notification);
-
-                // Send WebSocket notification
-                notificationWebSocketService.sendReactionNotification(
-                        publication.getUser().getId(), mapToReactionNotificationDTO(notification));
+            // Envoyer une notification uniquement pour une nouvelle réaction sur une FeedPost
+            if (publication instanceof FeedPost && !user.getId().equals(publication.getUser().getId())) {
+                String contentPreview = getFirstTwoWords(publication);
+                String message = String.format("%s %s a réagi à votre publication : \"%s...\"",
+                        user.getPrenom(), user.getNom(), contentPreview);
+                notificationService.createNotificationForUser(
+                        publication.getUser(), // Propriétaire de la publication
+                        message,
+                        "REACTION",
+                        publication.getId(),
+                        user // Utilisateur qui a déclenché la réaction
+                );
             }
         }
 
@@ -166,6 +144,42 @@ public class ReactionServiceImpl implements ReactionService {
         publicationRepository.save(publication);
 
         return mapToDTO(savedReaction);
+    }
+
+    @Override
+    @Transactional
+    public CommentDTO createComment(CommentRequest commentRequest) {
+        if (commentRequest.getUserId() == null || commentRequest.getPublicationId() == null || commentRequest.getContent() == null || commentRequest.getContent().trim().isEmpty()) {
+            throw new IllegalArgumentException("User ID, Publication ID, and Content cannot be null or empty");
+        }
+
+        Users user = usersRepository.findById(commentRequest.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + commentRequest.getUserId()));
+        Publication publication = publicationRepository.findById(commentRequest.getPublicationId())
+                .orElseThrow(() -> new RuntimeException("Publication not found with ID: " + commentRequest.getPublicationId()));
+
+        Comment comment = new Comment();
+        comment.setUser(user);
+        comment.setPublication(publication);
+        comment.setContent(commentRequest.getContent());
+
+        Comment savedComment = commentRepository.save(comment);
+
+        // Envoyer une notification pour un commentaire sur une FeedPost
+        if (publication instanceof FeedPost && !user.getId().equals(publication.getUser().getId())) {
+            String contentPreview = getFirstTwoWords(publication);
+            String message = String.format("%s %s a commenté votre publication : \"%s...\"",
+                    user.getPrenom(), user.getNom(), contentPreview);
+            notificationService.createNotificationForUser(
+                    publication.getUser(), // Propriétaire de la publication
+                    message,
+                    "COMMENT",
+                    publication.getId(),
+                    user // Utilisateur qui a déclenché le commentaire
+            );
+        }
+
+        return mapToCommentDTO(savedComment);
     }
 
     @Override
@@ -216,46 +230,7 @@ public class ReactionServiceImpl implements ReactionService {
         reactionRepository.delete(reaction);
     }
 
-    @Override
-    @Transactional
-    public CommentDTO createComment(CommentRequest commentRequest) {
-        if (commentRequest.getUserId() == null || commentRequest.getPublicationId() == null || commentRequest.getContent() == null || commentRequest.getContent().trim().isEmpty()) {
-            throw new IllegalArgumentException("User ID, Publication ID, and Content cannot be null or empty");
-        }
 
-        Users user = usersRepository.findById(commentRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + commentRequest.getUserId()));
-        Publication publication = publicationRepository.findById(commentRequest.getPublicationId())
-                .orElseThrow(() -> new RuntimeException("Publication not found with ID: " + commentRequest.getPublicationId()));
-
-        Comment comment = new Comment();
-        comment.setUser(user);
-        comment.setPublication(publication);
-        comment.setContent(commentRequest.getContent());
-
-        Comment savedComment = commentRepository.save(comment);
-
-        // Create notification for the publication owner
-        if (!user.getId().equals(publication.getUser().getId())) { // Don't notify if user comments on their own post
-            ReactionNotification notification = new ReactionNotification();
-            notification.setRecipient(publication.getUser());
-            notification.setActorId(user.getId());
-            notification.setActorNom(user.getNom());
-            notification.setActorPrenom(user.getPrenom());
-            notification.setActorPhoto(user.getImage());
-            notification.setMessage(String.format("%s %s a commenté votre publication : %s",
-                    user.getNom(), user.getPrenom(), getFirstTwoWords(publication)));
-            notification.setType("COMMENT");
-            notification.setPublicationId(publication.getId());
-            reactionNotificationRepository.save(notification);
-
-            // Send WebSocket notification
-            notificationWebSocketService.sendReactionNotification(
-                    publication.getUser().getId(), mapToReactionNotificationDTO(notification));
-        }
-
-        return mapToCommentDTO(savedComment);
-    }
 
     @Override
     public List<CommentDTO> getCommentsByPublicationId(Long publicationId) {

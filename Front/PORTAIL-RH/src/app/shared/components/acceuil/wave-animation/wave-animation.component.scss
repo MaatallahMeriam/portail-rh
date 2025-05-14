@@ -1,0 +1,51 @@
+$primary-color: #2c2984; // Dark purple from EXCELLIA logo
+$secondary-color: #fa0066; // Pink from EXCELLIA logo
+$accent-color: #ffb800; // Yellow from EXCELLIA logo
+
+.wave-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 70px;
+  overflow: hidden;
+  z-index: -1;
+  opacity: 0.3;
+}
+
+.wave {
+  position: absolute;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background-repeat: repeat-x;
+  background-position: 0 bottom;
+  transform-origin: center bottom;
+}
+
+.wave1 {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath fill='%232c2984' d='M0,0 C150,90 350,50 500,80 C650,110 750,40 900,20 C1050,0 1150,80 1200,100 L1200,120 L0,120 Z'%3E%3C/path%3E%3C/svg%3E");
+  bottom: 0;
+  animation: wave-animation 15s linear infinite;
+}
+
+.wave2 {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath fill='%23fa0066' opacity='0.5' d='M0,40 C150,10 350,60 500,30 C650,0 750,60 900,80 C1050,100 1150,20 1200,0 L1200,120 L0,120 Z'%3E%3C/path%3E%3C/svg%3E");
+  bottom: 10px;
+  animation: wave-animation 10s linear infinite;
+}
+
+.wave3 {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath fill='%23ffb800' opacity='0.3' d='M0,80 C150,60 350,0 500,50 C650,100 750,70 900,50 C1050,30 1150,90 1200,80 L1200,120 L0,120 Z'%3E%3C/path%3E%3C/svg%3E");
+  bottom: 5px;
+  animation: wave-animation 7s linear infinite;
+}
+
+@keyframes wave-animation {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}

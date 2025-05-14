@@ -1,51 +1,66 @@
 <div class="container">
-    
-    <div class="auth-buttons">
-      <a (click)="navigateTo('login')" class="auth-btn">Se Connecter</a>
-      
-    </div>
-  
-    <img
-      src="assets/images/fcd3.jpg"
-      alt=""
-      class="background-image"
-    />
-    <div class="blur-overlay hidden sm:block" aria-hidden="true">
-      <div class="blur-shape"></div>
-    </div>
-    <div class="blur-overlay-top" aria-hidden="true">
-      <div class="blur-shape"></div>
-    </div>
-    <div class="content-wrapper">
-      <div class="intro-section">
-        <h2 class="title">PORTAIL RH - EXCELLIA SOLUTIONS</h2>
-        <p class="description">
-          Bienvenue sur votre espace RH – Notre plateforme , au service de notre excellence.
 
-        </p>
+  <img
+    src="assets/images/fcd3.jpg"
+    alt=""
+    class="background-image"
+  />
+
+  <div class="blur-overlay hidden sm:block" aria-hidden="true">
+    <div class="blur-shape"></div>
+  </div>
+  
+  <div class="blur-overlay-top" aria-hidden="true">
+    <div class="blur-shape"></div>
+  </div>
+
+  <app-wave-animation class="wave"></app-wave-animation>
+
+  <div class="content-wrapper">
+    <div class="intro-section" @fadeInUp>
+      <h1 class="title">PORTAIL RH</h1>
+      <h2 class="subtitle">EXCELLIA SOLUTIONS</h2>
+      <p class="description">
+        Votre espace RH dédié à l'excellence et à l'innovation. Gérez vos processus RH avec agilité et simplicité, au service de la transformation digitale.
+      </p>
+      <div class="cta-button">
+        <button class="primary-btn" (click)="navigateTo('login')">
+          <span>Commencer maintenant</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
       </div>
-      <div class="links-and-stats">
-        <div class="links">
-          <a href="#" class="link">Open roles <span aria-hidden="true">→</span></a>
-          <a href="#" class="link">Internship program <span aria-hidden="true">→</span></a>
-          <a href="#" class="link">Our values <span aria-hidden="true">→</span></a>
-          <a href="#" class="link">Meet our leadership <span aria-hidden="true">→</span></a>
+    </div>
+
+    <div class="feature-section" @fadeInUp>
+      <h3 class="section-title">Fonctionnalités principales</h3>
+      <div class="feature-grid custom-feature-grid">
+          <app-feature-card *ngFor="let feature of featureItems" 
+            [icon]="feature.icon"
+            [title]="feature.title"
+            [description]="feature.description">
+          </app-feature-card>
         </div>
-        <dl class="stats">
-          <div class="stat-item">
-            <dt class="stat-label">La Marsa, Les berges du Lac 2</dt>
-            <dd class="stat-value">Siège social</dd>
-          </div>
-          <div class="stat-item">
-            <dt class="stat-label">Full-time colleagues</dt>
-            <dd class="stat-value">300+</dd>
-          </div>
-          <div class="stat-item">
-            <dt class="stat-label">Heures par semaine</dt>
-            <dd class="stat-value">40</dd>
-          </div>
-          
-        </dl>
-      </div>
+    </div>
+
+    <div class="stats-section" @fadeInUp>
+  <h3 class="section-title">À propos d'EXCELLIA Solutions</h3>
+  <div class="stats-grid">
+    <div class="stat-item" *ngFor="let stat of stats; let i = index">
+      <dt class="stat-label">{{ stat.label }}</dt>
+      <dd class="stat-value">
+        <app-animated-counter 
+          *ngIf="!isNaN(stat.value)" 
+          [endValue]="+stat.value" 
+          [duration]="1500"
+          [delay]="i * 100">
+        </app-animated-counter>
+        <ng-container *ngIf="isNaN(stat.value)">{{ stat.value }}</ng-container>
+      </dd>
     </div>
   </div>
+</div>
+  </div>
+</div>

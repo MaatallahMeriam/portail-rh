@@ -8,7 +8,77 @@ $transition: all 0.3s ease;
 $success-color: #2E7D32;
 $warning-color: #ED6C02;
 $error-color: #D32F2F;
+.password-section {
+    max-width: 800px;
+    margin-left: 150px;
+    padding: 20px;
+    background: white;
+    border-radius: $border-radius;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
 
+.password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 400px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+
+    label {
+        font-size: 16px;
+        color: $primary-color;
+        margin-bottom: 5px;
+    }
+
+    input {
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+
+        &:focus {
+            border-color: $primary-color;
+            outline: none;
+        }
+    }
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+
+    button {
+        padding: 10px 20px;
+        border-radius: 25px;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        transition: $transition;
+
+        &.save-button {
+            background: $primary-color;
+            color: white;
+
+            &:hover {
+                background: darken($primary-color, 10%);
+            }
+        }
+
+        &.cancel-button {
+            background: #e0e0e0;
+            color: #333;
+
+            &:hover {
+                background: #d0d0d0;
+            }
+        }
+    }
+}
 .content {
   flex-grow: 1;
   padding: 20px;
@@ -16,7 +86,24 @@ $error-color: #D32F2F;
   background-color: white;
   position: relative;
 }
+.delete-photo-button {
+  margin-left: 15px;
+    margin-top: 10px;
+    padding: 6px 10px;
+    background-color: #F8B000;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: $transition;
 
+    &:hover {
+        background-color: darken(#F8B000, 10%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(211, 47, 47, 0.2);
+    }
+}
 h2 {
   margin-left: 30px;
   color: $primary-color;
@@ -117,7 +204,7 @@ h4 {
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid $primary-color;
+  border: 3px solid #F8B000;
 }
 
 .camera-overlay {

@@ -9,12 +9,16 @@ import com.example.PORTAIL_RH.user_service.user_service.Entity.UserUpdateBasicDT
 import com.example.PORTAIL_RH.user_service.user_service.Entity.UserUpdateFullDTO;
 import com.example.PORTAIL_RH.user_service.user_service.Service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -23,6 +27,38 @@ public class UsersController {
 
     @Autowired
     private UsersService usersService;
+
+    @DeleteMapping("/{id}/profile-photo")
+    public ResponseEntity<UsersDTO> deleteProfilePhoto(@PathVariable Long id) throws Exception {
+        UsersDTO updatedUser = usersService.deleteProfilePhoto(id);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/update-password")
+    public ResponseEntity<Map<String, String>> updatePassword(@PathVariable Long id,
+                                                              @RequestParam String oldPassword,
+                                                              @RequestParam String newPassword) {
+        try {
+            boolean success = usersService.updatePassword(id, oldPassword, newPassword);
+            if (success) {
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Mot de passe mis à jour avec succès.");
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Échec de la mise à jour du mot de passe.");
+                return ResponseEntity.badRequest().body(response);
+            }
+        } catch (IllegalArgumentException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Une erreur est survenue.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 
 
     @PutMapping("/{id}/update-basic")
@@ -159,10 +195,27 @@ public class UsersController {
         List<BirthdayWishDTO> wishes = usersService.getBirthdayWishes(id);
         return new ResponseEntity<>(wishes, HttpStatus.OK);
     }
-
+    @GetMapping("/export-user-conges")
+    public ResponseEntity<byte[]> exportUserCongesToCSV() {
+        byte[] csvData = usersService.exportUserCongesToCSV();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/csv"));
+        headers.setContentDispositionFormData("attachment", "user_conges.csv");
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        return new ResponseEntity<>(csvData, headers, HttpStatus.OK);
+    }
     @GetMapping("/{senderId}/wished-users-today")
     public ResponseEntity<Set<Long>> getWishedUsersToday(@PathVariable Long senderId) {
         Set<Long> wishedUserIds = usersService.getWishedUserIdsToday(senderId);
         return new ResponseEntity<>(wishedUserIds, HttpStatus.OK);
+    }
+    @GetMapping("/export-active-users")
+    public ResponseEntity<byte[]> exportActiveUsersToCSV() {
+        byte[] csvData = usersService.exportActiveUsersToCSV();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/csv"));
+        headers.setContentDispositionFormData("attachment", "active_users.csv");
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        return new ResponseEntity<>(csvData, headers, HttpStatus.OK);
     }
 }

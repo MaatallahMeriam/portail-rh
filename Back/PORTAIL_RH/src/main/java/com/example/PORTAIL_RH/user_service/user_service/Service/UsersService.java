@@ -22,9 +22,9 @@ public interface UsersService {
     List<UsersDTO> getAllUsers();
 
     List<UsersDTO> getAllActiveUsers();
-
+    boolean updatePassword(Long userId, String oldPassword, String newPassword);
     List<UsersDTO> getAllActiveUsersWithNoEquipe();
-
+    UsersDTO deleteProfilePhoto(Long userId) throws Exception;
     List<UsersDTO> getAllDeactivatedUsers();
 
     UsersDTO updateUser(Long id, UsersDTO userDTO);
@@ -39,6 +39,11 @@ public interface UsersService {
     UsersDTO activateUser(Long id);
 
     DossierUser updateDossierByUserId(Long userId, DossierUser updatedDossier);
+
+    byte[] exportUserCongesToCSV();
+
+    byte[] exportActiveUsersToCSV();
+
 
     Users getUserEntityById(Long id);
 

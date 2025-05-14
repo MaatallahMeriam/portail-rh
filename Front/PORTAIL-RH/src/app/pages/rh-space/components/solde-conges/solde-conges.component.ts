@@ -417,4 +417,24 @@ export class SoldeCongesComponent implements OnInit {
   onSidebarStateChange(isCollapsed: boolean): void {
     this.isSidebarCollapsed = isCollapsed;
   }
+
+  exportUserConges(): void {
+    this.userService.exportUserCongesToCSV().subscribe({
+      next: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'Les détails des congés utilisateurs ont été exportés avec succès au format CSV.',
+        });
+      },
+      error: (err) => {
+        console.error('Erreur lors de l\'exportation des congés utilisateurs:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Une erreur est survenue lors de l\'exportation des détails des congés utilisateurs.',
+        });
+      },
+    });
+  }
 }

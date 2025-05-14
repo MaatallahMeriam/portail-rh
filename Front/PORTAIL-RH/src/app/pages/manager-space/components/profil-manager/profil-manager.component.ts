@@ -51,12 +51,15 @@ export class ProfilManagerComponent implements OnInit {
   editingField: keyof UserUpdateBasicDTO | null = null; // Updated to keyof UserUpdateBasicDTO
   editingValue: string = '';
   showSaveAnimation: boolean = false;
-  activeTab: 'personal' | 'dossier' | 'history' = 'personal';
+  activeTab: 'personal' | 'dossier' | 'password' = 'personal';
   selectedFileType: string | null = null;
   showAttachForm: string | null = null;
   selectedDossierFile: File | null = null;
   userDemandeDetails: UserDemandeDetailsDTO[] = [];
   isSidebarCollapsed = false;
+  oldPassword: string = '';
+  newPassword: string = '';
+  confirmPassword: string = '';
 
   constructor(
     private userService: UserService,
@@ -80,7 +83,56 @@ export class ProfilManagerComponent implements OnInit {
     this.loadUserDetails(this.userId);
     this.loadUserDemandeDetails(this.userId);
   }
+// Réinitialiser les champs du mot de passe
+resetPasswordFields(): void {
+    this.oldPassword = '';
+    this.newPassword = '';
+    this.confirmPassword = '';
+}
 
+// Mettre à jour le mot de passe
+updatePassword(): void {
+    if (!this.userId) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Utilisateur non authentifié.',
+        });
+        return;
+    }
+
+    if (!this.oldPassword || !this.newPassword || !this.confirmPassword) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Tous les champs sont requis.',
+        });
+        return;
+    }
+
+    if (this.newPassword !== this.confirmPassword) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Les nouveaux mots de passe ne correspondent pas.',
+        });
+        return;
+    }
+
+    this.userService.updatePassword(this.userId, this.oldPassword, this.newPassword).subscribe({
+        next: (response: string) => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Succès',
+                text: response,
+            });
+            this.resetPasswordFields();
+        },
+        error: (err) => {
+            console.error('Erreur lors de la mise à jour du mot de passe:', err);
+        }
+    });
+}
   loadUserDetails(userId: number): void {
     this.userService.getUserById(userId).subscribe({
       next: (userData: UserDTO) => {
@@ -108,7 +160,49 @@ export class ProfilManagerComponent implements OnInit {
       }
     });
   }
+deleteProfilePhoto(): void {
+    if (!this.userId) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Utilisateur non authentifié.',
+        });
+        return;
+    }
 
+    Swal.fire({
+        title: 'Voulez-vous vraiment supprimer votre photo de profil ?',
+        text: 'Cette action est irréversible.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#230046',
+        cancelButtonColor: '#ccc',
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            this.userService.deleteProfilePhoto(this.userId!).subscribe({
+                next: (updatedUser: UserDTO) => {
+                    this.user = updatedUser;
+                    this.updateProfilePicture(updatedUser.image);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Succès',
+                        text: 'Photo de profil supprimée avec succès.',
+                    });
+                },
+                error: (err) => {
+                    console.error('Erreur lors de la suppression de la photo de profil:', err);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        text: 'Impossible de supprimer la photo de profil.',
+                    });
+                }
+            });
+        }
+    });
+}
   loadUserDemandeDetails(userId: number): void {
     this.demandeService.getUserDemandeDetails(userId).subscribe({
       next: (demandes: UserDemandeDetailsDTO[]) => {

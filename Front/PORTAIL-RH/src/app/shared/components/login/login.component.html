@@ -1,32 +1,57 @@
 <div class="login-frame">
-  <div class="login-container">
+  <div class="login-container" @fadeIn>
     <div class="image-section">
-      <img src="assets/images/team_excellia.jpg" alt="Team Excellia" />
+      <img src="assets/images/team_excellia.jpg" alt="Team Excellia" @fadeInUp />
+      
     </div>
-    <div class="form-section">
+    <div class="form-section" @fadeInUp>
       <h1>Bienvenue !</h1>
+      <p class="subtitle">Connectez-vous à votre espace personnel</p>
+      
       <form class="form" (ngSubmit)="onLogin()">
-        <label for="username">Username ou E-mail</label>
-        <input
-          type="text"
-          id="username"
-          [(ngModel)]="usernameOrEmail"
-          name="usernameOrEmail"
-          placeholder="Username ou E-mail"
-        />
+        <div class="form-group">
+          <label for="username">E-mail</label>
+          <div class="input-container">
+            <input
+              type="email"
+              id="username"
+              [(ngModel)]="usernameOrEmail"
+              name="usernameOrEmail"
+              placeholder="email@excellia.com"
+              autocomplete="email"
+            />
+            <span class="input-icon">
+              <i class="fas fa-envelope"></i>
+            </span>
+          </div>
+        </div>
 
-        <label for="password">Mot de passe</label>
-        <input
-          type="password"
-          id="password"
-          [(ngModel)]="password"
-          name="password"
-          placeholder="*************"
-        />
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <div class="input-container">
+            <input
+              [type]="isPasswordVisible ? 'text' : 'password'"
+              id="password"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="Votre mot de passe"
+              autocomplete="current-password"
+            />
+            <span class="input-icon password-toggle" (click)="togglePasswordVisibility()">
+              <i [class]="isPasswordVisible ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            </span>
+          </div>
+        </div>
         
-        <button type="submit">Se Connecter</button>
-       
+        <button type="submit" class="login-button">
+          <span>Se Connecter</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
       </form>
+
+      <div class="footer-text">
+        <p>Portail RH EXCELLIA Solutions © 2025</p>
+      </div>
     </div>
   </div>
 </div>

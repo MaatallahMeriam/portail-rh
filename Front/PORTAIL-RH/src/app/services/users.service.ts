@@ -118,6 +118,32 @@ export class UserService {
       })
     );
   }
+  updatePassword(userId: number, oldPassword: string, newPassword: string): Observable<string> {
+    const url = `${this.apiUrl}/users/${userId}/update-password?oldPassword=${encodeURIComponent(oldPassword)}&newPassword=${encodeURIComponent(newPassword)}`;
+    return this.http.post<{ message: string }>(url, null, this.getAuthHeaders()).pipe(
+        map(response => response.message), // Extraire le champ 'message'
+        catchError((error) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: error.error?.message || 'Erreur lors de la mise à jour du mot de passe.',
+            });
+            return throwError(error);
+        })
+    );
+}
+  deleteProfilePhoto(userId: number): Observable<UserDTO> {
+    return this.http.delete<UserDTO>(`${this.apiUrl}/users/${userId}/profile-photo`, this.getAuthHeaders()).pipe(
+        catchError((error) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: 'Erreur lors de la suppression de la photo de profil.',
+            });
+            return throwError(error);
+        })
+    );
+}
 
   uploadDossierFiles(userId: number, cv: File | null, contrat: File | null, diplome: File | null): Observable<any> {
     const formData = new FormData();
@@ -150,7 +176,59 @@ export class UserService {
       })
     );
   }
+exportActiveUsersToCSV(): Observable<void> {
+    return this.http.get(`${this.apiUrl}/users/export-active-users`, {
+      ...this.getAuthHeaders(),
+      responseType: 'blob' // Expect a binary file response (CSV)
+    }).pipe(
+      map((blob: Blob) => {
+        // Create a URL for the blob and trigger the download
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'active_users.csv'; // File name as specified in the backend
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url); // Clean up the URL object
+      }),
+      catchError((error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur lors de l\'exportation des utilisateurs actifs.',
+        });
+        return throwError(error);
+      })
+    );
+  }
 
+  exportUserCongesToCSV(): Observable<void> {
+    return this.http.get(`${this.apiUrl}/users/export-user-conges`, {
+      ...this.getAuthHeaders(),
+      responseType: 'blob' // Expect a binary file response (CSV)
+    }).pipe(
+      map((blob: Blob) => {
+        // Create a URL for the blob and trigger the download
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'user_conges.csv'; // File name as specified in the backend
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url); // Clean up the URL object
+      }),
+      catchError((error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur lors de l\'exportation des congés des utilisateurs.',
+        });
+        return throwError(error);
+      })
+    );
+  }
   getAllActiveUsersWithNoEquipe(): Observable<UserDTO[]> {
     return this.http.get<UserDTO[]>(`${this.apiUrl}/users/get/active/no-equipe`, this.getAuthHeaders()).pipe(
       catchError((error) => {

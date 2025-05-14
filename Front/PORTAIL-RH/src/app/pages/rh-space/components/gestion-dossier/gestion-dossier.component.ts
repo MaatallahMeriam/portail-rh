@@ -358,4 +358,24 @@ export class GestionDossierComponent {
       }
     });
   }
+
+  exportUsers(): void {
+    this.userService.exportActiveUsersToCSV().subscribe({
+      next: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'Les utilisateurs actifs ont été exportés avec succès au format CSV.',
+        });
+      },
+      error: (err) => {
+        console.error('Erreur lors de l\'exportation des utilisateurs:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Une erreur est survenue lors de l\'exportation des utilisateurs.',
+        });
+      },
+    });
+  }
 }

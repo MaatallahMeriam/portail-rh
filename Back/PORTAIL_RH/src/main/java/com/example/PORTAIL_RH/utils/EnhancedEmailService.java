@@ -18,9 +18,6 @@ public class EnhancedEmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    /**
-     * Envoie un email avec le mot de passe pour un nouvel utilisateur.
-     */
     public boolean sendPasswordEmail(String to, String username, String password) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -47,9 +44,6 @@ public class EnhancedEmailService {
         }
     }
 
-    /**
-     * Envoie un email avec le QR code pour le pointage en télétravail.
-     */
     public boolean sendPointageEmail(String to, String username, String qrCodeBase64, String confirmationUrl) {
         try {
             MimeMessage message = mailSender.createMimeMessage();

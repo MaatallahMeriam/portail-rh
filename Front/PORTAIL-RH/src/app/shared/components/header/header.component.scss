@@ -88,8 +88,8 @@ $transition: all 0.2s ease-in-out;
 
     .notification-dropdown {
       position: absolute;
-      top: calc(100% + 10px); // Position just below the icon
-      right: 700px; // Align with the notification icon
+      top: 50px; // Position just below the icon
+      right: 720px; // Align with the notification icon
       width: 300px;
       background: white;
       border-radius: 8px;

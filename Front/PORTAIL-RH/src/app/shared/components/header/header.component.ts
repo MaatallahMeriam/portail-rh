@@ -1,4 +1,4 @@
-// header.component.ts
+// src/app/components/header/header.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -105,7 +105,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const message = notification.message?.toLowerCase() || '';
 
     if (type === 'pointage') {
-      return notification.message; // Use the full message, e.g., "Votre membre John Doe a bien effectué son pointage TT le 2025-05-11"
+      return notification.message; // e.g., "Votre membre John Doe a bien effectué son pointage TT le 2025-05-11"
     } else if (type === 'conges') {
       if (message.includes('acceptée')) {
         return 'Votre demande de congé a été acceptée';
@@ -129,6 +129,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
         return 'Votre demande logistique a été refusée';
       }
       return notification.message;
+    } else if (type === 'reaction') {
+      return notification.message; // e.g., "John Doe a réagi à votre publication : 'Premiers mots...'"
+    } else if (type === 'comment') {
+      return notification.message; // e.g., "John Doe a commenté votre publication : 'Premiers mots...'"
     }
     return message || 'Nouvelle notification';
   }
@@ -138,7 +142,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const notificationType = notification.type?.toUpperCase();
 
     if (notificationType === 'POINTAGE') {
-      // For POINTAGE notifications, mark as read without navigation
+      // POINTAGE notifications: mark as read without navigation
       if (!notification.read) {
         this.notificationService.markAsRead(notification.id).subscribe({
           next: (updatedNotification) => {
@@ -154,10 +158,36 @@ export class HeaderComponent implements OnInit, OnDestroy {
         });
       }
       this.showNotificationsDropdown = false;
-      return; // No navigation for POINTAGE
+      return;
     }
 
-    // Existing logic for other notification types
+    if (notificationType === 'REACTION' || notificationType === 'COMMENT') {
+      // REACTION and COMMENT notifications: navigate to the publication
+      if (notification.demandeId) {
+        this.router.navigate(['/feed'], {
+          queryParams: { publicationId: notification.demandeId },
+        });
+      }
+      // Mark as read
+      if (!notification.read) {
+        this.notificationService.markAsRead(notification.id).subscribe({
+          next: (updatedNotification) => {
+            const updatedNotifications = this.notifications.map((n) =>
+              n.id === notification.id ? { ...n, read: true } : n
+            );
+            this.notificationService.updateNotifications(updatedNotifications);
+            this.notificationCount = this.notifications.filter((n) => !n.read).length;
+          },
+          error: (error) => {
+            console.error('Erreur lors de la mise à jour de la notification', error);
+          },
+        });
+      }
+      this.showNotificationsDropdown = false;
+      return;
+    }
+
+    // Existing logic for other notification types (CONGES, DOCUMENT, LOGISTIQUE)
     if (userRole === 'RH') {
       if (notificationType === 'DOCUMENT' || notificationType === 'LOGISTIQUE') {
         this.router.navigate(['/valide-dmd']);

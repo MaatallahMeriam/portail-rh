@@ -6,6 +6,36 @@
   height: 100vh;
   background-color: #f8f9fa;
 }
+/* Export utilisateurs */
+.export-users {
+  position: absolute;
+  top: 50px;
+  right: 30px;
+  color: #230046;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    text-decoration: underline;
+    .export-icon {color: #dc027a;}
+    color: #dc027a;
+    transform: translateY(-1px);
+  }
+
+  
+}
+
+.export-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #230046;
+  }
 
 .main-content {
   display: flex;

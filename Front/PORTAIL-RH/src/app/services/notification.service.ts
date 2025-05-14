@@ -1,4 +1,4 @@
-// notification.service.ts
+// src/app/services/notification.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -9,7 +9,7 @@ export interface Notification {
   userId: number;
   message: string;
   type: string;
-  demandeId: number | null; // Allow null for POINTAGE notifications
+  demandeId: number | null; // Allow null for POINTAGE notifications or publication ID for REACTION/COMMENT
   read: boolean;
   createdAt: string;
   userName: string;
@@ -23,24 +23,40 @@ export class NotificationService {
   private notificationsSubject = new BehaviorSubject<Notification[]>([]);
   public notifications$ = this.notificationsSubject.asObservable();
   private ws: WebSocketSubject<any> | null = null;
+  private apiUrl = 'http://localhost:8080/api/notifications';
 
   constructor(private http: HttpClient) {}
 
   connectWebSocket(): void {
     const userId = localStorage.getItem('userId');
     if (userId) {
-      this.ws = webSocket(`ws://localhost:8080/ws`);
+      this.ws = webSocket('ws://localhost:8080/ws');
       this.ws.subscribe({
         next: (message) => {
-          console.log('Notification reçue via WebSocket :', message); // Debug
+          console.log('Notification reçue via WebSocket :', message);
+          // Vérifier que le message est destiné à l'utilisateur connecté
           if (message.userId === parseInt(userId)) {
+            // Convertir le message reçu (NotificationDTO) en Notification
+            const notification: Notification = {
+              id: message.id,
+              userId: message.userId,
+              message: message.message,
+              type: message.type,
+              demandeId: message.demandeId || null,
+              read: message.read,
+              createdAt: message.createdAt,
+              userName: message.userName || 'Utilisateur',
+              userImage: message.userImage || undefined,
+            };
             const currentNotifications = this.notificationsSubject.value;
-            this.notificationsSubject.next([message, ...currentNotifications]);
+            this.notificationsSubject.next([notification, ...currentNotifications]);
           }
         },
         error: (error) => console.error('Erreur WebSocket :', error),
         complete: () => console.log('Connexion WebSocket fermée'),
       });
+    } else {
+      console.warn('Aucun userId trouvé dans localStorage, impossible de connecter WebSocket');
     }
   }
 
@@ -52,7 +68,7 @@ export class NotificationService {
   }
 
   getNotifications(userId: number, isRead: boolean | null = null): Observable<Notification[]> {
-    let url = `http://localhost:8080/api/notifications?userId=${userId}`;
+    let url = `${this.apiUrl}?userId=${userId}`;
     if (isRead !== null) {
       url += `&isRead=${isRead}`;
     }
@@ -60,11 +76,11 @@ export class NotificationService {
   }
 
   markAsRead(notificationId: number): Observable<Notification> {
-    return this.http.patch<Notification>(`http://localhost:8080/api/notifications/${notificationId}/read`, {});
+    return this.http.patch<Notification>(`${this.apiUrl}/${notificationId}/read`, {});
   }
 
   markAllAsRead(userId: number): Observable<void> {
-    return this.http.patch<void>(`http://localhost:8080/api/notifications/mark-all-read?userId=${userId}`, {});
+    return this.http.patch<void>(`${this.apiUrl}/mark-all-read?userId=${userId}`, {});
   }
 
   updateNotifications(notifications: Notification[]): void {
