@@ -33,27 +33,27 @@ import { WaveAnimationComponent } from './wave-animation/wave-animation.componen
 })
 export class AcceuilComponent implements OnInit {
   featureItems = [
-    {
-      icon: 'users',
-      title: 'Gestion des Talents',
-      description: 'Recrutez, développez et fidélisez les meilleurs talents pour votre entreprise.'
-    },
-    {
-      icon: 'chart-line',
-      title: 'Suivi de Performance',
-      description: 'Évaluez et suivez la performance de vos équipes avec des outils avancés.'
-    },
-    {
-      icon: 'calendar-check',
-      title: 'Gestion des Congés',
-      description: 'Simplifiez la gestion des congés et absences de vos collaborateurs.'
-    },
-    {
-      icon: 'graduation-cap',
-      title: 'Formation Continue',
-      description: 'Développez les compétences de vos équipes avec des programmes personnalisés.'
-    }
-  ];
+  {
+    icon: 'users',
+    title: 'Gestion des Utilisateurs',
+    description: 'Gérez les profils, rôles et interactions entre employés, RH et managers efficacement.'
+  },
+  {
+    icon: 'chart-line',
+    title: 'Suivi des Équipes',
+    description: 'Suivez l’état de vos collaborateurs (congés, présence) et validez leurs demandes en temps réel.'
+  },
+  {
+    icon: 'calendar-check',
+    title: 'Gestion des Congés',
+    description: 'Demandez, validez et suivez vos congés avec un aperçu clair de votre solde disponible.'
+  },
+  {
+    icon: 'file-alt',
+    title: 'Gestion des Documents',
+    description: 'Accédez, téléchargez et gérez vos documents RH ou soumettez des demandes administratives.'
+  }
+];
 
   stats = [
     { label: 'Experts dévoués', value: 40 },

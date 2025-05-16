@@ -203,14 +203,13 @@
   color: white;
   border: none;
   border-radius: 20px;
-  font-weight: 400;
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 80px;
-  width: 80px;
+  width: 70px;
   height: 30px;
   
   &:hover:not(:disabled) {

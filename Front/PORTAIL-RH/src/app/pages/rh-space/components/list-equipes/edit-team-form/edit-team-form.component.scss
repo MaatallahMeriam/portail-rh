@@ -73,17 +73,18 @@
     margin-top: var(--spacing-xl, 30px);
   }
   
-  .btn {
-    padding: 12px 24px;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all var(--animation-duration, 0.3s) ease;
-    border: none;
-    cursor: pointer;
-  }
+ .btn {
+  height: 40px;
+  width: 110px;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all var(--animation-duration, 0.3s) ease;
+  border: none;
+  cursor: pointer;
+}
   
   .btn-submit {
-    background: var(--gradient-primary, linear-gradient(45deg, #230046, #9E2760));
+    background: #230046;
     color: white;
     
     &:hover {

@@ -44,7 +44,6 @@ $transition: all 0.3s ease;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    
     .datatable-header {
       background: white;
       border-bottom: 1px solid rgba($primary-color, 0.1);
@@ -85,6 +84,7 @@ $transition: all 0.3s ease;
       display: flex;
       align-items: center;
     }
+    
   }
 }
 
@@ -230,14 +230,11 @@ $transition: all 0.3s ease;
       background: none;
       border: none;
       color: $primary-color;
+      margin-top: -50px;
       cursor: pointer;
       padding: 8px;
       border-radius: 50%;
       transition: $transition;
-
-      &:hover {
-        background: rgba($primary-color, 0.1);
-      }
 
       &:disabled {
         opacity: 0.5;
@@ -304,6 +301,7 @@ $transition: all 0.3s ease;
 
 // Form Styles
 .request-form {
+  margin-top: -35px;
   padding: 20px;
 
   .form-group {
@@ -312,7 +310,6 @@ $transition: all 0.3s ease;
     input, textarea {
       width: 97%;
     }
-
     label {
       display: block;
       color: $primary-color;
@@ -347,6 +344,7 @@ $transition: all 0.3s ease;
   }
 
   .select-wrapper {
+    width: 97%;
     position: relative;
 
     &::after {
@@ -366,7 +364,22 @@ $transition: all 0.3s ease;
     }
   }
 }
+.history-card .card-header h3 {
+  position: relative;
+  padding-left: 30px; // Espace pour l'icône
 
+  &::before {
+    content: "\f1da"; // Code Font Awesome pour fa-history
+    font-family: "Font Awesome 5 Free"; // Assurez-vous que Font Awesome est chargé
+    font-weight: 900; // Icône solide
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $primary-color;
+    font-size: 18px;
+  }
+}
 // Form Actions
 .form-actions {
   display: flex;
@@ -378,15 +391,20 @@ $transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
+    width: 100px;
+    height: 35px;
+
+
     border: none;
     border-radius: 25px;
-    font-weight: 500;
+    font-weight: 400;
     cursor: pointer;
     transition: $transition;
 
     mat-icon {
-      font-size: 18px;
+      margin-bottom: -14px;
+      margin-right: -5px;
+      font-size: 15px;
     }
 
     &:disabled {
@@ -417,6 +435,7 @@ $transition: all 0.3s ease;
 
 // History Table
 .history-content {
+  margin-top:-20px;
   padding: 20px;
 }
 
@@ -508,7 +527,7 @@ $transition: all 0.3s ease;
     width: 220px;
   }
 
-  .app-right-sidebar {
+  .app-right-side-manager {
     width: 220px;
   }
 
@@ -519,7 +538,7 @@ $transition: all 0.3s ease;
 
     &.sidebar-collapsed {
       left: 100px;
-      right: 250px;
+      right: 220px;
       max-width: 1200px;
     }
   }
@@ -530,13 +549,13 @@ $transition: all 0.3s ease;
     width: 150px;
   }
 
-  .app-right-sidebar {
+  .app-right-side-manager {
     display: none;
   }
 
   .feed {
-    left: 220px;
-    right: 200px;
+    left: 200px;
+    right: 100px;
     max-width: calc(100% - 150px);
 
     &.sidebar-collapsed {
@@ -548,7 +567,7 @@ $transition: all 0.3s ease;
 }
 
 @media screen and (max-width: 768px) {
-  .app-right-sidebar {
+  .app-right-side-manager {
     width: 180px;
   }
 
@@ -570,7 +589,7 @@ $transition: all 0.3s ease;
     display: none;
   }
 
-  .app-right-sidebar {
+  .app-right-side-manager {
     width: 200px;
   }
 
@@ -588,18 +607,17 @@ $transition: all 0.3s ease;
 }
 
 @media screen and (max-width: 480px) {
-  .app-right-sidebar {
+  .app-right-side-manager {
     display: none;
   }
 
   .feed {
-    right: 120px;
+    right: 0;
     width: 100%;
 
     &.sidebar-collapsed {
-      left: 20px;
-      right: 250px;
-      width: 95%;
+      right: 0;
+      width: 100%;
     }
   }
 }

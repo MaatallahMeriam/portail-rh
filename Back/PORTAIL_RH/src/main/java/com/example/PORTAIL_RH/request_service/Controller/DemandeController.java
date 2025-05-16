@@ -54,11 +54,7 @@ public class DemandeController {
         return new ResponseEntity<>(updatedDemande, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}/statut")
-    public ResponseEntity<DemandeDTO> changeStatut(@PathVariable Long id, @RequestBody StatutRequest statutRequest) {
-        DemandeDTO updatedDemande = demandeService.changeStatut(id, statutRequest.getStatut());
-        return new ResponseEntity<>(updatedDemande, HttpStatus.OK);
-    }
+
 
     @GetMapping
     public ResponseEntity<List<DemandeDTO>> getAllDemandes() {
@@ -73,14 +69,18 @@ public class DemandeController {
     }
 
     @PutMapping("/{id}/accept")
-    public ResponseEntity<DemandeDTO> acceptDemande(@PathVariable Long id) {
-        DemandeDTO accepted = demandeService.acceptDemande(id);
+    public ResponseEntity<DemandeDTO> acceptDemande(
+            @PathVariable Long id,
+            @RequestParam Long userId) { // Ajout du paramètre userId
+        DemandeDTO accepted = demandeService.acceptDemande(id, userId); // Passer userId à la méthode
         return new ResponseEntity<>(accepted, HttpStatus.OK);
     }
 
     @PutMapping("/{id}/refuse")
-    public ResponseEntity<DemandeDTO> refuseDemande(@PathVariable Long id) {
-        DemandeDTO refused = demandeService.refuseDemande(id);
+    public ResponseEntity<DemandeDTO> refuseDemande(
+            @PathVariable Long id,
+            @RequestParam Long userId) { // Ajout du paramètre userId
+        DemandeDTO refused = demandeService.refuseDemande(id, userId); // Passer userId à la méthode
         return new ResponseEntity<>(refused, HttpStatus.OK);
     }
 

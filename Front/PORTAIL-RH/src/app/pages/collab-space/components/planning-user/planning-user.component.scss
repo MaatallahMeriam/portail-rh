@@ -19,9 +19,10 @@ $error-color: #D32F2F;
 
 .planning-exists {
   max-width: 800px;
-  margin-left: 200px;
+  margin-top: 50px;
+  margin-left: 180px;
   padding: 20px;
-  background: white;
+  background: #ebeaed;
   border-radius: $border-radius;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
@@ -30,7 +31,7 @@ h2 {
   margin-left: 30px;
   color: #230046;
   font-size: 29px;
-  font-weight: 600;
+  font-weight: bold;
   margin-bottom: 30px;
   position: relative;
   padding-bottom: 15px;
@@ -43,14 +44,17 @@ h2::after {
   left: 0;
   width: 80px;
   height: 4px;
-  background: linear-gradient(90deg, #230046, #c1006a);
+  background: linear-gradient(90deg, #230046, #c1006a,#ED6C02);
   border-radius: 2px;
 }
 
 h3 {
   font-size: 20px;
   color: #230046;
-  margin-left: 30px;
+  margin-left: 20px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+
 }
 
 .no-planning {
@@ -217,7 +221,7 @@ h3 {
 }
 
 .feed.sidebar-collapsed {
-  left: 100px;
+  left: 135px;
   width: calc(100% - 100px);
 }
 
@@ -229,7 +233,7 @@ h3 {
 .month-badge {
   position: absolute;
   top: 20px;
-  right: 45px;
+  right: 40px;
   width: 120px;
   height: 120px;
   display: flex;
@@ -298,7 +302,7 @@ h3 {
   transition: $transition;
 
   &:hover {
-    color: darken($primary-color, 10%);
+    color: #c1006a;
     text-decoration: underline;
   }
 }

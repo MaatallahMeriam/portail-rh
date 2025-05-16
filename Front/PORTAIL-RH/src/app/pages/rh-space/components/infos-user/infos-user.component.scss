@@ -2,7 +2,7 @@
   max-width: 1200px;
   margin: 20px auto;
   padding: 20px;
-  background: #fff;
+  background: #F8F9FA ;
   border-radius: 10px;
 }
 
@@ -12,7 +12,7 @@
 }
 
 .modal-content {
-  background: white;
+  background: #FFFF ;
   padding: 30px;
   border-radius: 15px;
   width: 90%;
@@ -40,8 +40,9 @@
 
 .professional-badge {
   border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
   padding: 20px;
+  background-color: #FFFF;
   position: relative;
   max-width: 500px;
   margin: 0 auto;
@@ -73,7 +74,7 @@
     height: 120px;
     border-radius: 60px;
     object-fit: cover;
-    border: 3px solid #230046;
+    border: 3px solid #E5007F;
   }
 }
 
@@ -139,7 +140,7 @@
 
 /* User Details Section */
 .user-details-section {
-  background: #f9f9f9;
+  background: white;
   border-radius: 15px;
   padding: 30px;
   margin-top: 30px;
@@ -162,7 +163,7 @@
   background: white;
   padding: 15px;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 2px 6px 20px rgba(0, 0, 0, 0.25);
 
   label {
     display: block;
@@ -194,7 +195,7 @@
   transition: all 0.2s ease;
 
   &:hover {
-    background: #f0f0f0;
+    transform: translateY(-2px);
     color: #230046;
   }
 
@@ -350,7 +351,7 @@
   bottom: 0;
   overflow-y: auto;
   max-width: 850px;
-  background: #fff;
+  background: #F8F9FA ;
   transition: all 0.3s ease-in-out;
 
   &.sidebar-collapsed {

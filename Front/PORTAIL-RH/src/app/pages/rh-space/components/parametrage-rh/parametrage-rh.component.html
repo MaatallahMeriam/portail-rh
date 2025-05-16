@@ -1,19 +1,34 @@
 <div class="collab-home">
-    <app-header></app-header>
+  <app-header [ngClass]="{ 'header-hidden': !isHeaderVisible }"></app-header>
 
-    <div class="main-content">
-        <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+  <div class="main-content">
+    <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
 
-        <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
-            <h2>Espace Paramétrage : </h2>
-            <div class="parametrage-container">
-                <div class="option-card" *ngFor="let option of options" (click)="navigateTo(option.route)">
-                  <img [src]="option.icon" alt="{{ option.label }}">
-                  <span>{{ option.label }}</span>
-                </div>
-              </div>
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed" @fadeIn>
+      <div class="feed-header">
+        <h2>Espace Paramétrage</h2>
+        <p class="subtitle">Configurez et gérez les différents paramètres de votre espace RH</p>
+      </div>
+      
+      <div class="parametrage-container" @staggerFadeIn>
+        <div class="option-card" 
+             *ngFor="let option of options" 
+             (click)="navigateTo(option.route)"
+             [attr.data-label]="option.label">
+          <div class="card-content">
+            <div class="icon-container">
+              <img [src]="option.icon" alt="{{ option.label }}">
+            </div>
+            <div class="text-container">
+              <span class="label">{{ option.label }}</span>
+              <span class="description" *ngIf="option.description">{{ option.description }}</span>
+            </div>
+          </div>
+          <div class="card-overlay"></div>
         </div>
-
-        <app-right-sidebar></app-right-sidebar>
+      </div>
     </div>
+
+    <app-right-sidebar></app-right-sidebar>
+  </div>
 </div>

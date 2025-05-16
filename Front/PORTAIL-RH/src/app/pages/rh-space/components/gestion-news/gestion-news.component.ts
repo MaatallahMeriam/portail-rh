@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SidebarComponent } from '../sidebar-RH/sidebar.component';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
-import { RightSidebarComponent } from '../../../../shared/components/right-sidebar/right-sidebar.component';
 import { CarouselModule } from 'ngx-owl-carousel-o';
 import { MatCardModule } from '@angular/material/card';
 import { NewsService, NewsDTO } from '../../../../services/news.service';
@@ -12,6 +11,9 @@ import Swal from 'sweetalert2';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatRippleModule } from '@angular/material/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-gestion-news',
@@ -23,14 +25,29 @@ import { MatIconModule } from '@angular/material/icon';
     FormsModule,
     SidebarComponent,
     HeaderComponent,
-    RightSidebarComponent,
     NgxDatatableModule,
     MatButtonModule,
     MatIconModule,
+    MatMenuModule,
+    MatRippleModule
   ],
   templateUrl: './gestion-news.component.html',
   styleUrls: ['./gestion-news.component.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms ease-out', style({ opacity: 1 }))
+      ])
+    ]),
+    trigger('slideIn', [
+      transition(':enter', [
+        style({ transform: 'translateY(20px)', opacity: 0 }),
+        animate('300ms ease-out', style({ transform: 'translateY(0)', opacity: 1 }))
+      ])
+    ])
+  ]
 })
 export class GestionNewsComponent {
   News: NewsDTO[] = [];
@@ -45,31 +62,31 @@ export class GestionNewsComponent {
   searchText: string = '';
   isSidebarCollapsed = false;
 
-  customOptions: any = {
+  customOptions = {
     loop: true,
     autoplay: true,
-    autoplayTimeout: 3000,
+    autoplayTimeout: 5000,
+    autoplayHoverPause: true,
     mouseDrag: true,
     touchDrag: true,
     pullDrag: true,
     dots: true,
     navSpeed: 700,
     navText: ['<', '>'],
-    stagePadding: 20,
-    margin: 15,
     responsive: {
       0: { items: 1 },
       600: { items: 2 },
-      900: { items: 3 },
+      900: { items: 3 }
     },
     nav: true,
+    margin: 10
   };
 
+
   columns = [
-    { prop: 'id', name: 'ID news', width: 100 },
     { prop: 'titre', name: 'Titre', width: 200 },
     { prop: 'description', name: 'Description', width: 300 },
-    { prop: 'createdAt', name: 'Date Création', width: 150 },
+    { prop: 'createdAt', name: 'Date', width: 150 }
   ];
 
   constructor(
@@ -80,84 +97,67 @@ export class GestionNewsComponent {
   }
 
   getImageUrl(imagePath: string | undefined): string {
-    const defaultImage = 'assets/images/news-placeholder.jpg';
-
     if (!imagePath) {
-      console.warn('Image path is undefined or null');
-      return defaultImage;
+      return 'assets/images/news-placeholder.jpg';
     }
 
-    if (imagePath.startsWith('http://localhost:8080/')) {
+    if (imagePath.startsWith('http')) {
       return imagePath;
     }
 
-    const fullUrl = `http://localhost:8080/Uploads/news/${imagePath.replace(/\\/g, '/')}`;
-    console.log('Constructed image URL:', fullUrl);
-
-    const img = new Image();
-    img.onload = () => {
-      console.log('Image loaded successfully:', fullUrl);
-    };
-    img.onerror = () => {
-      console.error('Failed to load image:', fullUrl);
-    };
-    img.src = fullUrl;
-
-    return fullUrl;
+    return `http://localhost:8080/Uploads/news/${imagePath.replace(/\\/g, '/')}`;
   }
 
   loadNews() {
     this.newsService.getAllNews().subscribe({
       next: (news) => {
-        console.log('Loaded news:', news); // Debug log
-        this.News = news;
-        this.filteredNews = [...news];
+        this.News = this.sortNewsByDate(news);
+        this.filteredNews = [...this.News];
       },
-      error: (err) => Swal.fire('Erreur', err.message, 'error'),
+      error: (err) => this.showError('Erreur', 'Impossible de charger les actualités.')
+    });
+  }
+
+  private sortNewsByDate(news: NewsDTO[]): NewsDTO[] {
+    return news.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA;
     });
   }
 
   filterNews() {
-    if (!this.searchText) {
+    if (!this.searchText.trim()) {
       this.filteredNews = [...this.News];
       return;
     }
+
     const search = this.searchText.toLowerCase();
-    this.filteredNews = this.News.filter(
-      (news) =>
-        (news.titre?.toLowerCase().includes(search) || '') ||
-        (news.description?.toLowerCase().includes(search) || '') ||
-        (news.id?.toString().includes(search) || '')
+    this.filteredNews = this.News.filter(news =>
+      news.titre?.toLowerCase().includes(search) ||
+      news.description?.toLowerCase().includes(search)
     );
-  }
-
-  toggleMenu(news: NewsDTO) {
-    this.selectedNews = this.selectedNews === news ? null : news;
-  }
-
-  @HostListener('document:click', ['$event'])
-  closeMenu(event: Event) {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.menu-button') && !target.closest('.dropdown-menu')) {
-      this.selectedNews = null;
-    }
   }
 
   supprimer(news: NewsDTO) {
     Swal.fire({
-      title: 'Êtes-vous sûr ?',
-      text: `Voulez-vous supprimer "${news.titre}" ?`,
+      title: 'Confirmer la suppression',
+      text: `Voulez-vous supprimer l'actualité "${news.titre}" ?`,
       icon: 'warning',
       showCancelButton: true,
+      confirmButtonColor: '#230046',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Supprimer',
+      cancelButtonText: 'Annuler'
     }).then((result) => {
       if (result.isConfirmed) {
         this.newsService.deleteNews(news.id).subscribe({
           next: () => {
-            this.News = this.News.filter((n) => n.id !== news.id);
-            this.filteredNews = this.filteredNews.filter((n) => n.id !== news.id);
-            Swal.fire('Supprimé !', 'La news a été supprimée.', 'success');
+            this.News = this.News.filter(n => n.id !== news.id);
+            this.filteredNews = this.filteredNews.filter(n => n.id !== news.id);
+            this.showSuccess('Actualité supprimée avec succès');
           },
-          error: (err) => Swal.fire('Erreur', err.message, 'error'),
+          error: (err) => this.showError('Erreur', 'Impossible de supprimer l\'actualité.')
         });
       }
     });
@@ -169,7 +169,6 @@ export class GestionNewsComponent {
     this.titre = news.titre;
     this.description = news.description;
     this.showForm = true;
-    this.selectedNews = null;
   }
 
   toggleForm() {
@@ -187,78 +186,101 @@ export class GestionNewsComponent {
   }
 
   submitForm() {
-    if (!this.titre || !this.description) {
-      Swal.fire('Erreur', 'Veuillez remplir tous les champs obligatoires.', 'error');
+    if (!this.titre.trim() || !this.description.trim()) {
+      this.showError('Champs requis', 'Veuillez remplir tous les champs obligatoires.');
       return;
     }
 
     const userId = this.authService.getUserIdFromToken();
     if (!userId) {
-      Swal.fire('Erreur', 'Utilisateur non authentifié', 'error');
+      this.showError('Non authentifié', 'Veuillez vous reconnecter.');
       return;
     }
 
     if (this.isEditing && this.editingNews) {
-      this.newsService
-        .updateNews(
-          this.editingNews.id,
-          this.titre,
-          this.description,
-          this.imageFile,
-          this.editingNews.imageUrl
-        )
-        .subscribe({
-          next: (response) => {
-            Swal.fire('Succès', 'News modifiée avec succès !', 'success');
-            this.loadNews();
-            this.resetForm();
-            this.showForm = false;
-          },
-          error: (err) => {
-            console.error('Erreur lors de la modification de la news :', err);
-            Swal.fire(
-              'Erreur',
-              err.error || err.message || 'Une erreur est survenue lors de la modification.',
-              'error'
-            );
-          },
-        });
+      this.updateNews();
     } else {
-      if (!this.imageFile) {
-        Swal.fire('Erreur', 'Veuillez sélectionner une image.', 'error');
-        return;
-      }
-
-      this.newsService.createNews(this.titre, this.description, this.imageFile, userId).subscribe({
-        next: (response) => {
-          Swal.fire('Succès', 'News ajoutée !', 'success');
-          this.loadNews();
-          this.resetForm();
-          this.showForm = false;
-        },
-        error: (err) => {
-          console.error('Erreur lors de la création de la news :', err);
-          Swal.fire(
-            'Erreur',
-            err.error || err.message || 'Une erreur est survenue lors de l\'ajout de la news.',
-            'error'
-          );
-        },
-      });
+      this.createNews(userId);
     }
   }
 
-  resetForm() {
+  private updateNews() {
+    if (!this.editingNews) return;
+
+    this.newsService.updateNews(
+      this.editingNews.id,
+      this.titre.trim(),
+      this.description.trim(),
+      this.imageFile,
+      this.editingNews.imageUrl
+    ).subscribe({
+      next: () => {
+        this.showSuccess('Actualité modifiée avec succès');
+        this.loadNews();
+        this.resetForm();
+      },
+      error: (err) => this.showError('Erreur', 'Impossible de modifier l\'actualité.')
+    });
+  }
+
+  private createNews(userId: number) {
+    if (!this.imageFile) {
+      this.showError('Image requise', 'Veuillez sélectionner une image.');
+      return;
+    }
+
+    this.newsService.createNews(
+      this.titre.trim(),
+      this.description.trim(),
+      this.imageFile,
+      userId
+    ).subscribe({
+      next: () => {
+        this.showSuccess('Actualité créée avec succès');
+        this.loadNews();
+        this.resetForm();
+      },
+      error: (err) => this.showError('Erreur', 'Impossible de créer l\'actualité.')
+    });
+  }
+
+  private resetForm() {
     this.titre = '';
     this.description = '';
     this.imageFile = null;
     this.isEditing = false;
     this.editingNews = null;
-    this.searchText = '';
-    this.filteredNews = [...this.News];
+    this.showForm = false;
+  }
+
+  private showError(title: string, text: string) {
+    Swal.fire({
+      icon: 'error',
+      title,
+      text,
+      confirmButtonColor: '#230046'
+    });
+  }
+
+  private showSuccess(text: string) {
+    Swal.fire({
+      icon: 'success',
+      title: 'Succès',
+      text,
+      confirmButtonColor: '#230046',
+      timer: 2000,
+      showConfirmButton: false
+    });
   }
 
   onSidebarStateChange(isCollapsed: boolean): void {
     this.isSidebarCollapsed = isCollapsed;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapePress() {
+    if (this.showForm) {
+      this.toggleForm();
+    }
   }
 }

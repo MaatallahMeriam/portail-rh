@@ -11,12 +11,14 @@
 // Plus imports for other components in your app.
 @import 'ngx-owl-carousel-o/lib/styles/scss/owl.carousel';
 @import 'ngx-owl-carousel-o/lib/styles/scss/owl.theme.default';
-
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;500;600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
 @include mat.core();
-
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 // Define the theme object.
 $PORTAIL-RH-theme: mat.define-theme((
   color: (
@@ -52,3 +54,51 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 /* Importing Bootstrap SCSS file. */
 @import 'bootstrap/scss/bootstrap';
+
+
+
+:root {
+  --primary-color: #230046;
+  --accent-color: #FF6B00;
+  --secondary-accent: #ff00ea;
+  --text-color: #333333;
+  --light-bg: #f8f9fa;
+  --white: #ffffff;
+  --box-shadow: 0 6px 20px rgba(35, 0, 70, 0.1);
+  --transition-standard: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --spacing-unit: 8px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+  color: var(--text-color);
+  background-color: var(--light-bg);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Remove focus outlines for non-keyboard users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Apply focus styles only for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}

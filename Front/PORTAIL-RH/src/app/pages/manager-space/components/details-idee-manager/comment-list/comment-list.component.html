@@ -1,0 +1,76 @@
+<div class="comments-list">
+  <div *ngIf="comments.length === 0" class="no-comments">
+    <mat-icon>chat_bubble_outline</mat-icon>
+    <p>Aucun commentaire pour le moment. Soyez le premier à commenter!</p>
+  </div>
+  
+  <div *ngFor="let comment of comments" class="comment" @commentAnimation>
+    <app-user-avatar [photoUrl]="getImageUrl(comment.userPhoto)"></app-user-avatar>
+    
+    <div class="comment-content">
+      <div class="comment-header">
+        <span class="comment-user">{{ comment.userNom }} {{ comment.userPrenom }}</span>
+        <span class="comment-time">{{ comment.createdAt | date: 'dd/MM/yyyy, HH:mm' }}</span>
+      </div>
+      
+      <!-- Edit Mode -->
+      <ng-container *ngIf="editingCommentId === comment.id; else displayMode">
+        <div class="edit-container">
+          <textarea 
+            [(ngModel)]="editedCommentContent" 
+            placeholder="Modifier votre commentaire..." 
+            rows="2" 
+            class="edit-comment-input"
+            autoFocus>
+          </textarea>
+          
+          <div class="edit-actions">
+            <button 
+              mat-button 
+              color="primary" 
+              class="save-btn" 
+              (click)="onUpdateComment(comment.id!)"
+              matTooltip="Enregistrer les modifications">
+              <mat-icon>check</mat-icon> Enregistrer
+            </button>
+            
+            <button 
+              mat-button 
+              class="cancel-btn" 
+              (click)="onCancelEdit()"
+              matTooltip="Annuler les modifications">
+              <mat-icon>close</mat-icon> Annuler
+            </button>
+          </div>
+        </div>
+      </ng-container>
+      
+      <!-- Display Mode -->
+      <ng-template #displayMode>
+        <p class="comment-text">{{ comment.content }}</p>
+        
+        <div class="comment-actions" *ngIf="isCommentOwner(comment)">
+          <button 
+            mat-icon-button 
+            color="primary" 
+            class="edit-btn" 
+            (click)="onEditComment(comment)"
+            matTooltip="Modifier"
+            matRipple>
+            <mat-icon>edit</mat-icon>
+          </button>
+          
+          <button 
+            mat-icon-button 
+            color="warn" 
+            class="delete-btn" 
+            (click)="onDeleteComment(comment.id!)"
+            matTooltip="Supprimer"
+            matRipple>
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

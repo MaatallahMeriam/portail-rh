@@ -10,8 +10,10 @@ public interface NotificationService {
     void createNotificationForRole(Demande demande);
     void createNotificationForUser(Users user, String message, String type, Long demandeId, Users triggeredByUser); // Ajout de la surcharge
     void createNotificationForRoleUsers(Users.Role role, String message, String type, Long demandeId);
-    void notifyRequesterStatusChange(Demande demande, String status);
+    void notifyRequesterStatusChange(Demande demande, String status, Users triggeredByUser); // Ajout de triggeredByUser    List<NotificationDTO> getNotificationsByUserId(Long userId, boolean isRead);
+
     List<NotificationDTO> getNotificationsByUserId(Long userId, boolean isRead);
+
     List<NotificationDTO> getNotificationsByUserId(Long userId);
     NotificationDTO markAsRead(Long notificationId);
     void markAllAsRead(Long userId);

@@ -10,6 +10,7 @@ import { UserService, UserDTO } from '../../../../services/users.service';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import Swal from 'sweetalert2';
+import { fadeAnimation, listAnimation, slideInAnimation, tabAnimation } from '../../../../animation';
 
 interface Demande {
   userDetails: string;
@@ -43,6 +44,7 @@ interface Demande {
   templateUrl: './trait-dmd-details.component.html',
   styleUrls: ['./trait-dmd-details.component.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  animations: [fadeAnimation, listAnimation, slideInAnimation, tabAnimation]
 })
 export class TraitDmdDetailsComponent implements OnInit {
   pendingDemandes: Demande[] = [];
@@ -54,6 +56,7 @@ export class TraitDmdDetailsComponent implements OnInit {
   selectedType: 'logistique' | 'document' = 'logistique';
   activeTab: 'pending' | 'history' = 'pending';
   loading: boolean = false;
+  animationState: string = 'in';
   private typeChangeSubject = new Subject<'logistique' | 'document'>();
   private userImageCache: Map<number, string> = new Map();
   isSidebarCollapsed = false;
@@ -66,8 +69,12 @@ export class TraitDmdDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.typeChangeSubject.pipe(debounceTime(300)).subscribe(type => {
-      this.selectedType = type;
-      this.loadDemandes();
+      this.animationState = 'out';
+      setTimeout(() => {
+        this.selectedType = type;
+        this.loadDemandes();
+        this.animationState = 'in';
+      }, 300);
     });
 
     this.loadDemandes();
@@ -216,6 +223,7 @@ export class TraitDmdDetailsComponent implements OnInit {
       icon: 'error',
       title: 'Erreur',
       text: `Erreur lors du chargement des demandes ${type}.`,
+      confirmButtonColor: '#230046',
     });
     console.error(`Error fetching ${type} demands:`, error);
     this.cdr.detectChanges();
@@ -309,6 +317,13 @@ export class TraitDmdDetailsComponent implements OnInit {
           icon: 'success',
           title: 'Succès',
           text: `Demande ${row.processingAction === 'accept' ? 'acceptée' : 'refusée'} avec succès.`,
+          confirmButtonColor: '#230046',
+          showClass: {
+            popup: 'animate__animated animate__fadeInDown'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__fadeOutUp'
+          }
         });
 
         this.pendingDemandes = this.pendingDemandes.filter(d => d.demandeId !== row.demandeId);
@@ -321,6 +336,7 @@ export class TraitDmdDetailsComponent implements OnInit {
           icon: 'error',
           title: 'Erreur',
           text: `Erreur lors de ${row.processingAction === 'accept' ? 'l\'acceptation' : 'le refus'} de la demande.`,
+          confirmButtonColor: '#230046'
         });
         console.error('Error processing demand:', error);
 
@@ -334,8 +350,14 @@ export class TraitDmdDetailsComponent implements OnInit {
   }
 
   setActiveTab(tab: 'pending' | 'history'): void {
-    this.activeTab = tab;
-    this.loadDemandes();
+    if (this.activeTab !== tab) {
+      this.animationState = 'out';
+      setTimeout(() => {
+        this.activeTab = tab;
+        this.loadDemandes();
+        this.animationState = 'in';
+      }, 300);
+    }
   }
 
   onSidebarStateChange(isCollapsed: boolean): void {

@@ -409,6 +409,6 @@ export class IdeeManagerComponent implements OnInit {
   }
 
   navigateTo(ideaId: number): void {
-    this.router.navigate(['/details-idee-collab', ideaId]);
+    this.router.navigate(['/details-idee-manager', ideaId]);
   }
 }

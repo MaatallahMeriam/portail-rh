@@ -1,4 +1,4 @@
-<div class="collab-home">
+<div class="collab-home" @fadeAnimation>
   <app-header></app-header>
 
   <div class="main-content">
@@ -6,7 +6,7 @@
 
     <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
-        <div class="header">
+        <div class="header" @slideInAnimation>
           <h2 class="title">Traitement Demandes</h2>
           <div class="header-actions">
             <div class="radio-group">
@@ -19,7 +19,7 @@
                   name="requestType"
                   checked
                 />
-                Logistique
+                <span class="radio-text">Logistique</span>
               </label>
               <label class="radio-label">
                 <input
@@ -29,20 +29,19 @@
                   (change)="onTypeChange('document')"
                   name="requestType"
                 />
-                Document
+                <span class="radio-text">Document</span>
               </label>
             </div>
-            <!-- Bouton "Enregistrer" supprimé -->
           </div>
         </div>
 
-        <!-- Ajout des onglets -->
-        <div class="tabs">
+        <div class="tabs" @slideInAnimation>
           <button
             class="tab-button"
             [class.active]="activeTab === 'pending'"
             (click)="setActiveTab('pending')"
           >
+            <span class="tab-icon pending-icon">⏱</span>
             Demandes à traiter
           </button>
           <button
@@ -50,50 +49,58 @@
             [class.active]="activeTab === 'history'"
             (click)="setActiveTab('history')"
           >
+            <span class="tab-icon history-icon">📋</span>
             Historique
           </button>
         </div>
 
-        <!-- Onglet "Demandes en attente" -->
-        <section class="history-section" *ngIf="activeTab === 'pending'">
+        <section class="history-section" *ngIf="activeTab === 'pending'" [@tabAnimation]>
           <div class="history-content">
-            <!-- Loading Spinner -->
-            <div class="loading-spinner" *ngIf="loading">
-              <span>Chargement...</span>
+            <div class="loading-container" *ngIf="loading">
+              <div class="pulse-loader">
+                <div class="pulse-loader-inner"></div>
+                <span class="loader-text">Chargement des demandes...</span>
+              </div>
             </div>
 
-            <!-- Table -->
+            <div *ngIf="!loading && pendingDemandes.length === 0" class="empty-state" @fadeAnimation>
+              <div class="empty-icon">📭</div>
+              <p class="empty-text">Aucune demande en attente</p>
+              <p class="empty-subtext">Toutes les demandes ont été traitées</p>
+            </div>
+
             <ngx-datatable
-              *ngIf="!loading"
+              *ngIf="!loading && pendingDemandes.length > 0"
               class="material"
               [rows]="pendingDemandes"
               [columns]="columns"
               [columnMode]="'force'"
               [headerHeight]="50"
               [footerHeight]="50"
-              [rowHeight]="50"
+              [rowHeight]="60"
               [scrollbarH]="false"
               [scrollbarV]="true"
               [messages]="{
                 emptyMessage: 'Aucune demande en attente trouvée',
                 totalMessage: 'demandes au total'
               }"
+              [@listAnimation]="pendingDemandes.length"
             >
-              <!-- Collaborateur Column -->
               <ngx-datatable-column name="Collaborateur" prop="userDetails" [width]="150">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   <div class="collaborateur-cell">
-                    <img
-                      [src]="getNormalizedImage(row.image)"
-                      alt="Photo de {{ row.userDetails }}"
-                      class="profile-photo"
-                    />
-                    <span>{{ row.userDetails }}</span>
+                    <div class="avatar-container">
+                      <img
+                        [src]="getNormalizedImage(row.image)"
+                        alt="Photo de {{ row.userDetails }}"
+                        class="profile-photo"
+                      />
+                    </div>
+                    <span class="user-name">{{ row.userDetails }}</span>
                   </div>
                 </ng-template>
               </ngx-datatable-column>
 
-              <!-- Dynamic Columns Based on Type -->
               <ngx-datatable-column
                 *ngIf="selectedType === 'logistique'"
                 name="Composant"
@@ -101,7 +108,9 @@
                 [width]="120"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
@@ -112,7 +121,9 @@
                 [width]="150"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
@@ -123,7 +134,9 @@
                 [width]="120"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
@@ -134,7 +147,9 @@
                 [width]="150"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text truncate-text" [title]="value">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
@@ -145,7 +160,9 @@
                 [width]="120"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
@@ -156,7 +173,9 @@
                 [width]="100"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
@@ -167,19 +186,20 @@
                 [width]="150"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text truncate-text" [title]="value">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
-              <!-- Actions Column -->
-              <ngx-datatable-column name="Actions" prop="actions" [width]="100">
+              <ngx-datatable-column name="Actions" prop="actions" [width]="120">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   <div class="action-buttons">
                     <ng-container *ngIf="!row.isProcessing; else processingTemplate">
-                      <button class="action-btn accept-btn" (click)="onAction(row, true)">
+                      <button class="action-btn accept-btn" (click)="onAction(row, true)" title="Accepter">
                         <span class="action-icon">✔</span>
                       </button>
-                      <button class="action-btn reject-btn" (click)="onAction(row, false)">
+                      <button class="action-btn reject-btn" (click)="onAction(row, false)" title="Refuser">
                         <span class="action-icon">✖</span>
                       </button>
                     </ng-container>
@@ -204,53 +224,61 @@
           </div>
         </section>
 
-        <!-- Onglet "Historique" -->
-        <section class="history-section" *ngIf="activeTab === 'history'">
+        <section class="history-section" *ngIf="activeTab === 'history'" [@tabAnimation]>
           <div class="history-content">
-            <!-- Loading Spinner -->
-            <div class="loading-spinner" *ngIf="loading">
-              <span>Chargement...</span>
+            <div class="loading-container" *ngIf="loading">
+              <div class="pulse-loader">
+                <div class="pulse-loader-inner"></div>
+                <span class="loader-text">Chargement de l'historique...</span>
+              </div>
             </div>
 
-            <!-- Table -->
+            <div *ngIf="!loading && historyDemandes.length === 0" class="empty-state" @fadeAnimation>
+              <div class="empty-icon">📭</div>
+              <p class="empty-text">Aucune demande dans l'historique</p>
+              <p class="empty-subtext">L'historique des demandes est vide</p>
+            </div>
+
             <ngx-datatable
-              *ngIf="!loading"
+              *ngIf="!loading && historyDemandes.length > 0"
               class="material"
               [rows]="historyDemandes"
               [columns]="historyColumns"
               [columnMode]="'force'"
               [headerHeight]="50"
               [footerHeight]="50"
-              [rowHeight]="50"
+              [rowHeight]="60"
               [scrollbarH]="false"
               [scrollbarV]="true"
               [messages]="{
                 emptyMessage: 'Aucune demande trouvée dans l\'historique',
                 totalMessage: 'demandes au total'
               }"
+              [@listAnimation]="historyDemandes.length"
             >
-              <!-- Collaborateur Column -->
               <ngx-datatable-column name="Collaborateur" prop="userDetails" [width]="150">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   <div class="collaborateur-cell">
-                    <img
-                      [src]="getNormalizedImage(row.image)"
-                      alt="Photo de {{ row.userDetails }}"
-                      class="profile-photo"
-                    />
-                    <span>{{ row.userDetails }}</span>
+                    <div class="avatar-container">
+                      <img
+                        [src]="getNormalizedImage(row.image)"
+                        alt="Photo de {{ row.userDetails }}"
+                        class="profile-photo"
+                      />
+                    </div>
+                    <span class="user-name">{{ row.userDetails }}</span>
                   </div>
                 </ng-template>
               </ngx-datatable-column>
 
-              <!-- Date d'Émission -->
               <ngx-datatable-column name="Date d'Émission" prop="dateEmission" [width]="120">
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value | date:'dd/MM/yyyy' }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text">{{ value | date:'dd/MM/yyyy' }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
-              <!-- Dynamic Columns Based on Type -->
               <ngx-datatable-column
                 *ngIf="selectedType === 'logistique'"
                 name="Composant"
@@ -258,7 +286,9 @@
                 [width]="120"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
@@ -269,7 +299,9 @@
                 [width]="150"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
@@ -280,7 +312,9 @@
                 [width]="120"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
@@ -291,7 +325,9 @@
                 [width]="150"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text truncate-text" [title]="value">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
@@ -302,7 +338,9 @@
                 [width]="120"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
@@ -313,7 +351,9 @@
                 [width]="100"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
@@ -324,22 +364,24 @@
                 [width]="150"
               >
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="cell-content">
+                    <span class="cell-text truncate-text" [title]="value">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
-              <!-- Statut Column -->
               <ngx-datatable-column name="Statut" prop="statut" [width]="120">
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span
+                  <div class="status-badge"
                     [ngClass]="{
                       'status-pending': value === 'EN_ATTENTE',
                       'status-accepted': value === 'VALIDEE',
                       'status-rejected': value === 'REFUSEE'
                     }"
                   >
-                    {{ value }}
-                  </span>
+                    
+                    <span class="status-text">{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
@@ -353,8 +395,6 @@
             </ngx-datatable>
           </div>
         </section>
-
-        <!-- Confirmation Dialog supprimée -->
       </div>
     </div>
   </div>

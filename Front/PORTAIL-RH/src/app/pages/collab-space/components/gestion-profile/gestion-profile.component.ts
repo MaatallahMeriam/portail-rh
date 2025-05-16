@@ -9,6 +9,7 @@ import { AuthService } from '../../../../shared/services/auth.service';
 import { FileService } from '../../../../services/file.service';
 import { DemandeService, UserDemandeDetailsDTO } from '../../../../services/demande.service';
 import Swal from 'sweetalert2';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-gestion-profile',
@@ -21,10 +22,25 @@ import Swal from 'sweetalert2';
     HeaderComponent,
   ],
   templateUrl: './gestion-profile.component.html',
-  styleUrls: ['./gestion-profile.component.scss']
+  styleUrls: ['./gestion-profile.component.scss'],
+   animations: [
+      trigger('fadeInOut', [
+        transition(':enter', [
+          style({ opacity: 0, transform: 'translateY(10px)' }),
+          animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+        ]),
+        transition(':leave', [
+          animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(10px)' }))
+        ])
+      ])
+    ]
+
 })
 export class GestionProfileComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
+  @ViewChild('fileInputCV') fileInputCV?: ElementRef;
+  @ViewChild('fileInputDiplome') fileInputDiplome?: ElementRef;
+  @ViewChild('fileInputContrat') fileInputContrat?: ElementRef;
 
   user: UserDTO = {
     id: 0,
@@ -50,11 +66,10 @@ export class GestionProfileComponent implements OnInit {
   newProfilePhotoFile: File | null = null;
   userId: number | null = null;
   dossierId: number | null = null;
-  editingField: keyof UserUpdateBasicDTO | null = null; // Updated to keyof UserUpdateBasicDTO
+  editingField: keyof UserUpdateBasicDTO | null = null;
   editingValue: string = '';
   showSaveAnimation: boolean = false;
   activeTab: 'personal' | 'dossier' | 'password' = 'personal';
-  selectedFileType: string | null = null;
   showAttachForm: string | null = null;
   selectedDossierFile: File | null = null;
   userDemandeDetails: UserDemandeDetailsDTO[] = [];
@@ -85,56 +100,64 @@ export class GestionProfileComponent implements OnInit {
     this.loadUserDetails(this.userId);
     this.loadUserDemandeDetails(this.userId);
   }
-// Réinitialiser les champs du mot de passe
-resetPasswordFields(): void {
+
+  triggerProfilePictureInput(): void {
+    if (this.fileInput && this.fileInput.nativeElement) {
+      this.fileInput.nativeElement.click();
+    } else {
+      console.error('No file input found for profile picture');
+    }
+  }
+
+  resetPasswordFields(): void {
     this.oldPassword = '';
     this.newPassword = '';
     this.confirmPassword = '';
-}
+  }
 
-// Mettre à jour le mot de passe
-updatePassword(): void {
+  updatePassword(): void {
     if (!this.userId) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Erreur',
-            text: 'Utilisateur non authentifié.',
-        });
-        return;
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Utilisateur non authentifié.',
+      });
+      return;
     }
 
     if (!this.oldPassword || !this.newPassword || !this.confirmPassword) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Erreur',
-            text: 'Tous les champs sont requis.',
-        });
-        return;
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Tous les champs sont requis.',
+      });
+      return;
     }
 
     if (this.newPassword !== this.confirmPassword) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Erreur',
-            text: 'Les nouveaux mots de passe ne correspondent pas.',
-        });
-        return;
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Les nouveaux mots de passe ne correspondent pas.',
+      });
+      return;
     }
 
     this.userService.updatePassword(this.userId, this.oldPassword, this.newPassword).subscribe({
-        next: (response: string) => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Succès',
-                text: response,
-            });
-            this.resetPasswordFields();
-        },
-        error: (err) => {
-            console.error('Erreur lors de la mise à jour du mot de passe:', err);
-        }
+      next: (response: string) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: response,
+        });
+        this.resetPasswordFields();
+      },
+      error: (err) => {
+        console.error('Erreur lors de la mise à jour du mot de passe:', err);
+      }
     });
-}
+  }
+
   loadUserDetails(userId: number): void {
     this.userService.getUserById(userId).subscribe({
       next: (userData: UserDTO) => {
@@ -162,49 +185,51 @@ updatePassword(): void {
       }
     });
   }
-deleteProfilePhoto(): void {
+
+  deleteProfilePhoto(): void {
     if (!this.userId) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Erreur',
-            text: 'Utilisateur non authentifié.',
-        });
-        return;
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Utilisateur non authentifié.',
+      });
+      return;
     }
 
     Swal.fire({
-        title: 'Voulez-vous vraiment supprimer votre photo de profil ?',
-        text: 'Cette action est irréversible.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#230046',
-        cancelButtonColor: '#ccc',
-        confirmButtonText: 'Oui, supprimer',
-        cancelButtonText: 'Annuler'
+      title: 'Voulez-vous vraiment supprimer votre photo de profil ?',
+      text: 'Cette action est irréversible.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#230046',
+      cancelButtonColor: '#ccc',
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler'
     }).then((result) => {
-        if (result.isConfirmed) {
-            this.userService.deleteProfilePhoto(this.userId!).subscribe({
-                next: (updatedUser: UserDTO) => {
-                    this.user = updatedUser;
-                    this.updateProfilePicture(updatedUser.image);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Succès',
-                        text: 'Photo de profil supprimée avec succès.',
-                    });
-                },
-                error: (err) => {
-                    console.error('Erreur lors de la suppression de la photo de profil:', err);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erreur',
-                        text: 'Impossible de supprimer la photo de profil.',
-                    });
-                }
+      if (result.isConfirmed) {
+        this.userService.deleteProfilePhoto(this.userId!).subscribe({
+          next: (updatedUser: UserDTO) => {
+            this.user = updatedUser;
+            this.updateProfilePicture(updatedUser.image);
+            Swal.fire({
+              icon: 'success',
+              title: 'Succès',
+              text: 'Photo de profil supprimée avec succès.',
             });
-        }
+          },
+          error: (err) => {
+            console.error('Erreur lors de la suppression de la photo de profil:', err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur',
+              text: 'Impossible de supprimer la photo de profil.',
+            });
+          }
+        });
+      }
     });
-}
+  }
+
   loadUserDemandeDetails(userId: number): void {
     this.demandeService.getUserDemandeDetails(userId).subscribe({
       next: (demandes: UserDemandeDetailsDTO[]) => {
@@ -253,8 +278,26 @@ deleteProfilePhoto(): void {
     return `http://localhost:8080/${imagePath.replace(/\\/g, '/')}`;
   }
 
-  triggerFileInput(): void {
-    this.fileInput.nativeElement.click();
+  triggerFileInput(fileType: string): void {
+    let fileInput: ElementRef | undefined;
+    switch (fileType) {
+      case 'cv':
+        fileInput = this.fileInputCV;
+        break;
+      case 'diplome':
+        fileInput = this.fileInputDiplome;
+        break;
+      case 'contrat':
+        fileInput = this.fileInputContrat;
+        break;
+      default:
+        return;
+    }
+    if (fileInput && fileInput.nativeElement) {
+      fileInput.nativeElement.click();
+    } else {
+      console.error(`No file input found for fileType: ${fileType}`);
+    }
   }
 
   onFileSelected(event: Event): void {
@@ -311,8 +354,7 @@ deleteProfilePhoto(): void {
   }
 
   editField(fieldName: keyof UserDTO): void {
-    // Only allow editing of fields that exist in UserUpdateBasicDTO
-    const validFields: (keyof UserUpdateBasicDTO)[] = ['userName', 'nom', 'prenom', 'mail', 'numero', 'dateNaissance'];
+    const validFields: (keyof UserUpdateBasicDTO)[] = ['userName', 'nom', 'prenom', 'mail', 'numero', 'dateNaissance', 'adresse'];
     if (!validFields.includes(fieldName as keyof UserUpdateBasicDTO)) {
       Swal.fire({
         icon: 'info',
@@ -395,24 +437,18 @@ deleteProfilePhoto(): void {
     this.editingValue = '';
   }
 
-  toggleMenu(fileType: string): void {
-    this.selectedFileType = this.selectedFileType === fileType ? null : fileType;
-    this.showAttachForm = null;
-  }
-
   @HostListener('document:click', ['$event'])
-  closeMenu(event: Event): void {
+  closeAttachForm(event: Event): void {
     const target = event.target as HTMLElement;
-    if (!target.closest('.menu-button') && !target.closest('.dropdown-menu') && !target.closest('.attach-form')) {
-      this.selectedFileType = null;
+    if (!target.closest('.edit-icon') && !target.closest('.attach-form')) {
       this.showAttachForm = null;
+      this.selectedDossierFile = null;
     }
   }
 
   attachFile(fileType: string): void {
     this.showAttachForm = fileType;
     this.selectedDossierFile = null;
-    this.selectedFileType = null;
   }
 
   onDossierFileSelected(event: Event): void {
@@ -537,7 +573,6 @@ deleteProfilePhoto(): void {
               title: 'Succès',
               text: `Fichier ${fileType} supprimé avec succès.`,
             });
-            this.selectedFileType = null;
           },
           error: (error) => {
             console.error(`Erreur lors de la suppression du fichier ${fileType}`, error);
@@ -546,7 +581,6 @@ deleteProfilePhoto(): void {
               title: 'Erreur',
               text: `Erreur lors de la suppression du fichier ${fileType}.`,
             });
-            this.selectedFileType = null;
           }
         });
       }

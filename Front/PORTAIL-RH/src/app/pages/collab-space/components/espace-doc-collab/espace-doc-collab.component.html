@@ -26,21 +26,16 @@
             <div *ngFor="let category of filteredCategories" class="category-section">
               <h3 class="category-title">Document {{ category.name }} :</h3>
               <div class="document-grid">
-                <div *ngFor="let document of category.documents" class="document-card">
-                  <div class="document-icon">
-                    <mat-icon>description</mat-icon>
+                <div *ngFor="let document of category.documents" class="document-card" (click)="downloadDocument(document.id)">
+                    <div class="document-icon">
+                      <mat-icon>description</mat-icon>
+                    </div>
+                    <div class="document-info">
+                      <h3 class="document-name">{{ document.name }}</h3>
+                      <p class="document-description">{{ document.description || 'Aucune description' }}</p>
+                      <span class="document-category">Catégorie : {{ document.categorie }}</span>
+                    </div>
                   </div>
-                  <div class="document-info">
-                    <h3 class="document-name">{{ document.name }}</h3>
-                    <p class="document-description">{{ document.description || 'Aucune description' }}</p>
-                    <span class="document-category">Catégorie : {{ document.categorie }}</span>
-                  </div>
-                  <div class="document-actions">
-                    <button mat-icon-button (click)="downloadDocument(document.id)">
-                      <mat-icon>download</mat-icon>
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
             <div *ngIf="filteredCategories.length === 0" class="no-documents">

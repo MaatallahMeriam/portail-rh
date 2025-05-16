@@ -30,7 +30,9 @@ export class SidebarComponent implements OnInit {
       expanded: false,
       children: [
         { label: 'Congés', route: 'demandeCongRH', icon: 'calendar' },
-        { label: 'Traitements', route: 'trait-dmd-rh', icon: 'clipboard-check' }
+        { label: 'Traitements Demandes', route: 'valide-dmd', icon: 'clipboard-check' },
+        { label: 'Historiques Congés', route: 'histo-dmd', icon: 'clock-history' },
+
       ]
     },
     { label: 'Boîte à Idées', route: 'idee-rh', icon: 'lightbulb' },

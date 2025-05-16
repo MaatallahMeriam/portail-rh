@@ -203,43 +203,6 @@ public class DemandeServiceImpl implements DemandeService {
     }
 
     @Override
-    @Transactional
-    public DemandeDTO changeStatut(Long id, Demande.StatutType nouveauStatut) {
-        Demande demande = demandeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
-
-        if (demande.getStatut() == nouveauStatut) {
-            throw new IllegalStateException("Le statut est déjà " + nouveauStatut);
-        }
-
-        demande.setStatut(nouveauStatut);
-        if (nouveauStatut == Demande.StatutType.VALIDEE) {
-            demande.setDateValidation(new Date());
-            if (demande instanceof Dmd_Conges conges) {
-                UserConges userConges = conges.getUserConges();
-                logger.info("Validation d'une demande de congé pour userCongesId={}", userConges.getId());
-                logger.info("Solde actuel avant validation (soldeActuel)={}", userConges.getSoldeActuel());
-                logger.info("Durée de la demande (duree)={}", conges.getDuree());
-                int nouveauSolde = userConges.getSoldeActuel() - conges.getDuree();
-                if (nouveauSolde < 0) {
-                    logger.error("Solde insuffisant lors de la validation. soldeActuel={}, duree={}", userConges.getSoldeActuel(), conges.getDuree());
-                    throw new RuntimeException("Solde insuffisant pour valider la demande");
-                }
-                userConges.setSoldeActuel(nouveauSolde);
-                userConges.setLastUpdated(new Date());
-                userCongesRepository.save(userConges);
-                logger.info("Nouveau solde après validation (soldeActuel)={}", userConges.getSoldeActuel());
-            }
-        } else if (nouveauStatut == Demande.StatutType.REFUSEE) {
-            demande.setDateValidation(null);
-        }
-
-        Demande updatedDemande = demandeRepository.save(demande);
-        notificationService.notifyRequesterStatusChange(demande, nouveauStatut.toString());
-        return mapToDTO(updatedDemande);
-    }
-
-    @Override
     public List<DemandeDTO> getDemandesByUserIdAndType(Long userId, String type) {
         Demande.DemandeType demandeType;
         try {
@@ -286,13 +249,17 @@ public class DemandeServiceImpl implements DemandeService {
 
     @Override
     @Transactional
-    public DemandeDTO acceptDemande(Long id) {
+    public DemandeDTO acceptDemande(Long id, Long userId) {
         Demande demande = demandeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
 
         if (demande.getStatut() != Demande.StatutType.EN_ATTENTE) {
             throw new IllegalStateException("La demande doit être en attente pour être acceptée. Statut actuel : " + demande.getStatut());
         }
+
+        // Récupérer l'utilisateur qui effectue l'action (manager ou RH)
+        Users processingUser = usersRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         demande.setStatut(Demande.StatutType.VALIDEE);
         demande.setDateValidation(new Date());
@@ -323,21 +290,25 @@ public class DemandeServiceImpl implements DemandeService {
 
         Demande updatedDemande = demandeRepository.save(demande);
 
-        // Notify only the user who submitted the request
-        notificationService.notifyRequesterStatusChange(updatedDemande, "acceptée");
+        // Notify only the user who submitted the request, passing the processing user
+        notificationService.notifyRequesterStatusChange(updatedDemande, "acceptée", processingUser);
 
         return mapToDTO(updatedDemande);
     }
 
     @Override
     @Transactional
-    public DemandeDTO refuseDemande(Long id) {
+    public DemandeDTO refuseDemande(Long id, Long userId) {
         Demande demande = demandeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
 
         if (demande.getStatut() != Demande.StatutType.EN_ATTENTE) {
             throw new IllegalStateException("La demande doit être en attente pour être refusée. Statut actuel : " + demande.getStatut());
         }
+
+        // Récupérer l'utilisateur qui effectue l'action (manager ou RH)
+        Users processingUser = usersRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         demande.setStatut(Demande.StatutType.REFUSEE);
         demande.setDateValidation(null); // Ensure dateValidation is null when refused
@@ -352,8 +323,8 @@ public class DemandeServiceImpl implements DemandeService {
 
         Demande updatedDemande = demandeRepository.save(demande);
 
-        // Notify only the user who submitted the request
-        notificationService.notifyRequesterStatusChange(updatedDemande, "refusée");
+        // Notify only the user who submitted the request, passing the processing user
+        notificationService.notifyRequesterStatusChange(updatedDemande, "refusée", processingUser);
 
         return mapToDTO(updatedDemande);
     }

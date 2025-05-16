@@ -3,7 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError, combineLatest } from 'rxjs';
 import { catchError, switchMap, map } from 'rxjs/operators';
 import Swal from 'sweetalert2';
-import { UserService, UserDTO } from './users.service'; // Adjust the import path as needed
+import { AuthService } from '../shared/services/auth.service'; // Ajustez le chemin selon votre structure
+import { UserService, UserDTO } from './users.service'; // Ajustez le chemin selon votre structure
 
 export interface DemandeRequest {
   type: string;
@@ -111,7 +112,8 @@ export class DemandeService {
 
   constructor(
     private http: HttpClient,
-    private userService: UserService // Inject UserService
+    private authService: AuthService, // Injecter AuthService
+    private userService: UserService
   ) {}
 
   createDemande(request: DemandeRequest): Observable<DemandeDTO> {
@@ -222,7 +224,12 @@ export class DemandeService {
   }
 
   acceptDemande(id: number): Observable<DemandeDTO> {
-    return this.http.put<DemandeDTO>(`${this.apiUrl}/${id}/accept`, {}).pipe(
+    const userId = this.authService.getUserIdFromToken();
+    if (!userId) {
+      return throwError(() => new Error('Utilisateur non authentifié.'));
+    }
+    const params = new HttpParams().set('userId', userId.toString());
+    return this.http.put<DemandeDTO>(`${this.apiUrl}/${id}/accept`, {}, { params }).pipe(
       catchError((error) => {
         Swal.fire({
           icon: 'error',
@@ -235,7 +242,12 @@ export class DemandeService {
   }
 
   refuseDemande(id: number): Observable<DemandeDTO> {
-    return this.http.put<DemandeDTO>(`${this.apiUrl}/${id}/refuse`, {}).pipe(
+    const userId = this.authService.getUserIdFromToken();
+    if (!userId) {
+      return throwError(() => new Error('Utilisateur non authentifié.'));
+    }
+    const params = new HttpParams().set('userId', userId.toString());
+    return this.http.put<DemandeDTO>(`${this.apiUrl}/${id}/refuse`, {}, { params }).pipe(
       catchError((error) => {
         Swal.fire({
           icon: 'error',

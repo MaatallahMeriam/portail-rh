@@ -13,7 +13,7 @@
     overflow: hidden;
 }
 
-.app-side-bar-manager {
+.app-side-bar-manager{
     position: fixed;
     top: 0;
     bottom: 0;
@@ -80,6 +80,11 @@
 .add-idea-btn {
     background-color: #E5007F;
     color: white;
+    border-radius:45px;
+    margin-top: 5x;
+    height: 40px;
+    width: 40px;
+
 }
 
 .idea-input, .topic-input, .edit-input, .edit-topic-input {
@@ -90,6 +95,19 @@
     margin-bottom: 10px;
     font-size: 1rem;
 }
+.button {
+    font-size: 12px;
+    padding: 3px 10px;    
+    background-color: #230046;
+    color: white;
+    border-radius: 25px;
+    cursor: pointer;
+    &:hover {
+        transform: scale(1);
+        background: linear-gradient(45deg, darken(#230046, 5%), darken(#3a0073, 5%));
+      }
+}
+
 
 .form-actions, .edit-actions {
     display: flex;
@@ -141,12 +159,14 @@
 }
 
 .idea-card {
-    background: #f9f9f9;
+    background: white;
     border-radius: 8px;
     padding: 10px;
     max-width: 400px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease;
+    border: 1px solid #e0e0e0;
+
 }
 
 .idea-card:hover {
@@ -164,6 +184,10 @@
 .user-photo, .comment-user-photo {
     width: 35px;
     height: 35px;
+    border: 2px solid rgba(#3D2A7D, 0.1);
+
+    border-color: #E5007F;
+
     border-radius: 50%;
     object-fit: cover;
 }
@@ -352,7 +376,7 @@
 }
 
 @media screen and (max-width: 1300px) {
-    .app-side-bar-manager {
+    .app-side-bar-manager{
         width: 200px;
     }
 
@@ -377,7 +401,7 @@
 }
 
 @media screen and (max-width: 1024px) {
-    .app-side-bar-manager {
+    .app-side-bar-manager{
         width: 200px;
     }
 
@@ -402,7 +426,7 @@
 }
 
 @media screen and (max-width: 768px) {
-    .app-side-bar-manager {
+    .app-side-bar-manager{
         display: none;
     }
 

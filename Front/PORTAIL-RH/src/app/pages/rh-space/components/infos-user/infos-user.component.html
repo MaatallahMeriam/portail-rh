@@ -34,7 +34,6 @@
 
         <!-- Section Informations -->
         <div class="user-details-section">
-          <h2>Informations personnelles</h2>
           <div class="details-grid">
             <div class="detail-group">
               <label>Nom d'utilisateur</label>
@@ -127,15 +126,6 @@
               </div>
             </div>
 
-            <div class="detail-group">
-              <label>Statut</label>
-              <div class="detail-value">
-                <span>{{ user?.active ? 'Actif' : 'Inactif' }}</span>
-                <button class="edit-button" (click)="editField('active')">
-                  <mat-icon>edit</mat-icon>
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>

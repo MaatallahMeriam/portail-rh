@@ -1,47 +1,39 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SidebarComponent } from '../sidebar-RH/sidebar.component';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
-import { RightSidebarComponent } from '../../../../shared/components/right-sidebar/right-sidebar.component';
-import { CarouselModule } from 'ngx-owl-carousel-o';
-import { MatCardModule } from '@angular/material/card';
 import { NgxDatatableModule, ColumnMode } from '@swimlane/ngx-datatable';
 import { DemandeService, ManagerCongesDemandeDTO } from '../../../../services/demande.service';
 import { UserService, UserDTO } from '../../../../services/users.service';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-histo-dmd-conges',
   standalone: true,
   imports: [
-    CommonModule,
-    CarouselModule,
-    MatCardModule,
+     CommonModule,
     FormsModule,
     SidebarComponent,
     HeaderComponent,
-    RightSidebarComponent,
     NgxDatatableModule,
   ],
   templateUrl: './histo-dmd-conges.component.html',
   styleUrl: './histo-dmd-conges.component.scss',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class HistoDmdCongesComponent {
+export class HistoDmdCongesComponent implements OnInit {
   demandes: ManagerCongesDemandeDTO[] = [];
   filteredDemandes: ManagerCongesDemandeDTO[] = [];
   totalDemandes: number = 0;
   searchQuery: string = '';
   columns: any[] = [];
-  public ColumnMode = ColumnMode;
-  private userImageCache: Map<number, string> = new Map();
+  ColumnMode = ColumnMode;
+  isLoading: boolean = true;
   isSidebarCollapsed = false;
+  private userImageCache: Map<number, string> = new Map();
 
   constructor(
     private demandeService: DemandeService,
-    private userService: UserService,
-    private sanitizer: DomSanitizer
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -51,59 +43,29 @@ export class HistoDmdCongesComponent {
 
   initializeColumns(): void {
     this.columns = [
-      {
-        name: 'Collaborateur',
-        prop: 'nom',
-        cellTemplate: 'collaborateurCellTemplate',
-        width: 200,
-      },
-      {
-        name: 'Nom Congé',
-        prop: 'congeNom',
-        width: 150,
-      },
-      {
-        name: 'Date Début',
-        prop: 'dateDebut',
-        width: 120,
-        pipe: {
-          transform: (value: string) => this.formatDate(value),
-        },
-      },
-      {
-        name: 'Date Fin',
-        prop: 'dateFin',
-        width: 120,
-        pipe: {
-          transform: (value: string) => this.formatDate(value),
-        },
-      },
-      {
-        name: 'Durée',
-        prop: 'duree',
-        cellTemplate: 'dureeCellTemplate',
-        width: 100,
-      },
-      {
-        name: 'Statut',
-        prop: 'statut',
-        cellTemplate: 'statutCellTemplate',
-        width: 120,
-      },
+      { name: 'Collaborateur', prop: 'nom', width: 200 },
+      { name: 'Type de Congé', prop: 'congeNom', width: 150 },
+      { name: 'Date Début', prop: 'dateDebut', width: 120 },
+      { name: 'Date Fin', prop: 'dateFin', width: 120 },
+      { name: 'Durée', prop: 'duree', width: 100 },
+      { name: 'Statut', prop: 'statut', width: 120 }
     ];
   }
 
   loadDemandes(): void {
+    this.isLoading = true;
     this.demandeService.getAllCongesDemandes().subscribe({
       next: (data) => {
         this.demandes = data;
         this.filteredDemandes = [...this.demandes];
         this.totalDemandes = this.demandes.length;
         this.preloadUserImages();
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Erreur lors du chargement des demandes:', error);
-      },
+        this.isLoading = false;
+      }
     });
   }
 
@@ -116,10 +78,9 @@ export class HistoDmdCongesComponent {
             const imageUrl = user.image ? user.image.replace(/\\/g, '/') : 'assets/icons/user-login-icon-14.png';
             this.userImageCache.set(userId, imageUrl);
           },
-          error: (error) => {
-            console.error(`Erreur lors du chargement de l'image de l'utilisateur ${userId}:`, error);
+          error: () => {
             this.userImageCache.set(userId, 'assets/icons/user-login-icon-14.png');
-          },
+          }
         });
       }
     });
@@ -129,50 +90,59 @@ export class HistoDmdCongesComponent {
     return this.userImageCache.get(userId) || 'assets/icons/user-login-icon-14.png';
   }
 
+  onImageError(event: any): void {
+    event.target.src = 'assets/icons/user-login-icon-14.png';
+  }
+
   formatDate(dateStr: string): string {
     if (!dateStr) return '-';
     const date = new Date(dateStr);
     return date.toLocaleDateString('fr-FR', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric',
+      year: 'numeric'
     });
   }
 
   filterDemandes(): void {
     const query = this.searchQuery.toLowerCase().trim();
-    if (!query) {
-      this.filteredDemandes = [...this.demandes];
-      return;
-    }
+    this.filteredDemandes = !query ? [...this.demandes] : 
+      this.demandes.filter(demande => {
+        const fullName = `${demande.nom} ${demande.prenom}`.toLowerCase();
+        const congeNom = demande.congeNom.toLowerCase();
+        const statut = demande.statut.toLowerCase();
+        return fullName.includes(query) || 
+               congeNom.includes(query) || 
+               statut.includes(query);
+      });
+    this.totalDemandes = this.filteredDemandes.length;
+  }
 
-    this.filteredDemandes = this.demandes.filter((demande) => {
-      const fullName = `${demande.nom} ${demande.prenom}`.toLowerCase();
-      const congeNom = demande.congeNom.toLowerCase();
-      const statut = demande.statut.toLowerCase();
-      return (
-        fullName.includes(query) ||
-        congeNom.includes(query) ||
-        statut.includes(query)
-      );
-    });
+  resetSearch(): void {
+    this.searchQuery = '';
+    this.filterDemandes();
   }
 
   getStatusColor(status: string): string {
-    switch ((status || '').toUpperCase()) {
-      case 'EN_ATTENTE':
-        return '#ED6C02';
-      case 'VALIDEE':
-        return '#2E7D32';
-      case 'REFUSEE':
-        return '#D32F2F';
-      default:
-        return '#666666';
+    switch (status?.toUpperCase()) {
+      case 'EN_ATTENTE': return '#ED6C02';
+      case 'VALIDEE': return '#2E7D32';
+      case 'REFUSEE': return '#D32F2F';
+      default: return '#666666';
     }
   }
 
   getStatusClass(status: string): string {
     return `status-${(status || 'inconnu').toLowerCase().replace('_', '-')}`;
+  }
+
+  formatStatus(status: string): string {
+    switch (status?.toUpperCase()) {
+      case 'EN_ATTENTE': return 'En attente';
+      case 'VALIDEE': return 'Validée';
+      case 'REFUSEE': return 'Refusée';
+      default: return 'Inconnu';
+    }
   }
 
   onSidebarStateChange(isCollapsed: boolean): void {

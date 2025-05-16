@@ -1,232 +1,370 @@
 <div class="collab-home">
-    <app-header></app-header>
-  
-    <div class="main-content">
-        <app-side-bar-manager  (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
-        
-            <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
-                <main class="content">
-                    <h2>Gestion Profil</h2>
-    
-                   <div class="tabs">
-                        <button class="tab-button" [class.active]="activeTab === 'personal'" (click)="activeTab = 'personal'">Informations Personnelles</button>
-                        <button class="tab-button" [class.active]="activeTab === 'dossier'" (click)="activeTab = 'dossier'">Dossier</button>
-                        <button class="tab-button" [class.active]="activeTab === 'password'" (click)="activeTab = 'password'">Mot de passe</button>
-                    </div>
-    
-                    
+  <app-header></app-header>
 
-<div class="tab-content">
-    <!-- Personal Information Tab -->
-    <div *ngIf="activeTab === 'personal'" class="profile-card">
-        <!-- Contenu existant -->
-        <div class="profile-picture-container">
-            <img [src]="profilePicture" alt="Profile Picture" class="profile-picture" />
-            <div class="camera-overlay" (click)="triggerFileInput()">
-                <mat-icon class="camera-icon">photo_camera</mat-icon>
-            </div>
-            <input type="file" #fileInput accept="image/*" (change)="onFileSelected($event)" style="display: none;" />
-            <div class="save-animation" *ngIf="showSaveAnimation">
-                <div class="spinner"></div>
-                <span>Saving changes</span>
-                <mat-icon class="done-icon">done</mat-icon>
-            </div>
-            <button *ngIf="profilePicture !== 'assets/icons/user-login-icon-14.png'" class="delete-photo-button" (click)="deleteProfilePhoto()">
-                Supprimer
-            </button>
-        </div>
-        <div class="user-info">
-            <div class="info-row">
-                <div class="info-field">
-                    <label>Nom</label>
-                    <div class="input-container">
-                        <span>{{ user.nom }}</span>
-                        <mat-icon class="edit-icon" (click)="editField('nom')">edit</mat-icon>
-                    </div>
-                </div>
-                <div class="info-field">
-                    <label>Prénom</label>
-                    <div class="input-container">
-                        <span>{{ user.prenom }}</span>
-                        <mat-icon class="edit-icon" (click)="editField('prenom')">edit</mat-icon>
-                    </div>
-                </div>
-            </div>
-            <div class="info-row">
-                <div class="info-field">
-                    <label>Nom d'utilisateur</label>
-                    <div class="input-container">
-                        <span>{{ user.userName }}</span>
-                        <mat-icon class="edit-icon" (click)="editField('userName')">edit</mat-icon>
-                    </div>
-                </div>
-                <div class="info-field">
-                    <label>Date de naissance</label>
-                    <div class="input-container">
-                        <span>{{ user.dateNaissance }}</span>
-                        <mat-icon class="edit-icon" (click)="editField('dateNaissance')">edit</mat-icon>
-                    </div>
-                </div>
-            </div>
-            <div class="info-row">
-                <div class="info-field">
-                    <label>Numéro de téléphone</label>
-                    <div class="input-container">
-                        <span>{{ user.numero }}</span>
-                        <mat-icon class="edit-icon" (click)="editField('numero')">edit</mat-icon>
-                    </div>
-                </div>
-                <div class="info-field">
-                    <label>E-mail</label>
-                    <div class="input-container">
-                        <span>{{ user.mail }}</span>
-                        <mat-icon class="edit-icon" (click)="editField('mail')">edit</mat-icon>
-                    </div>
-                </div>
-            </div>
-            <div class="info-row">
-                <div class="info-field">
-                    <label>Adresse</label>
-                    <div class="input-container">
-                        <span>{{ user.adresse }}</span>
-                        <mat-icon class="edit-icon" (click)="editField('adresse')">edit</mat-icon>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+  <div class="main-content">
+    <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
 
-    <!-- Dossier Tab -->
-    <div *ngIf="activeTab === 'dossier'" class="dossier-section">
-        <h3>Dossier de {{ user.prenom }} {{ user.nom }}</h3>
-        <div class="files-grid">
-            <div class="file-card">
-                <div class="actions">
-                    <button class="menu-button" (click)="toggleMenu('cv')">⋮</button>
-                    <div class="dropdown-menu" *ngIf="selectedFileType === 'cv'">
-                        <button (click)="attachFile('cv')">Joindre file</button>
-                        <button (click)="deleteFile('cv')">Supprimer</button>
-                    </div>
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <main class="content">
+        <h2 class="page-title">Gestion Profil</h2>
+
+        <nav class="tabs-container">
+          <button 
+            class="tab-button" 
+            [class.active]="activeTab === 'personal'" 
+            (click)="activeTab = 'personal'"
+          >
+            <mat-icon>person</mat-icon>
+            Informations Personnelles
+          </button>
+          <button 
+            class="tab-button" 
+            [class.active]="activeTab === 'dossier'" 
+            (click)="activeTab = 'dossier'"
+          >
+            <mat-icon>folder</mat-icon>
+            Dossier
+          </button>
+          <button 
+            class="tab-button" 
+            [class.active]="activeTab === 'password'" 
+            (click)="activeTab = 'password'"
+          >
+            <mat-icon>lock</mat-icon>
+            Mot de passe
+          </button>
+        </nav>
+
+        <div class="tab-content">
+          <!-- Personal Information Tab -->
+          <div *ngIf="activeTab === 'personal'" class="profile-card" [@fadeInOut]>
+            <div class="profile-picture-section">
+              <div class="profile-picture-wrapper">
+                <div class="profile-picture-container">
+                  <img [src]="profilePicture" alt="Photo de profil" class="profile-picture" />
+                  <div class="camera-overlay" (click)="triggerProfilePictureInput()">
+                    <mat-icon class="camera-icon">photo_camera</mat-icon>
+                  </div>
+                  <input type="file" #fileInput accept="image/*" (change)="onFileSelected($event)" class="hidden" />
                 </div>
-                <div class="file-icon-container">
-                    <img src="/assets/icons/donnees-dutilisateur.png" alt="CV Icon" class="file-icon" />
+                <div class="save-animation" *ngIf="showSaveAnimation">
+                  <div class="spinner"></div>
+                  <span>Enregistrement en cours...</span>
+                  <mat-icon class="done-icon">done</mat-icon>
+                </div>
+                <button 
+                  *ngIf="profilePicture !== 'assets/icons/user-login-icon-14.png'" 
+                  class="delete-photo-button" 
+                  (click)="deleteProfilePhoto()"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+            <hr class="separator-line">
+            <div class="user-info-section">
+              <div class="info-grid">
+                <div class="info-field">
+                  <label>Nom</label>
+                  <div class="input-container">
+                    <span>{{ user.nom }}</span>
+                    <button class="edit-button" (click)="editField('nom')">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="info-field">
+                  <label>Prénom</label>
+                  <div class="input-container">
+                    <span>{{ user.prenom }}</span>
+                    <button class="edit-button" (click)="editField('prenom')">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="info-field">
+                  <label>Nom d'utilisateur</label>
+                  <div class="input-container">
+                    <span>{{ user.userName }}</span>
+                    <button class="edit-button" (click)="editField('userName')">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="info-field">
+                  <label>Date de naissance</label>
+                  <div class="input-container">
+                    <span>{{ user.dateNaissance }}</span>
+                    <button class="edit-button" (click)="editField('dateNaissance')">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="info-field">
+                  <label>Numéro de téléphone</label>
+                  <div class="input-container">
+                    <span>{{ user.numero }}</span>
+                    <button class="edit-button" (click)="editField('numero')">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="info-field">
+                  <label>E-mail</label>
+                  <div class="input-container">
+                    <span>{{ user.mail }}</span>
+                    <button class="edit-button" (click)="editField('mail')">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="info-field full-width">
+                  <label>Adresse</label>
+                  <div class="input-container">
+                    <span>{{ user.adresse }}</span>
+                    <button class="edit-button" (click)="editField('adresse')">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dossier Tab (Unchanged) -->
+          <div *ngIf="activeTab === 'dossier'" class="dossier-section" [@fadeInOut]>
+            <h3 class="section-title">Dossier de {{ user.prenom }} {{ user.nom }}</h3>
+            <div class="files-grid">
+              <!-- CV Card -->
+              <div class="file-card">
+                <div class="file-card-header">
+                  <div class="file-icon-container">
+                    <mat-icon class="file-icon">description</mat-icon>
+                  </div>
+                  <div class="action-icons">
+                    <button class="edit-icon" (click)="attachFile('cv')">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button class="delete-icon" (click)="deleteFile('cv')">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
                 </div>
                 <div class="file-info">
-                    <h4>CV</h4>
-                    <p class="file-description">Curriculum Vitae</p>
-                    <button (click)="downloadFile('cv')" class="download-button">
-                        <img src="/assets/icons/telecharger.png" alt="Download CV" class="download-icon" />
-                        <span>Télécharger</span>
-                    </button>
+                  <h4>CV</h4>
+                  <p class="file-description">Curriculum Vitae</p>
+                  <button (click)="downloadFile('cv')" class="download-button">
+                    <mat-icon>download</mat-icon>
+                    <span>Télécharger</span>
+                  </button>
                 </div>
                 <div class="attach-form" *ngIf="showAttachForm === 'cv'">
-                    <h4>Joindre CV</h4>
-                    <input type="file" (change)="onDossierFileSelected($event)" accept=".pdf,.doc,.docx" />
-                    <div class="form-buttons">
-                        <button class="submit-button" (click)="submitFile('cv')">Soumettre</button>
-                        <button class="cancel-button" (click)="cancelAttach()">Annuler</button>
-                    </div>
+                  <h4>Joindre CV</h4>
+                  <div class="file-upload-container">
+                    <button class="file-upload-button" (click)="triggerFileInput('cv')">
+                      <mat-icon>attach_file</mat-icon>
+                      Joindre un fichier
+                    </button>
+                    <input 
+                      type="file" 
+                      #fileInputCV
+                      (change)="onDossierFileSelected($event)" 
+                      accept=".pdf,.doc,.docx" 
+                      class="file-input-hidden"
+                    />
+                  </div>
+                  <div class="form-buttons">
+                    <button class="submit-button" (click)="submitFile('cv')">
+                      <mat-icon>check</mat-icon>
+                      Soumettre
+                    </button>
+                    <button class="cancel-button" (click)="cancelAttach()">
+                      <mat-icon>close</mat-icon>
+                      Annuler
+                    </button>
+                  </div>
                 </div>
-            </div>
-            <div class="file-card">
-                <div class="actions">
-                    <button class="menu-button" (click)="toggleMenu('diplome')">⋮</button>
-                    <div class="dropdown-menu" *ngIf="selectedFileType === 'diplome'">
-                        <button (click)="attachFile('diplome')">Joindre fichier</button>
-                        <button (click)="deleteFile('diplome')">Supprimer fichier</button>
-                    </div>
-                </div>
-                <div class="file-icon-container">
-                    <img src="/assets/icons/donnees-dutilisateur.png" alt="Diplôme Icon" class="file-icon" />
+              </div>
+              <!-- Diplôme Card -->
+              <div class="file-card">
+                <div class="file-card-header">
+                  <div class="file-icon-container">
+                    <mat-icon class="file-icon">school</mat-icon>
+                  </div>
+                  <div class="action-icons">
+                    <button class="edit-icon" (click)="attachFile('diplome')">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button class="delete-icon" (click)="deleteFile('diplome')">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
                 </div>
                 <div class="file-info">
-                    <h4>Diplôme</h4>
-                    <p class="file-description">Diplôme académique</p>
-                    <button (click)="downloadFile('diplome')" class="download-button">
-                        <img src="/assets/icons/telecharger.png" alt="Download Diplôme" class="download-icon" />
-                        <span>Télécharger</span>
-                    </button>
+                  <h4>Diplôme</h4>
+                  <p class="file-description">Diplôme académique</p>
+                  <button (click)="downloadFile('diplome')" class="download-button">
+                    <mat-icon>download</mat-icon>
+                    <span>Télécharger</span>
+                  </button>
                 </div>
                 <div class="attach-form" *ngIf="showAttachForm === 'diplome'">
-                    <h4>Joindre Diplôme</h4>
-                    <input type="file" (change)="onDossierFileSelected($event)" accept=".pdf,.doc,.docx" />
-                    <div class="form-buttons">
-                        <button class="submit-button" (click)="submitFile('diplome')">Soumettre</button>
-                        <button class="cancel-button" (click)="cancelAttach()">Annuler</button>
-                    </div>
+                  <h4>Joindre Diplôme</h4>
+                  <div class="file-upload-container">
+                    <button class="file-upload-button" (click)="triggerFileInput('diplome')">
+                      <mat-icon>attach_file</mat-icon>
+                      Joindre un fichier
+                    </button>
+                    <input 
+                      type="file" 
+                      #fileInputDiplome
+                      (change)="onDossierFileSelected($event)" 
+                      accept=".pdf,.doc,.docx" 
+                      class="file-input-hidden"
+                    />
+                  </div>
+                  <div class="form-buttons">
+                    <button class="submit-button" (click)="submitFile('diplome')">
+                      <mat-icon>check</mat-icon>
+                      Soumettre
+                    </button>
+                    <button class="cancel-button" (click)="cancelAttach()">
+                      <mat-icon>close</mat-icon>
+                      Annuler
+                    </button>
+                  </div>
                 </div>
-            </div>
-            <div class="file-card">
-                <div class="actions">
-                    <button class="menu-button" (click)="toggleMenu('contrat')">⋮</button>
-                    <div class="dropdown-menu" *ngIf="selectedFileType === 'contrat'">
-                        <button (click)="attachFile('contrat')">Joindre fichier</button>
-                        <button (click)="deleteFile('contrat')">Supprimer fichier</button>
-                    </div>
-                </div>
-                <div class="file-icon-container">
-                    <img src="/assets/icons/donnees-dutilisateur.png" alt="Contrat Icon" class="file-icon" />
+              </div>
+              <!-- Contrat Card -->
+              <div class="file-card">
+                <div class="file-card-header">
+                  <div class="file-icon-container">
+                    <mat-icon class="file-icon">work</mat-icon>
+                  </div>
+                  <div class="action-icons">
+                    <button class="edit-icon" (click)="attachFile('contrat')">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button class="delete-icon" (click)="deleteFile('contrat')">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
                 </div>
                 <div class="file-info">
-                    <h4>Contrat</h4>
-                    <p class="file-description">Contrat de travail</p>
-                    <button (click)="downloadFile('contrat')" class="download-button">
-                        <img src="/assets/icons/telecharger.png" alt="Download Contrat" class="download-icon" />
-                        <span>Télécharger</span>
-                    </button>
+                  <h4>Contrat</h4>
+                  <p class="file-description">Contrat de travail</p>
+                  <button (click)="downloadFile('contrat')" class="download-button">
+                    <mat-icon>download</mat-icon>
+                    <span>Télécharger</span>
+                  </button>
                 </div>
                 <div class="attach-form" *ngIf="showAttachForm === 'contrat'">
-                    <h4>Joindre Contrat</h4>
-                    <input type="file" (change)="onDossierFileSelected($event)" accept=".pdf,.doc,.docx" />
-                    <div class="form-buttons">
-                        <button class="submit-button" (click)="submitFile('contrat')">Soumettre</button>
-                        <button class="cancel-button" (click)="cancelAttach()">Annuler</button>
-                    </div>
+                  <h4>Joindre Contrat</h4>
+                  <div class="file-upload-container">
+                    <button class="file-upload-button" (click)="triggerFileInput('contrat')">
+                      <mat-icon>attach_file</mat-icon>
+                      Joindre un fichier
+                    </button>
+                    <input 
+                      type="file" 
+                      #fileInputContrat
+                      (change)="onDossierFileSelected($event)" 
+                      accept=".pdf,.doc,.docx" 
+                      class="file-input-hidden"
+                    />
+                  </div>
+                  <div class="form-buttons">
+                    <button class="submit-button" (click)="submitFile('contrat')">
+                      <mat-icon>check</mat-icon>
+                      Soumettre
+                    </button>
+                    <button class="cancel-button" (click)="cancelAttach()">
+                      <mat-icon>close</mat-icon>
+                      Annuler
+                    </button>
+                  </div>
                 </div>
+              </div>
             </div>
-        </div>
-    </div>
+          </div>
 
-    <!-- Password Tab -->
-    <div *ngIf="activeTab === 'password'" class="password-section">
-        <h3>Modifier le mot de passe</h3>
-        <div class="password-form">
-            <div class="form-field">
-                <label>Ancien mot de passe</label>
-                <input type="password" [(ngModel)]="oldPassword" placeholder="Entrez l'ancien mot de passe" />
-            </div>
-            <div class="form-field">
-                <label>Nouveau mot de passe</label>
-                <input type="password" [(ngModel)]="newPassword" placeholder="Entrez le nouveau mot de passe" />
-            </div>
-            <div class="form-field">
-                <label>Confirmer le nouveau mot de passe</label>
-                <input type="password" [(ngModel)]="confirmPassword" placeholder="Confirmez le nouveau mot de passe" />
-            </div>
-            <div class="form-actions">
-                <button class="save-button" (click)="updatePassword()">Enregistrer</button>
-                <button class="cancel-button" (click)="resetPasswordFields()">Annuler</button>
-            </div>
-        </div>
-    </div>
-</div>
-                </main>
-            </div>
-        </div>
-    
-        <!-- Edit Modal -->
-        <div class="edit-modal" *ngIf="editingField">
-            <div class="modal-content">
-                <h3>Modifier {{ fieldDisplayName(editingField) }}</h3>
-                <input
-                    [type]="editingField === 'dateNaissance' ? 'date' : 'text'"
-                    [(ngModel)]="editingValue"
-                    [placeholder]="'Nouveau ' + fieldDisplayName(editingField)"
-                >
-                <div class="modal-actions">
-                    <button class="save-button" (click)="saveEdit()">Enregistrer</button>
-                    <button class="cancel-button" (click)="cancelEdit()">Annuler</button>
+          <!-- Password Tab (Unchanged) -->
+          <div *ngIf="activeTab === 'password'" class="password-section" [@fadeInOut]>
+            <div class="password-card">
+              <h3 class="section-title">Modifier le mot de passe</h3>
+              <div class="password-form">
+                <div class="form-field">
+                  <label>
+                    <mat-icon>lock</mat-icon>
+                    Ancien mot de passe
+                  </label>
+                  <input 
+                    type="password" 
+                    [(ngModel)]="oldPassword" 
+                    placeholder="Entrez l'ancien mot de passe" 
+                  />
                 </div>
+                <div class="form-field">
+                  <label>
+                    <mat-icon>vpn_key</mat-icon>
+                    Nouveau mot de passe
+                  </label>
+                  <input 
+                    type="password" 
+                    [(ngModel)]="newPassword" 
+                    placeholder="Entrez le nouveau mot de passe" 
+                  />
+                </div>
+                <div class="form-field">
+                  <label>
+                    <mat-icon>done_all</mat-icon>
+                    Confirmer le nouveau mot de passe
+                  </label>
+                  <input 
+                    type="password" 
+                    [(ngModel)]="confirmPassword" 
+                    placeholder="Confirmez le nouveau mot de passe" 
+                  />
+                </div>
+                <div class="form-actions">
+                  <button class="cancel-button" (click)="resetPasswordFields()">
+                    <mat-icon>close</mat-icon>
+                    Annuler
+                  </button>
+                  <button class="save-button" (click)="updatePassword()">
+                    <mat-icon>save</mat-icon>
+                    Enregistrer
+                  </button>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+      </main>
     </div>
+  </div>
+
+  <!-- Edit Modal (Unchanged) -->
+  <div class="modal-overlay" *ngIf="editingField" [@fadeInOut]>
+    <div class="modal-content">
+      <h3 class="modal-title">
+        <mat-icon>edit</mat-icon>
+        Modifier {{ fieldDisplayName(editingField) }}
+      </h3>
+      <input
+        [type]="editingField === 'dateNaissance' ? 'date' : 'text'"
+        [(ngModel)]="editingValue"
+        [placeholder]="'Nouveau ' + fieldDisplayName(editingField)"
+        class="modal-input"
+      >
+      <div class="modal-actions">
+        <button class="cancel-button" (click)="cancelEdit()">
+          Annuler
+        </button>
+        <button class="save-button" (click)="saveEdit()">
+          Enregistrer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

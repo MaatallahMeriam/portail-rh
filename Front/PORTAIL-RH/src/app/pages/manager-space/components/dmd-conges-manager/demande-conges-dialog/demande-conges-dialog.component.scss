@@ -8,7 +8,7 @@ $transition: all 0.3s ease;
     background: #fff;
     border-radius: 12px;
     padding: 32px;
-    width: 500px; 
+    width: 555px; 
     max-height: 680px;
     margin: auto auto;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -60,10 +60,11 @@ $transition: all 0.3s ease;
   }
 }
 
-.dialog-content {
+.dialog-content {    
+  background: #fff;
+
   margin-bottom: 10px;
   margin-top: -40px;
-  margin-left: -10px;
 }
 
 .leave-form {
@@ -207,11 +208,33 @@ $transition: all 0.3s ease;
   padding-top: 16px;
   border-top: 1px solid rgba(#230046, 0.1);
 }
+.file-button {
+  // Masquer le texte existant
+  font-size: 0; // Réduit le texte à 0 pour le cacher
+  padding: 8px; // Ajuste le padding pour une meilleure apparence de l'icône
 
+  // Ajouter l'icône avec ::before
+  &::before {
+    content: "\f0c6"; // Code Font Awesome pour fa-paperclip
+    font-family: "Font Awesome 5 Free"; // Assurez-vous que Font Awesome est chargé
+    font-weight: 900; // Icône solide
+    font-size: 16px; // Taille de l'icône
+    color: white; // Couleur assortie au bouton
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  // Conserver les effets existants
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(#230046, 0.2);
+  }
+}
 .cancel-button, .submit-button {
-  padding: 12px 24px;
+  height: 35px;
+  width: 100px;
   border-radius: 25px;
-  font-weight: 600;
+  font-weight: 400;
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
@@ -219,7 +242,7 @@ $transition: all 0.3s ease;
 
 .cancel-button {
   background: #f5f5f5;
-  color: #575656;
+  color: #363636;
 
   &:hover {
     background: #eee;

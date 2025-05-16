@@ -7,69 +7,110 @@
     <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
         <div class="loading-spinner" *ngIf="loading">
+          <div class="spinner"></div>
           <span>Chargement...</span>
         </div>
 
-        <div class="user-card" *ngIf="!loading && user">
-          <h3 class="membre" >Détails Membre :</h3>
-          <div class="user-info">
-            <div class="profile-photo" [style.backgroundImage]="getBackgroundImage(user)"></div>
-            <div class="user-details">
-              <h3>{{ user.prenom }} {{ user.nom }}</h3>
-              <p class="poste">{{ user.poste }}</p>
-              <p class="contact-info"><strong>Numéro :</strong> {{ user.numero }}</p>
-              <p class="contact-info"><strong>Email :</strong> {{ user.mail }}</p>
-              <p class="contact-info"><strong>Adresse :</strong> {{ user.adresse }}</p>
+        <div class="user-section" *ngIf="!loading && user">
+          <div class="user-card">
+            <div class="card-header">
+              <h3 class="section-title">Détails Membre</h3>
+            </div>
+            <div class="user-info">
+              <div class="profile-photo" [style.backgroundImage]="getBackgroundImage(user)">
+              </div>
+              <div class="user-details">
+                <h3 class="user-name">{{ user.prenom }} {{ user.nom }}</h3>
+                <p class="poste">{{ user.poste }}</p>
+                <div class="contact-details">
+                  <div class="contact-info">
+                    <i class="contact-icon phone-icon"></i>
+                    <span>{{ user.numero }}</span>
+                  </div>
+                  <div class="contact-info">
+                    <i class="contact-icon email-icon"></i>
+                    <span>{{ user.mail }}</span>
+                  </div>
+                  <div class="contact-info">
+                    <i class="contact-icon location-icon"></i>
+                    <span>{{ user.adresse }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="conges-slider-container" *ngIf="!loading">
+        <div class="conges-section" *ngIf="!loading">
           <h2 class="section-title">Congés Associés</h2>
-          <owl-carousel-o [options]="carouselOptions" *ngIf="userConges.length > 0">
-            <ng-container *ngFor="let conge of userConges">
-              <ng-template carouselSlide>
-                <mat-card class="conge-card" [ngClass]="getColorForType(conge.type)">
-                  <mat-card-content class="content-card">
-                    <p><strong>Nom :</strong> {{ conge.nom }}</p>
-                    <p><strong>Validité :</strong> {{ conge.validite }}</p>
-                    <p><strong>Solde :</strong> {{ conge.soldeInitial }} {{ conge.unite }}</p>
-                  </mat-card-content>
-                </mat-card>
-              </ng-template>
-            </ng-container>
-          </owl-carousel-o>
-          <p *ngIf="userConges.length === 0" class="no-conges-message">
-            Aucun congé associé à cet utilisateur.
-          </p>
+          <div class="conges-wrapper">
+            <owl-carousel-o [options]="carouselOptions" *ngIf="userConges.length > 0">
+              <ng-container *ngFor="let conge of userConges">
+                <ng-template carouselSlide>
+                  <div class="conge-card-wrapper">
+                    <mat-card class="conge-card" [ngClass]="getColorForType(conge.type)">
+                      <div class="conge-card-content">
+                        <div class="conge-header">
+                          <h4 class="conge-name">{{ conge.nom }}</h4>
+                        </div>
+                        <div class="conge-details">
+                          <div class="conge-info">
+                            <span class="info-label">Validité:</span>
+                            <span class="info-value">{{ conge.validite }}</span>
+                          </div>
+                          <div class="conge-info">
+                            <span class="info-label">Solde:</span>
+                            <span class="info-value">{{ conge.soldeInitial }} {{ conge.unite }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </mat-card>
+                  </div>
+                </ng-template>
+              </ng-container>
+            </owl-carousel-o>
+            <div class="no-conges" *ngIf="userConges.length === 0">
+              <div class="no-data-message">
+                <i class="no-data-icon"></i>
+                <p>Aucun congé associé à cet utilisateur</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="teletravail-section" *ngIf="!loading">
           <h2 class="section-title">Planning de Télétravail - {{ currentMonth | date: 'MMMM yyyy' }}</h2>
-          <div class="calendar-card" *ngIf="hasPlanning; else noPlanning">
-            <div class="calendar-header">
-              <span class="month-year">{{ currentMonth | date: 'MMMM yyyy' }}</span>
-            </div>
-            <div class="calendar-grid">
-              <div class="day-label" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">{{ day }}</div>
-              <div
-                class="calendar-day"
-                *ngFor="let day of calendarDays"
-                [ngClass]="{
-                  'filler': !day.isCurrentMonth,
-                  'today': day.isToday,
-                  'teletravail': selectedDays.includes(formatDate(day.date))
-                }"
-              >
-                {{ day.date.getDate() }}
+          <div class="calendar-container">
+            <div class="calendar-card" *ngIf="hasPlanning; else noPlanning">
+              <div class="calendar-header">
+                <span class="month-year">{{ currentMonth | date: 'MMMM yyyy' }}</span>
+              </div>
+              <div class="calendar-grid">
+                <div class="day-label" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">{{ day }}</div>
+                <div
+                  class="calendar-day"
+                  *ngFor="let day of calendarDays"
+                  [ngClass]="{
+                    'filler': !day.isCurrentMonth,
+                    'today': day.isToday,
+                    'teletravail': selectedDays.includes(formatDate(day.date)),
+                    'weekend': day.date.getDay() === 0 || day.date.getDay() === 6
+                  }"
+                >
+                  <span class="day-number">{{ day.date.getDate() }}</span>
+                  <div class="day-indicator" *ngIf="selectedDays.includes(formatDate(day.date))"></div>
+                </div>
               </div>
             </div>
+            <ng-template #noPlanning>
+              <div class="no-planning-card">
+                <div class="no-data-message">
+                  <i class="calendar-icon"></i>
+                  <p>{{ user?.prenom }} {{ user?.nom }} n'a pas encore fixé son planning de télétravail pour ce mois.</p>
+                </div>
+              </div>
+            </ng-template>
           </div>
-          <ng-template #noPlanning>
-            <div class="no-planning-message">
-              <p>{{ user?.prenom }} {{ user?.nom }} n'a pas encore fixé son planning de ce mois.</p>
-            </div>
-          </ng-template>
         </div>
       </div>
     </div>

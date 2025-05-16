@@ -44,6 +44,7 @@ export interface UserDTO {
   adresse: string;
   checked?: boolean;
   equipeId?: number;
+  nomEquipe?: string;
 }
 
 export interface UserUpdateBasicDTO {
@@ -53,6 +54,7 @@ export interface UserUpdateBasicDTO {
   mail?: string;
   numero?: string;
   dateNaissance?: string;
+  adresse?: string;
 }
 
 export interface UserUpdateFullDTO {

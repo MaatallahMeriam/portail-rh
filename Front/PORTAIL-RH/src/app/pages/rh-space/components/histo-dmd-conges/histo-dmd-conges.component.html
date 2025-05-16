@@ -7,22 +7,43 @@
     <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
         <div class="header">
-          <h2 class="title">Historique Demandes Congés</h2>
+          <div class="title-section">
+            <h2 class="title">Historique Demandes Congés</h2>
+            <div class="total-badge">{{ totalDemandes }} demandes</div>
+          </div>
+          <div class="logo-section">
+          </div>
         </div>
 
         <section class="history-section">
           <div class="search-bar">
-            <input
-              type="text"
-              [(ngModel)]="searchQuery"
-              (input)="filterDemandes()"
-              placeholder="Rechercher par nom, congé ou statut..."
-            />
+            <div class="search-input-wrapper">
+              <input
+                type="text"
+                [(ngModel)]="searchQuery"
+                (input)="filterDemandes()"
+                placeholder="Rechercher par nom, congé ou statut..."
+                class="search-input"
+              />
+            </div>
           </div>
 
-          <div class="history-content">
+          <div class="history-content" [class.loading]="isLoading">
+            <div class="spinner-overlay" *ngIf="isLoading">
+              <div class="spinner"></div>
+            </div>
+            
+            <div class="empty-state" *ngIf="!isLoading && filteredDemandes.length === 0">
+              <i class="fas fa-calendar-times empty-icon"></i>
+              <p class="empty-message">Aucune demande trouvée</p>
+              <button class="reset-btn" (click)="resetSearch()">
+                <i class="fas fa-sync-alt"></i> Réinitialiser la recherche
+              </button>
+            </div>
+
             <ngx-datatable
-              class="material"
+              *ngIf="!isLoading && filteredDemandes.length > 0"
+              class="material excellia-table"
               [rows]="filteredDemandes"
               [columns]="columns"
               [columnMode]="ColumnMode.force"
@@ -31,56 +52,74 @@
               [rowHeight]="60"
               [scrollbarH]="false"
               [scrollbarV]="true"
+              [loadingIndicator]="isLoading"
             >
-              <!-- Collaborateur Cell Template -->
-              <ngx-datatable-column name="Collaborateur" prop="nom" [width]="100">
-                <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+              <!-- Collaborateur Column -->
+              <ngx-datatable-column name="Collaborateur" prop="nom" [width]="200">
+                <ng-template let-row="row" ngx-datatable-cell-template>
                   <div class="collaborateur-cell">
-                    <img
-                      [src]="getPhotoUrl(row.userId)"
-                      alt="Profile Photo of {{ value }} {{ row.prenom }}"
-                      class="profile-photo"
-                    />
-                    <span>{{ value }} {{ row.prenom }}</span>
+                    <div class="profile-photo-container">
+                      <img
+                        [src]="getPhotoUrl(row.userId)"
+                        [alt]="'Photo de ' + row.nom + ' ' + row.prenom"
+                        class="profile-photo"
+                        (error)="onImageError($event)"
+                      />
+                    </div>
+                    <div class="user-info">
+                      <span class="user-name">{{ row.nom }} {{ row.prenom }}</span>
+                    </div>
                   </div>
                 </ng-template>
               </ngx-datatable-column>
 
               <!-- Nom Congé Column -->
-              <ngx-datatable-column name="Nom Congé" prop="congeNom" [width]="100">
+              <ngx-datatable-column name="Type de Congé" prop="congeNom" [width]="150">
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ value }}</span>
+                  <div class="conge-type">
+                    <i class="fas fa-calendar-alt conge-icon"></i>
+                    <span>{{ value }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
               <!-- Date Début Column -->
-              <ngx-datatable-column name="Date Début" prop="dateDebut" [width]="80">
+              <ngx-datatable-column name="Date Début" prop="dateDebut" [width]="120">
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ formatDate(value) }}</span>
+                  <div class="date-cell">
+                    <i class="fas fa-calendar-day date-icon"></i>
+                    <span>{{ formatDate(value) }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
               <!-- Date Fin Column -->
-              <ngx-datatable-column name="Date Fin" prop="dateFin" [width]="80">
+              <ngx-datatable-column name="Date Fin" prop="dateFin" [width]="120">
                 <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span>{{ formatDate(value) }}</span>
+                  <div class="date-cell">
+                    <i class="fas fa-calendar-check date-icon"></i>
+                    <span>{{ formatDate(value) }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
-              <!-- Durée Cell Template -->
+              <!-- Durée Column -->
               <ngx-datatable-column name="Durée" prop="duree" [width]="100">
-                <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-                  {{ value }} {{ row.unite }}
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <div class="duree-cell">
+                    <i class="fas fa-clock duree-icon"></i>
+                    <span>{{ row.duree }} {{ row.unite }}</span>
+                  </div>
                 </ng-template>
               </ngx-datatable-column>
 
-              <!-- Statut Cell Template -->
+              <!-- Statut Column -->
               <ngx-datatable-column name="Statut" prop="statut" [width]="120">
                 <ng-template let-value="value" ngx-datatable-cell-template>
                   <div class="status-container">
                     <span class="status-dot" [style.background-color]="getStatusColor(value)"></span>
                     <span class="status-badge" [ngClass]="getStatusClass(value)">
-                      {{ value || 'Inconnu' | titlecase }}
+                      {{ formatStatus(value) }}
                     </span>
                   </div>
                 </ng-template>
@@ -88,8 +127,8 @@
 
               <ngx-datatable-footer>
                 <ng-template ngx-datatable-footer-template>
-                  <div class="footer-total">
-                    <span>{{ totalDemandes }} Demandes au total</span>
+                  <div class="footer-content">
+                    <span class="footer-total">{{ totalDemandes }} Demandes au total</span>
                   </div>
                 </ng-template>
               </ngx-datatable-footer>
@@ -98,7 +137,5 @@
         </section>
       </div>
     </div>
-
-    <app-right-sidebar></app-right-sidebar>
   </div>
 </div>

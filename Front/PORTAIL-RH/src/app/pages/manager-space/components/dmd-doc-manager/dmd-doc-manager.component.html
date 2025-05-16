@@ -7,7 +7,7 @@
     <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
         <div class="header">
-          <h2 class="title">Demande de Documents</h2>
+          <h2 class="title">Demandes des Documents</h2>
           <div class="header-actions">
             <button 
               class="refresh-button" 
@@ -90,7 +90,7 @@
                   </button>
                   <button type="submit" class="btn btn-submit" [disabled]="isLoading || !reason">
                     <mat-icon>send</mat-icon>
-                    Envoyer la demande
+                    Envoyer
                   </button>
                 </div>
               </form>
@@ -168,7 +168,7 @@
         </div>
       </div>
 
-      <app-right-side-manager></app-right-side-manager>
+            <app-right-side-manager></app-right-side-manager>
     </div>
   </div>
 </div>

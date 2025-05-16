@@ -140,6 +140,53 @@ label {
   }
 }
 
+
+
+
+
+.password-toggle {
+  position: relative;
+  width: 1.5rem;
+  height: 1rem;
+
+  i {
+    font-size: 1.1rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+  
+
+  &.fa-eye-slash::before,
+  &.fa-eye-slash::after {
+    content: '';
+    position: absolute;
+    background: $error-color;
+  }
+
+  &.fa-eye-slash::before {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+  }
+
+  &.fa-eye-slash::after {
+    top: -0.3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1rem;
+    height: 0.4rem;
+    border-radius: 50% 50% 0 0;
+  }
+}
+
+
+
+
 input {
   width: 100%;
   padding: 0.75rem 1rem;

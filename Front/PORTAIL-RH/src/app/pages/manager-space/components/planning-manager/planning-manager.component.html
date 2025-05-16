@@ -2,9 +2,9 @@
     <app-header></app-header>
   
     <div class="main-content">
-        <app-side-bar-manager  (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
+        <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
         
-              <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+        <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
             <main class="content">
                 <h2>Planning Télétravail :</h2>
 
@@ -21,7 +21,7 @@
                     <h3>Aucun planning de télétravail n'est disponible pour ce mois.</h3>
                 </div>
                 <div class="planning-exists">
-    <h3>Votre PLANNING TT pour ce mois :</h3>
+                          <h3>Votre PLANNING TT pour ce mois :</h3>
 
     <!-- Calendrier pour sélectionner ou afficher les jours -->
     <div class="calendar-card" *ngIf="userPlanning">

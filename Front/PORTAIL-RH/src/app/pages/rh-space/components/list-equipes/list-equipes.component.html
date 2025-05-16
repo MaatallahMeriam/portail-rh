@@ -6,7 +6,7 @@
 
     <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
-        <h2 class="title">Liste Equipes</h2>
+        <h2 class="title">Liste  des équipes</h2>
 
         <div class="history-header">
           <input
@@ -17,7 +17,7 @@
             (ngModelChange)="filterEquipes()"
           />
           <button class="add-button" (click)="toggleAddForm()">
-            <mat-icon>add</mat-icon>
+            <span class="plus-icon">+</span>
           </button>
         </div>
 

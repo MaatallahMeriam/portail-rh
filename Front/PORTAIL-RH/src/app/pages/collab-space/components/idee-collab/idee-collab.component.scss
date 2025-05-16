@@ -80,6 +80,11 @@
 .add-idea-btn {
     background-color: #E5007F;
     color: white;
+    border-radius:45px;
+    margin-top: 5x;
+    height: 40px;
+    width: 40px;
+
 }
 
 .idea-input, .topic-input, .edit-input, .edit-topic-input {
@@ -154,12 +159,14 @@
 }
 
 .idea-card {
-    background: #f9f9f9;
+    background: white;
     border-radius: 8px;
     padding: 10px;
     max-width: 400px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease;
+    border: 1px solid #e0e0e0;
+
 }
 
 .idea-card:hover {
@@ -177,6 +184,10 @@
 .user-photo, .comment-user-photo {
     width: 35px;
     height: 35px;
+    border: 2px solid rgba(#3D2A7D, 0.1);
+
+    border-color: #E5007F;
+
     border-radius: 50%;
     object-fit: cover;
 }

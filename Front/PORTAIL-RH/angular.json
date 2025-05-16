@@ -35,8 +35,7 @@
               "src/styles.scss",
               "node_modules/ngx-owl-carousel-o/lib/styles/prebuilt-themes/owl.carousel.min.css",
               "node_modules/ngx-owl-carousel-o/lib/styles/prebuilt-themes/owl.theme.default.min.css",
-               "node_modules/animate.css/animate.min.css"
-   
+               "node_modules/animate.css/animate.min.css"   
             ],
             "scripts": []
           },
@@ -98,9 +97,7 @@
               "node_modules/ngx-owl-carousel-o/lib/styles/prebuilt-themes/owl.carousel.min.css",
               "node_modules/ngx-owl-carousel-o/lib/styles/prebuilt-themes/owl.theme.default.min.css",
               "node_modules/swiper/swiper-bundle.min.css",
-               "node_modules/animate.css/animate.min.css"
-
-            ]
+               "node_modules/animate.css/animate.min.css"            ]
             , 
             "scripts": []
           }
@@ -110,13 +107,5 @@
   },
   "cli": {
     "analytics": "6e17aa93-1c8b-4d44-a06e-b87d1579df6a"
-  },
-
-  "architect": {
-  "serve": {
-    "options": {
-      "proxyConfig": "proxy.conf.json"
-    }
   }
-}
 }

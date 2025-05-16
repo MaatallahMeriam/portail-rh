@@ -1,15 +1,35 @@
 <div class="collab-home">
-  <app-header></app-header>
+  <app-header [ngClass]="{ 'header-hidden': !isHeaderVisible }"></app-header>
 
   <div class="main-content">
     <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
 
-    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
-      <h2 class="title">Dossier Utilisateur - Mr/Mrs {{ user ? (user.nom + ' ' + user.prenom) : 'Chargement...' }}</h2>
-      <div class="parametrage-container">
-        <div class="option-card" *ngFor="let option of options" (click)="navigateTo(option.route)">
-          <img [src]="option.icon" alt="{{ option.label }}">
-          <span>{{ option.label }}</span>
+    <div class="feed" 
+         [class.sidebar-collapsed]="isSidebarCollapsed"
+         (scroll)="onScroll($event)"
+         @fadeIn>
+      <div class="feed-header">
+        <h2 class="title">
+          Dossier Utilisateur - {{ user ? (user.nom + ' ' + user.prenom) : 'Chargement...' }}
+        </h2>
+        <p class="subtitle">Gérez les informations et documents de l'utilisateur</p>
+      </div>
+
+      <div class="parametrage-container" @staggerFadeIn>
+        <div class="option-card" 
+             *ngFor="let option of options" 
+             (click)="navigateTo(option.route)"
+             [attr.data-label]="option.label">
+          <div class="card-content">
+            <div class="icon-container">
+              <img [src]="option.icon" [alt]="option.label">
+            </div>
+            <div class="text-container">
+              <span class="label">{{ option.label }}</span>
+              <span class="description" *ngIf="option.description">{{ option.description }}</span>
+            </div>
+          </div>
+          <div class="card-overlay"></div>
         </div>
       </div>
     </div>

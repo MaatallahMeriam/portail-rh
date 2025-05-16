@@ -32,7 +32,6 @@ import { DmdDocManagerComponent } from './pages/manager-space/components/dmd-doc
 import { DmdLogManagerComponent } from './pages/manager-space/components/dmd-log-manager/dmd-log-manager.component';
 import { DmdCongesManagerComponent } from './pages/manager-space/components/dmd-conges-manager/dmd-conges-manager.component';
 import { TraitDmdComponent } from './pages/manager-space/components/trait-dmd/trait-dmd.component';
-import { TraitDmdRhComponent } from './pages/rh-space/components/trait-dmd-rh/trait-dmd-rh.component';
 import { HistoDmdCongesComponent } from './pages/rh-space/components/histo-dmd-conges/histo-dmd-conges.component';
 import { TraitDmdDetailsComponent } from './pages/rh-space/components/trait-dmd-details/trait-dmd-details.component';
 import { ArchiveListComponent } from './pages/admin-space/component/archive-list/archive-list.component';
@@ -99,7 +98,6 @@ const routes: Routes = [
   {path:'archive-list',component:ArchiveListComponent},
   {path:'valide-dmd',component:TraitDmdDetailsComponent},
   {path:'histo-dmd',component:HistoDmdCongesComponent},
-  {path:'trait-dmd-rh',component:TraitDmdRhComponent},
   {path:'trait-dmd',component:TraitDmdComponent},
   {path:'dmd-conges-manager',component:DmdCongesManagerComponent},
   {path:'dmd-log-manager',component:DmdLogManagerComponent},

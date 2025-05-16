@@ -6,84 +6,165 @@
 
     <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
-        <h2 class="title">L'équipe {{ equipe?.nom || '...' }}</h2>
+        <header class="page-header">
+          <h1 class="title">L'équipe {{ equipe?.nom || '...' }}</h1>
+          <p class="subtitle">Gérez les membres et le manager de l'équipe</p>
+        </header>
 
         <!-- Manager Card -->
-        <div class="manager-section">
-          <div class="manager-card" *ngIf="manager">
+        <section class="manager-section">
+          <div class="manager-card" *ngIf="manager" [@cardAnimation]>
             <div class="manager-header">
               <h3>Manager de l'équipe</h3>
-              <button class="menu-button" (click)="toggleManagerMenu()">
-                <mat-icon class="manag-gestion">more_vert</mat-icon>
-                <div class="dropdown-menu" *ngIf="showManagerMenu">
-                  <div class="dropdown-item" (click)="toggleManagerForm()">
-                    <mat-icon class="icon-edit">edit</mat-icon>
-                    Modifier
-                  </div>
-                </div>
+              <button mat-icon-button class="action-button edit" (click)="toggleManagerForm(); $event.stopPropagation()" aria-label="Modifier le manager">
+                <mat-icon>edit</mat-icon>
               </button>
             </div>
             <div class="manager-content">
-              <img [src]="manager.image || '/assets/icons/user-login-icon-14.png'"
-                   alt="Photo de {{ manager.nom }} {{ manager.prenom }}"
-                   class="manager-photo" />
+              <div class="manager-photo-container">
+                <img [src]="manager.image || '/assets/icons/user-login-icon-14.png'"
+                     [alt]="'Photo de ' + manager.nom + ' ' + manager.prenom"
+                     class="manager-photo" />
+              </div>
               <div class="manager-info">
                 <h4 class="manager-name">{{ manager.nom }} {{ manager.prenom }}</h4>
-                <p class="manager-role">Département : {{ manager.departement }}</p>
-                <p class="manager-details">{{ manager.role }} • {{ manager.poste }}</p>
+                <p class="manager-role">{{ manager.role }}</p>
+                <div class="manager-details">
+                  <span class="detail-item">
+                    <mat-icon>business</mat-icon>
+                    {{ manager.departement }}
+                  </span>
+                  <span class="detail-item">
+                    <mat-icon>work</mat-icon>
+                    {{ manager.poste }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="manager-card no-manager" *ngIf="!manager && equipe">
+          <div class="manager-card no-manager" *ngIf="!manager && equipe" [@cardAnimation]>
             <div class="manager-header">
               <h3>Manager de l'équipe</h3>
-              <button class="menu-button" (click)="toggleManagerForm()">
+              <button class="add-manager-button" (click)="toggleManagerForm()">
                 <mat-icon>person_add</mat-icon>
+                <span>Assigner</span>
               </button>
             </div>
             <div class="empty-manager">
-              <mat-icon class="empty-icon">person_outline</mat-icon>
-              <p>Aucun manager assigné</p>
+              <div class="empty-icon-container">
+                <mat-icon>person_outline</mat-icon>
+              </div>
+              <h4>Aucun manager assigné</h4>
+              <p>Cette équipe n'a pas encore de manager désigné</p>
               <button class="assign-button" (click)="toggleManagerForm()">
+                <mat-icon>add</mat-icon>
                 Assigner un manager
               </button>
             </div>
           </div>
-        </div>
+        </section>
 
-        <!-- Formulaire de modification du manager -->
-        <div class="modal-overlay" *ngIf="showManagerForm">
+        <!-- Section des membres -->
+        <section class="members-section">
+          <div class="section-header">
+            <div class="header-content">
+              <h3>Membres de l'équipe</h3>
+              <span class="member-count">{{ teamMembers.length }} membres</span>
+            </div>
+            <button class="add-button" (click)="toggleAddMemberForm()">
+              <mat-icon>person_add</mat-icon>
+              <span>Ajouter un membre</span>
+            </button>
+          </div>
+
+          <!-- Grid des membres -->
+          <div class="members-grid" *ngIf="teamMembers.length > 0" [@listAnimation]="teamMembers.length">
+            <div class="member-card" *ngFor="let member of teamMembers" [@cardAnimation]>
+              <button mat-icon-button class="remove-button" (click)="removeUserFromTeam(member.id)" aria-label="Retirer le membre">
+                <mat-icon class="delete">delete</mat-icon>
+              </button>
+              <div class="member-photo-container">
+                <img [src]="member.image || '/assets/icons/user-login-icon-14.png'"
+                     [alt]="'Photo de ' + member.nom + ' ' + member.prenom"
+                     class="member-photo" />
+              </div>
+              <div class="member-info">
+                <h4 class="member-name">{{ member.nom }} {{ member.prenom }}</h4>
+                <p class="member-role">{{ member.role }}</p>
+                <div class="member-details">
+                  <span class="detail-item">
+                    <mat-icon>business</mat-icon>
+                    {{ member.departement }}
+                  </span>
+                  <span class="detail-item">
+                    <mat-icon>work</mat-icon>
+                    {{ member.poste }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="teamMembers.length === 0" [@fadeIn]>
+            <div class="empty-icon-container">
+              <mat-icon>group_outline</mat-icon>
+            </div>
+            <h4>Aucun membre</h4>
+            <p>Cette équipe n'a pas encore de membres</p>
+            <button class="primary-button" (click)="toggleAddMemberForm()">
+              <mat-icon>add</mat-icon>
+              Ajouter des membres
+            </button>
+          </div>
+        </section>
+
+        <!-- Modals -->
+        <div class="modal-overlay" *ngIf="showManagerForm" [@modalAnimation]>
           <div class="modal-content">
             <div class="modal-header">
               <h3>{{ manager ? 'Modifier le manager' : 'Assigner un manager' }}</h3>
-              <button class="close-button" (click)="toggleManagerForm()">
+              <button class="close-button" (click)="toggleManagerForm()" aria-label="Fermer">
                 <mat-icon>close</mat-icon>
               </button>
             </div>
             <div class="modal-body">
-              <input
-                class="search"
-                type="text"
-                placeholder="Rechercher un manager..."
-                [(ngModel)]="managerSearchText"
-                (ngModelChange)="filterManagers()"
-              />
+              <div class="search-container">
+                <mat-icon>search</mat-icon>
+                <input
+                  type="text"
+                  placeholder="Rechercher un manager..."
+                  [(ngModel)]="managerSearchText"
+                  (ngModelChange)="filterManagers()"
+                  class="search-input"
+                />
+              </div>
 
               <div class="users-grid">
-                <div class="user-card" *ngFor="let user of filteredManagerUsers">
+                <div class="user-card" *ngFor="let user of filteredManagerUsers" [@cardAnimation]>
                   <mat-radio-button
                     [value]="user.id"
                     [checked]="selectedManagerId === user.id"
                     (change)="selectManager(user.id)">
                     <div class="user-info">
-                      <img [src]="user.image || '/assets/icons/user-login-icon-14.png'"
-                           alt="Photo"
-                           class="user-photo" />
+                      <div class="user-photo-container">
+                        <img [src]="user.image || '/assets/icons/user-login-icon-14.png'"
+                             [alt]="'Photo de ' + user.nom + ' ' + user.prenom"
+                             class="user-photo" />
+                      </div>
                       <div class="user-details">
                         <span class="user-name">{{ user.prenom }} {{ user.nom }}</span>
                         <span class="user-role">{{ user.role }}</span>
-                        <span class="user-department">{{ user.departement }}</span>
+                        <div class="user-meta">
+                          <span class="meta-item">
+                            <mat-icon>business</mat-icon>
+                            {{ user.departement }}
+                          </span>
+                          <span class="meta-item">
+                            <mat-icon>work</mat-icon>
+                            {{ user.poste }}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </mat-radio-button>
@@ -91,80 +172,63 @@
               </div>
 
               <div class="modal-actions">
-                <button class="cancel-button" (click)="toggleManagerForm()">Annuler</button>
-                <button class="submit-button" (click)="confirmManagerSelection()">Confirmer</button>
+                <button class="cancel-button" (click)="toggleManagerForm()">
+                  <mat-icon>close</mat-icon>
+                  <span>Annuler</span>
+                </button>
+                <button class="submit-button" (click)="confirmManagerSelection()">
+                  <mat-icon>check</mat-icon>
+                  <span>Confirmer</span>
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Section des membres -->
-        <div class="members-section">
-          <div class="section-header">
-            <h3>Membres de l'équipe</h3>
-            <button class="add-button" (click)="toggleAddMemberForm()">
-              <mat-icon>person_add</mat-icon>
-              Ajouter un membre
-            </button>
-          </div>
-
-          <!-- Grid des membres -->
-          <div class="members-grid" *ngIf="teamMembers.length > 0">
-            <div class="member-card" *ngFor="let member of teamMembers">
-              <button class="remove-button" (click)="removeUserFromTeam(member.id)">
-                <mat-icon class="icon">delete</mat-icon>
-              </button>
-              <img [src]="member.image || '/assets/icons/user-login-icon-14.png'"
-                   alt="Photo"
-                   class="member-photo" />
-              <div class="member-info">
-                <h4 class="member-name">{{ member.nom }} {{ member.prenom }}</h4>
-                <p class="member-role">{{ member.role }}</p>
-                <p class="member-details">{{ member.departement }} • {{ member.poste }}</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="empty-state" *ngIf="teamMembers.length === 0">
-            <mat-icon class="empty-icon">group_outline</mat-icon>
-            <p>Aucun membre dans cette équipe</p>
-            <button class="add-button" (click)="toggleAddMemberForm()">
-              Ajouter des membres
-            </button>
-          </div>
-        </div>
-
-        <!-- Modal d'ajout de membres -->
-        <div class="modal-overlay" *ngIf="showAddMemberForm">
+        <div class="modal-overlay" *ngIf="showAddMemberForm" [@modalAnimation]>
           <div class="modal-content">
             <div class="modal-header">
               <h3>Ajouter des membres</h3>
-              <button class="close-button" (click)="toggleAddMemberForm()">
+              <button class="close-button" (click)="toggleAddMemberForm()" aria-label="Fermer">
                 <mat-icon>close</mat-icon>
               </button>
             </div>
             <div class="modal-body">
-              <input
-                class="search"
-                type="text"
-                placeholder="Rechercher un utilisateur..."
-                [(ngModel)]="searchText"
-                (ngModelChange)="filterUsers()"
-              />
+              <div class="search-container">
+                <mat-icon>search</mat-icon>
+                <input
+                  type="text"
+                  placeholder="Rechercher un utilisateur..."
+                  [(ngModel)]="searchText"
+                  (ngModelChange)="filterUsers()"
+                  class="search-input"
+                />
+              </div>
 
               <div class="users-grid">
-                <div class="user-card" *ngFor="let user of filteredUsers">
+                <div class="user-card" *ngFor="let user of filteredUsers" [@cardAnimation]>
                   <mat-checkbox
                     [(ngModel)]="user.checked"
                     (change)="onUserSelect(user.id, $event.checked)">
                     <div class="user-info">
-                      <img [src]="user.image || '/assets/icons/user-login-icon-14.png'"
-                           alt="Photo"
-                           class="user-photo" />
+                      <div class="user-photo-container">
+                        <img [src]="user.image || '/assets/icons/user-login-icon-14.png'"
+                             [alt]="'Photo de ' + user.nom + ' ' + user.prenom"
+                             class="user-photo" />
+                      </div>
                       <div class="user-details">
                         <span class="user-name">{{ user.prenom }} {{ user.nom }}</span>
                         <span class="user-role">{{ user.role }}</span>
-                        <span class="user-department">{{ user.departement }}</span>
+                        <div class="user-meta">
+                          <span class="meta-item">
+                            <mat-icon>business</mat-icon>
+                            {{ user.departement }}
+                          </span>
+                          <span class="meta-item">
+                            <mat-icon>work</mat-icon>
+                            {{ user.poste }}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </mat-checkbox>
@@ -172,9 +236,13 @@
               </div>
 
               <div class="modal-actions">
-                <button class="cancel-button" (click)="toggleAddMemberForm()">Annuler</button>
+                <button class="cancel-button" (click)="toggleAddMemberForm()">
+                  <mat-icon>close</mat-icon>
+                  <span>Annuler</span>
+                </button>
                 <button class="submit-button" (click)="addSelectedUsersToTeam()">
-                  Ajouter les membres sélectionnés
+                  <mat-icon>check</mat-icon>
+                  <span>Ajouter les membres</span>
                 </button>
               </div>
             </div>
@@ -182,7 +250,5 @@
         </div>
       </div>
     </div>
-
-    <app-right-sidebar></app-right-sidebar>
   </div>
 </div>

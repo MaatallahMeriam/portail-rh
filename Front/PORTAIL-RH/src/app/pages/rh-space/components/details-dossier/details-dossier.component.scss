@@ -1,288 +1,362 @@
-/* Styles existants conservés */
+// Variables
+$primary-color: #230046;
+$accent-color: #FF6B00;
+$secondary-accent: #ff00ea;
+$text-color: #333333;
+$light-bg: #f8f9fa;
+$white: #ffffff;
+$box-shadow: 0 6px 20px rgba(35, 0, 70, 0.1);
+$transition-standard: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$spacing-unit: 8px;
+$gradient-primary: linear-gradient(135deg, $primary-color, $accent-color, $secondary-accent);
+
+// Base Layout
 .collab-home {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
 }
 
 .main-content {
-    display: flex;
-    flex: 1;
-    overflow: hidden; 
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  background-color: $light-bg;
+  position: relative;
 }
 
+// Header Animation
+:host ::ng-deep app-header {
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+:host ::ng-deep .header-hidden {
+  transform: translateY(-100%);
+}
+
+// Sidebar Styles
 .app-sidebar, .app-right-sidebar {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    z-index: 100; 
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.app-sidebar {
+  left: 0;
+  width: 250px;
+  background: #f4f4f4;
+}
+
+.app-right-sidebar {
+  right: 0;
+  width: 250px;
+  background: #f4f4f4;
+}
+
+// Feed Section
+.feed {
+  position: fixed;
+  top: 70px;
+  left: 260px;
+  right: 250px;
+  bottom: 0;
+  background: transparent;
+  max-width: 1200px;
+  padding: $spacing-unit * 3;
+  transition: $transition-standard;
+  overflow-y: auto;
+  
+  &.sidebar-collapsed {
+    left: 100px;
+    right: 250px;
+    max-width: calc(100% - 350px);
+  }
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+  background: transparent;
+      border-radius: 4px;
+    
+    &:hover {
+  background: transparent;    }
+  }
+}
+
+// Feed Header
+.feed-header {
+  margin-bottom: $spacing-unit * 4;
 }
 
 .title {
-    color: #230046;
-    font-size: 32px;
-    font-weight: 600;
-    margin-top: 20px;
-    margin-bottom: 30px;
-    margin-left: 10px;
-    position: relative;
-    padding-bottom: 15px;
-}
+  color: $primary-color;
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0;
+  position: relative;
+  padding-bottom: $spacing-unit * 2;
   
-.title::after {
+  &::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 80px;
-    height: 4px;
-    background: linear-gradient(135deg, #230046, #FF6B00, #ff00ea);
-    border-radius: 2px;
-}
-  
-.app-sidebar {
-    left: 0;
-    width: 250px; 
-    background: #f4f4f4;
+    width: 110px;
+    height: 6px;
+    background: $gradient-primary;
+    border-radius: 3px;
+    animation: gradientShift 6s infinite alternate;
+  }
 }
 
-.app-right-sidebar {
-    right: 0;
-    width: 250px; 
-    background: #f4f4f4;
+.subtitle {
+  color: rgba($text-color, 0.7);
+  font-size: 16px;
+  margin-top: $spacing-unit;
+  font-weight: 400;
 }
 
-.feed {
-    position: fixed; 
-    top: 70px; 
-    left: 350px; 
-    right: 250px; 
-    bottom: 0; 
-    overflow-y: auto; 
-    max-width: 850px; 
-    background: transparent;
-    transition: all 0.3s ease-in-out;
-
-    &.sidebar-collapsed {
-        left: 230px;
-        right: 100px;
-        max-width: 1200px;
-    }
-}
-
-.feed::-webkit-scrollbar {
-    display: none;
-}
-
-.feed::-webkit-scrollbar-thumb {
-    background-color: #aaa;
-    border-radius: 5px;
-}
-
-.feed::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-/* Nouveau style amélioré pour le conteneur de paramétrage */
+// Card Grid
 .parametrage-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 30px;
-    padding: 20px;
-    justify-items: center;
-    border-radius: 15px;
-    background: #ffffff;
-    margin-top: 5px;
-    margin-left: 20px;
-    margin-right: 20px;
-    height: auto;
-    max-width: 900px;
-    min-height: 500px;
-    box-shadow: 0 10px 30px rgba(35, 0, 70, 0.1);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: $spacing-unit * 4;
+  margin-top: $spacing-unit * 4;
+  justify-items: stretch;
 }
-  
+
+// Card Styles
 .option-card {
-    margin-top: 20px;
+  position: relative;
+  background: $white;
+  border-radius: 16px;
+  height: 220px;
+  width: 100%;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: $transition-standard;
+  border: 1px solid rgba($primary-color, 0.08);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: $gradient-primary;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: $box-shadow;
+    
+    &::before {
+      opacity: 1;
+    }
+    
+    .icon-container img {
+      transform: scale(1.1) rotate(5deg);
+    }
+  }
+  
+  // Card Content Layout
+  .card-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 180px;
-    height: 180px;
-    background: white;
-    border: 2px solid #230046;
-    border-radius: 15px;
-    padding: 20px;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    padding: $spacing-unit * 3;
+    z-index: 2;
     position: relative;
-    overflow: hidden;
-}
-
-.option-card::before {
-    content: '';
+  }
+  
+  // Icon Styling
+  .icon-container {
+    margin-bottom: $spacing-unit * 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: rgba($primary-color, 0.04);
+    border-radius: 50%;
+    padding: $spacing-unit * 2;
+    
+    img {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+  }
+  
+  // Text Styling
+  .text-container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    
+    .label {
+      color: $primary-color;
+      font-weight: 600;
+      font-size: 18px;
+      transition: color 0.2s ease;
+    }
+    
+    .description {
+      color: rgba($text-color, 0.6);
+      font-size: 14px;
+      margin-top: $spacing-unit;
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+    }
+  }
+  
+  // Card Overlay
+  .card-overlay {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(100deg, #230046, #bb0274);
+    right: 0;
+    bottom: 0;
+    background: rgba($white, 0.5);
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.3s ease;
     z-index: 1;
-}
-
-.option-card img {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 15px;
-    position: relative;
-    z-index: 2;
-    transition: transform 0.4s ease;
-}
-
-.option-card span {
-    font-size: 16px;
-    font-weight: 600;
-    color: #230046;
-    text-align: center;
-    position: relative;
-    z-index: 2;
-    transition: color 0.4s ease;
-}
-
-.option-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(35, 0, 70, 0.2);
-    border-color: transparent;
-}
-
-.option-card:hover::before {
+  }
+  
+  &:hover .card-overlay {
     opacity: 1;
+  }
+  
+  &:active {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(35, 0, 70, 0.15);
+  }
 }
 
-.option-card:hover span {
-    color: white;
+// Animations
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-.option-card:hover img {
-    transform: scale(1.1);
-    filter: brightness(0) invert(1);
+// Responsive Styles
+@media screen and (max-width: 1400px) {
+  .parametrage-container {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+  }
 }
 
-/* Media Queries existants */
-@media (max-width: 1457px) {
-    .app-sidebar {
-        width: 200px; 
-    }
-
-    .app-right-sidebar {
-        display: none; 
-    }
-
-    .feed {
-        left: 250px; 
-        right: 300px; 
-        max-width: calc(100% - 150px);
-
-        &.sidebar-collapsed {
-            left: 100px;
-            right: 100px;
-            max-width: 1200px;
-        }
-    }
+@media screen and (max-width: 1200px) {
+  .app-right-sidebar {
+    display: none;
+  }
+  
+  .feed {
+    left: 200px;
+    right: 0;
+    max-width: calc(100% - 200px);
+    padding: $spacing-unit * 2;
+  }
+  
+  .feed.sidebar-collapsed {
+    left: 100px;
+    right: 0;
+    max-width: calc(100% - 100px);
+  }
+  
+  .parametrage-container {
+    gap: $spacing-unit * 3;
+  }
 }
 
-@media (max-width: 1300px) {
-    .app-sidebar {
-        width: 200px; 
-    }
-
-    .app-right-sidebar {
-        display: none; 
-    }
-
-    .feed {
-        left: 250px; 
-        right: 300px; 
-        max-width: calc(100% - 150px);
-
-        &.sidebar-collapsed {
-            left: 100px;
-            right: 100px;
-            max-width: 1200px;
-        }
-    }
+@media screen and (max-width: 900px) {
+  .parametrage-container {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .title {
+    font-size: 28px;
+  }
 }
 
-@media (max-width: 1139px) {
-    .parametrage-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+@media screen and (max-width: 768px) {
+  .app-sidebar {
+    display: none;
+  }
+  
+  .feed {
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    padding: $spacing-unit * 2;
+  }
+  
+  .feed.sidebar-collapsed {
+    left: 0;
+    right: 0;
+    max-width: 100%;
+  }
+  
+  .option-card {
+    height: 200px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .feed {
+    padding: $spacing-unit;
+  }
+  
+  .title {
+    font-size: 24px;
+    padding-bottom: $spacing-unit;
+    
+    &::after {
+      width: 80px;
+      height: 4px;
+    }
+  }
+  
+  .subtitle {
+    font-size: 14px;
+  }
+  
+  .option-card {
+    height: 180px;
+    
+    .icon-container {
+      width: 60px;
+      height: 60px;
+      
+      img {
+        width: 35px;
+        height: 35px;
+      }
     }
     
-    .option-card {
-        width: 160px;
-        height: 160px;
-    }
-}
-
-@media (max-width: 892px) {
-    .parametrage-container {
-        grid-template-columns: repeat(1, 1fr);
+    .text-container .label {
+      font-size: 16px;
     }
     
-    .option-card {
-        width: 200px;
-        height: 200px;
+    .text-container .description {
+      font-size: 12px;
     }
-}
-
-@media (max-width: 768px) {
-    .app-sidebar {
-        display: none; 
-    }
-
-    .app-right-sidebar {
-        width: 180px;
-    }
-
-    .feed {
-        left: 200px; 
-        right: 250px; 
-        max-width: calc(100% - 180px);
-
-        &.sidebar-collapsed {
-            left: 0;
-            right: 180px;
-            max-width: 100%;
-        }
-    }
-}
-
-@media (max-width: 480px) {
-    .app-right-sidebar {
-        display: none; 
-    }
-
-    .feed {
-        right: 0; 
-        width: 100%; 
-
-        &.sidebar-collapsed {
-            left: 0;
-            right: 0;
-            max-width: 100%;
-        }
-    }
-    
-    .parametrage-container {
-        padding: 15px;
-    }
-    
-    .option-card {
-        width: 160px;
-        height: 160px;
-    }
+  }
 }

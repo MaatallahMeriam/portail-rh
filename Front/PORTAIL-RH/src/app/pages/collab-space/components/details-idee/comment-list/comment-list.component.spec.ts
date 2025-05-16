@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TraitDmdRhComponent } from './trait-dmd-rh.component';
+import { CommentListComponent } from './comment-list.component';
 
-describe('TraitDmdRhComponent', () => {
-  let component: TraitDmdRhComponent;
-  let fixture: ComponentFixture<TraitDmdRhComponent>;
+describe('CommentListComponent', () => {
+  let component: CommentListComponent;
+  let fixture: ComponentFixture<CommentListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TraitDmdRhComponent]
+      imports: [CommentListComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TraitDmdRhComponent);
+    fixture = TestBed.createComponent(CommentListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

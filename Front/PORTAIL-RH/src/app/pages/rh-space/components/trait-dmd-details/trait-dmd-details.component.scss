@@ -1,13 +1,30 @@
 $primary-color: #230046;
 $secondary-color: #56142F;
 $accent-color: #FF6B00;
+$primary-light: rgba(35, 0, 70, 0.05);
+$primary-medium: rgba(35, 0, 70, 0.1);
+$primary-gradient: linear-gradient(90deg, $primary-color, #E4007E);
 $success-color: #2E7D32;
 $warning-color: #ED6C02;
 $error-color: #D32F2F;
 $background-color: #F8F9FA;
 $card-background: #FFFFFF;
 $border-radius: 12px;
-$transition: all 0.3s ease;
+$box-shadow: 0 8px 24px rgba(35, 0, 70, 0.1);
+$transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin glass-effect {
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
 
 .collab-home {
   overflow: hidden;
@@ -15,12 +32,14 @@ $transition: all 0.3s ease;
   flex-direction: column;
   height: 100vh;
   background-color: $background-color;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .main-content {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 .feed {
@@ -33,7 +52,8 @@ $transition: all 0.3s ease;
   background: transparent;
   max-width: none;
   padding: 20px;
-  transition: all 0.3s ease-in-out;
+  transition: $transition;
+  scroll-behavior: smooth;
 
   &.sidebar-collapsed {
     left: 100px;
@@ -42,7 +62,22 @@ $transition: all 0.3s ease;
   }
 
   &::-webkit-scrollbar {
-    display: none;
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background:transparent;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba($primary-color, 0.3);
+    }
   }
 }
 
@@ -50,52 +85,70 @@ $transition: all 0.3s ease;
   max-width: 100%;
   margin: 20px auto;
   margin-left: -10px;
-  padding: 20px;
+  padding: 24px;
   margin-top: -10px;
-  background-color: #ffffff;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+  background-color: $card-background;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  transition: $transition;
+  
+  &:hover {
+    box-shadow: 0 12px 32px rgba(35, 0, 70, 0.15);
+    transform: translateY(-2px);
+  }
 }
 
 .title {
   color: $primary-color;
-  font-size: 29px;
-  font-weight: 600;
+  font-size: 32px;
+  font-weight: 700;
   margin-top: -5px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   position: relative;
-  padding-bottom: 15px;
-}
-
-.title::after {
-  content: '';
+  padding-bottom: 16px;
+  letter-spacing: -0.5px;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+  
+  &::after {
+    content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   width: 80px;
   height: 4px;
-  background: linear-gradient(90deg, $primary-color, #E4007E);
+  background: linear-gradient(90deg, #230046, #FF6B00);
   border-radius: 2px;
+  animation: expandWidth 0.5s ease-out;
+  }
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid rgba($primary-color, 0.1);
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid $primary-medium;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
 }
 
 .radio-group {
   display: flex;
-  gap: 20px;
+  gap: 24px;
+  background: $primary-light;
+  padding: 8px 16px;
+  border-radius: 24px;
+  box-shadow: 0 2px 8px rgba(35, 0, 70, 0.05);
+  transition: $transition;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(35, 0, 70, 0.1);
+  }
 }
 
 .radio-label {
@@ -104,20 +157,29 @@ $transition: all 0.3s ease;
   font-size: 16px;
   color: $primary-color;
   cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 16px;
+  transition: $transition;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.8);
+  }
 
   input[type="radio"] {
     appearance: none;
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     border: 2px solid $primary-color;
     border-radius: 50%;
-    margin-right: 15px;
+    margin-right: 12px;
     position: relative;
     transition: $transition;
+    box-shadow: 0 2px 4px rgba(35, 0, 70, 0.1);
 
     &:checked {
       background-color: $primary-color;
       border-color: $primary-color;
+      animation: pulse 0.5s;
 
       &:after {
         content: '';
@@ -125,8 +187,8 @@ $transition: all 0.3s ease;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
         background-color: $card-background;
         border-radius: 50%;
       }
@@ -134,49 +196,191 @@ $transition: all 0.3s ease;
 
     &:hover {
       border-color: darken($primary-color, 10%);
+      transform: scale(1.05);
     }
+  }
+  
+  .radio-text {
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.2px;
   }
 }
 
+// Tabs styling
+.tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid $primary-medium;
+  padding-bottom: 8px;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: $primary-color;
+  cursor: pointer;
+  transition: $transition;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: transparent;
+    transform: scaleX(0);
+    transition: $transition;
+  }
+
+  &.active {
+    color: #E4007E;
+    
+    &::before {
+      background: $primary-gradient;
+      transform: scaleX(1);
+    }
+  }
+
+  &:hover {
+    color: #E4007E;
+    background: $primary-light;
+    
+    &::before {
+      transform: scaleX(0.5);
+      background: rgba(227, 0, 126, 0.5);
+    }
+  }
+  
+  .tab-icon {
+    font-size: 16px;
+  }
+}
+
+// Section styling
 .history-section {
   background: $card-background;
   border-radius: $border-radius;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(35, 0, 70, 0.08);
+  transition: $transition;
+  overflow: hidden;
+  
+  &:hover {
+    box-shadow: 0 8px 24px rgba(35, 0, 70, 0.12);
+  }
 }
 
 .history-content {
-  padding: 15px;
+  padding: 16px;
   position: relative;
 }
 
-.loading-spinner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100px;
-  font-size: 16px;
-  color: $primary-color;
+// Loading spinner
+.loading-container {
+  @include flex-center;
+  flex-direction: column;
+  height: 200px;
 }
 
+.pulse-loader {
+  @include flex-center;
+  flex-direction: column;
+  gap: 16px;
+  
+  .pulse-loader-inner {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: $primary-gradient;
+    animation: pulse-animation 1.5s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(227, 0, 126, 0.3);
+  }
+  
+  .loader-text {
+    color: $primary-color;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+}
+
+@keyframes pulse-animation {
+  0% {
+    transform: scale(0.8);
+    box-shadow: 0 0 0 0 rgba(227, 0, 126, 0.7);
+  }
+  
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 16px rgba(227, 0, 126, 0);
+  }
+  
+  100% {
+    transform: scale(0.8);
+    box-shadow: 0 0 0 0 rgba(227, 0, 126, 0);
+  }
+}
+
+// Empty state
+.empty-state {
+  @include flex-center;
+  flex-direction: column;
+  height: 200px;
+  text-align: center;
+  
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+  
+  .empty-text {
+    font-size: 20px;
+    font-weight: 600;
+    color: $primary-color;
+    margin-bottom: 8px;
+  }
+  
+  .empty-subtext {
+    font-size: 16px;
+    color: rgba($primary-color, 0.6);
+  }
+}
+
+// Table styling
 :host ::ng-deep {
   .ngx-datatable {
-    border-radius: 8px;
+    border-radius: $border-radius;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-
+    box-shadow: 0 2px 12px rgba(35, 0, 70, 0.05);
+    
     .datatable-header {
       background: rgba($primary-color, 0.03);
       border-bottom: 1px solid rgba($primary-color, 0.1);
 
       .datatable-header-cell {
-        padding: 12px 10px;
-        font-weight: 600;
+        padding: 16px 12px;
+        font-weight: 700;
         color: $primary-color;
         font-size: 15px;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        transition: $transition;
+        
       }
     }
 
@@ -186,8 +390,9 @@ $transition: all 0.3s ease;
         transition: $transition;
 
         &:hover {
-          background: rgba(35, 0, 70, 0.02);
-          transform: translateY(-1px);
+          background: rgba(35, 0, 70, 0.03);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(35, 0, 70, 0.05);
         }
 
         .datatable-body-cell {
@@ -206,25 +411,69 @@ $transition: all 0.3s ease;
     .datatable-footer {
       background: rgba($primary-color, 0.03);
       border-top: 1px solid rgba($primary-color, 0.1);
-      padding: 15px 20px;
+      padding: 16px 24px;
       font-size: 14px;
+      font-weight: 600;
       color: $primary-color;
     }
   }
 }
 
+// Cell styling
+.cell-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  .cell-icon {
+    font-size: 16px;
+    opacity: 0.7;
+  }
+  
+  .cell-text {
+    font-weight: 500;
+  }
+}
+
+.truncate-text {
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// User profile styling
 .collaborateur-cell {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+}
+
+.avatar-container {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid $primary-medium;
+  box-shadow: 0 2px 8px rgba(35, 0, 70, 0.1);
+  transition: $transition;
+  
+  &:hover {
+    transform: scale(1.1);
+    border-color: #E4007E;
+  }
 }
 
 .profile-photo {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border: 1px solid rgba($primary-color, 0.1);
+  transition: $transition;
+}
+
+.user-name {
+  font-weight: 600;
+  color: $primary-color;
 }
 
 .footer-total {
@@ -232,31 +481,52 @@ $transition: all 0.3s ease;
   justify-content: flex-start;
   align-items: center;
   font-weight: 600;
+  color: $primary-color;
 }
 
+// Action buttons
 .action-buttons {
-  margin-left: -55px;
   display: flex;
-  gap: 15px;
+  gap: 12px;
   align-items: center;
   justify-content: center;
 }
 
 .action-btn {
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
   border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
   cursor: pointer;
   transition: $transition;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
 
   .action-icon {
-    font-size: 15px;
+    font-size: 12px;
     color: white;
+    transition: $transition;
+  }
+  
+  .btn-tooltip {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: $transition;
+    white-space: nowrap;
+  }
+
+  &:hover .btn-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
   }
 
   &.accept-btn {
@@ -265,6 +535,15 @@ $transition: all 0.3s ease;
     &:hover {
       background: lighten($success-color, 10%);
       transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba($success-color, 0.3);
+      
+      .action-icon {
+        transform: scale(1.2);
+      }
+    }
+    
+    &:active {
+      transform: scale(0.95);
     }
   }
 
@@ -274,49 +553,109 @@ $transition: all 0.3s ease;
     &:hover {
       background: lighten($error-color, 10%);
       transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba($error-color, 0.3);
+      
+      .action-icon {
+        transform: scale(1.2);
+      }
+    }
+    
+    &:active {
+      transform: scale(0.95);
     }
   }
 }
 
 .cancel-btn {
   position: relative;
-  width: 60px;
-  height: 30px;
-  border-radius: 15px;
+  min-width: 80px;
+  height: 36px;
+  border-radius: 18px;
   background: $warning-color;
   border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
   cursor: pointer;
   color: white;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   transition: $transition;
+  overflow: hidden;
 
   &:hover {
     background: lighten($warning-color, 10%);
     transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba($warning-color, 0.3);
+  }
+  
+  &:active {
+    transform: scale(0.95);
   }
 
   .cancel-text {
     z-index: 2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .loading-ring {
     position: absolute;
-    top: -2px;
-    left: -2px;
-    width: 64px;
-    height: 34px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     border: 2px solid transparent;
     border-top: 2px solid white;
-    border-radius: 17px;
-    animation: spin 2s linear forwards;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
     z-index: 1;
   }
 }
 
+// Status badge styling
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: $transition;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  &.status-pending {
+    background-color: rgba($warning-color, 0.1);
+    color: $warning-color;
+    border: 1px solid rgba($warning-color, 0.3);
+  }
+  
+  &.status-accepted {
+    background-color: rgba($success-color, 0.1);
+    color: $success-color;
+    border: 1px solid rgba($success-color, 0.3);
+  }
+  
+  &.status-rejected {
+    background-color: rgba($error-color, 0.1);
+    color: $error-color;
+    border: 1px solid rgba($error-color, 0.3);
+  }
+  
+  .status-icon {
+    font-size: 14px;
+  }
+  
+  .status-text {
+    text-transform: capitalize;
+  }
+}
+
+// Animations
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -324,55 +663,23 @@ $transition: all 0.3s ease;
   }
   100% {
     transform: rotate(360deg);
-    border-top-color: transparent;
+    border-top-color: white;
   }
 }
 
-/* Styles pour les onglets */
-.tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba($primary-color, 0.1);
-}
-
-.tab-button {
-  background: none;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: 500;
-  color: $primary-color;
-  cursor: pointer;
-  transition: $transition;
-  border-bottom: 2px solid transparent;
-
-  &.active {
-    color: #c3016c;
-    border-bottom: 2px solid #c3016c;
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(35, 0, 70, 0.7);
   }
-
-  &:hover {
-    color: #c3016c;
+  70% {
+    box-shadow: 0 0 0 10px rgba(35, 0, 70, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(35, 0, 70, 0);
   }
 }
 
-/* Styles pour le statut dans la table d'historique */
-.status-pending {
-  color: $warning-color;
-  font-weight: 400;
-}
-
-.status-accepted {
-  color: $success-color;
-  font-weight: 400;
-}
-
-.status-rejected {
-  color: $error-color;
-  font-weight: 400;
-}
-
+// Responsive styles
 @media (max-width: 1200px) {
   .feed {
     left: 250px;
@@ -384,163 +691,85 @@ $transition: all 0.3s ease;
       max-width: 1350px;
     }
   }
+  
+  .title {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 992px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .radio-group {
+    gap: 16px;
+  }
 }
 
 @media (max-width: 768px) {
   .feed {
     left: 0;
+    padding: 16px;
 
     &.sidebar-collapsed {
       left: 0;
       right: 0;
       max-width: 100%;
     }
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
   }
 
   .header-actions {
-    flex-direction: column;
-    gap: 10px;
+    width: 100%;
   }
 
   .radio-group {
+    width: 100%;
+    justify-content: space-around;
+  }
+  
+  .tabs {
+    overflow-x: auto;
+    padding-bottom: 12px;
+    
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+  }
+  
+  .tab-button {
+    padding: 10px 16px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    margin-left: 0;
+    padding: 12px;
+  }
+  
+  .title {
+    font-size: 24px;
+  }
+  
+  .tabs {
+    gap: 8px;
+  }
+  
+  .action-buttons {
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
   }
-}
-
-@media screen and (max-width: 1470px) and (min-width: 1022px) {
-  .feed {
-    left: 270px;
-
-    &.sidebar-collapsed {
-      left: 100px;
-      right: 100px;
-      max-width: 1200px;
-    }
-  }
-}
-
-@media screen and (max-width: 1024px) {
-  .feed {
-    left: 200px;
-
-    &.sidebar-collapsed {
-      left: 100px;
-      right: 100px;
-      max-width: 1200px;
-    }
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .feed {
-    left: 0;
-    right: 0;
-    max-width: 100%;
-
-    &.sidebar-collapsed {
-      left: 0;
-      right: 0;
-      max-width: 100%;
-    }
-  }
-}
-
-@media screen and (max-width: 768px) and (min-width: 481px) {
-  .feed {
-    left: 0;
-    right: 0;
-    max-width: 100%;
-
-    &.sidebar-collapsed {
-      left: 0;
-      right: 0;
-      max-width: 100%;
-    }
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .feed {
-    right: 0;
-    width: 100%;
-
-    &.sidebar-collapsed {
-      left: 0;
-      right: 0;
-      max-width: 100%;
-    }
-  }
-}
-
-/* Media Queries */
-@media (max-width: 1457px) {
-  .app-sidebar {
-    width: 200px;
-  }
-
-  .feed {
-    left: 250px;
-
-    &.sidebar-collapsed {
-      left: 100px;
-      right: 100px;
-      max-width: 1200px;
-    }
-  }
-}
-
-@media (max-width: 1300px) {
-  .app-sidebar {
-    width: 200px;
-  }
-
-  .feed {
-    left: 250px;
-
-    &.sidebar-collapsed {
-      left: 100px;
-      right: 100px;
-      max-width: 1200px;
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .app-sidebar {
-    display: none;
-  }
-
-  .feed {
-    left: 200px;
-
-    &.sidebar-collapsed {
-      left: 0;
-      right: 0;
-      max-width: 100%;
-    }
-  }
-
-  .history-header {
-    flex-direction: column;
-  }
-
-  .search {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .feed {
-    left: 0;
-    right: 0;
-    width: 100%;
-    padding: 10px;
-
-    &.sidebar-collapsed {
-      left: 0;
-      right: 0;
-      max-width: 100%;
-    }
+  
+  .status-badge {
+    padding: 4px 8px;
+    font-size: 12px;
   }
 }

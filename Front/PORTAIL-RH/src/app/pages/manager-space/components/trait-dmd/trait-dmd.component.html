@@ -4,9 +4,9 @@
   <div class="main-content">
     <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
     
-    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
-      <div class="container">
-        <div class="header">
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed" [@fadeAnimation]>
+      <div class="container" [@slideInAnimation]>
+        <div class="header" [@fadeAnimation]>
           <h2 class="title">Demandes Congés des membres</h2>
         </div>
 
@@ -15,85 +15,94 @@
             class="tab-button" 
             [class.active]="activeTab === 'pending'" 
             (click)="setActiveTab('pending')">
+            <span class="tab-icon pending-icon"></span>
             Demandes à traiter
+            <span class="badge" *ngIf="totalDemandes > 0">{{ totalDemandes }}</span>
           </button>
           <button 
             class="tab-button" 
             [class.active]="activeTab === 'history'" 
             (click)="setActiveTab('history')">
+            <span class="tab-icon history-icon"></span>
             Historique
           </button>
         </div>
 
-        <section class="history-section" *ngIf="activeTab === 'pending'">
+        <section class="history-section" *ngIf="activeTab === 'pending'" [@tabAnimation]>
           <div class="history-content">
             <ngx-datatable
-              class="material"
+              class="material custom-datatable"
               [rows]="demandes"
               [columns]="columns"
               [columnMode]="'force'"
               [headerHeight]="50"
               [footerHeight]="50"
-              [rowHeight]="50"
+              [rowHeight]="60"
               [scrollbarH]="false"
               [scrollbarV]="true">
               
               <ngx-datatable-column name="Collaborateur" prop="userDetails" [width]="200">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   <div class="collaborateur-cell">
-                    <img
-                      [src]="getNormalizedImage(row.image)"
-                      alt="Photo de {{ row.userDetails }}"
-                      class="profile-photo"
-                    />
-                    <span>{{ row.userDetails }}</span>
+                    <div class="profile-photo-container">
+                      <img
+                        [src]="getNormalizedImage(row.image)"
+                        alt="Photo de {{ row.userDetails }}"
+                        class="profile-photo"
+                      />
+                    </div>
+                    <span class="user-name">{{ row.userDetails }}</span>
                   </div>
                 </ng-template>
               </ngx-datatable-column>
 
               <ngx-datatable-column name="Congés" prop="nomConges" [width]="120">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                  <span>{{ row.nomConges }}</span>
+                  <span class="conge-badge">{{ row.nomConges }}</span>
                 </ng-template>
               </ngx-datatable-column>
 
               <ngx-datatable-column name="Date Début" prop="dateDebut" [width]="110">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                  <span>{{ row.dateDebut }}</span>
+                  <span class="date">{{ row.dateDebut }}</span>
                 </ng-template>
               </ngx-datatable-column>
 
               <ngx-datatable-column name="Date Fin" prop="dateFin" [width]="110">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                  <span>{{ row.dateFin }}</span>
+                  <span class="date">{{ row.dateFin }}</span>
                 </ng-template>
               </ngx-datatable-column>
 
               <ngx-datatable-column name="Durée" prop="dureeUnite" [width]="90">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                  <span>{{ row.dureeUnite }}</span>
+                  <span class="duration-pill">{{ row.dureeUnite }}</span>
                 </ng-template>
               </ngx-datatable-column>
 
               <ngx-datatable-column name="Solde" prop="solde" [width]="70">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                  <span>{{ row.solde }}</span>
+                  <span class="solde-badge">{{ row.solde }}</span>
                 </ng-template>
               </ngx-datatable-column>
 
-              <ngx-datatable-column name="Actions" prop="actions" [width]="100">
+              <ngx-datatable-column name="Actions" prop="actions" [width]="120">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   <div class="action-buttons">
                     <ng-container *ngIf="!row.isProcessing; else processingTemplate">
-                      <button class="action-btn accept-btn" (click)="onAction(row, true)">
-                        <span class="action-icon">✔</span>
+                      <button class="action-btn accept-btn" (click)="onAction(row, true)" title="Accepter">
+                        <span class="action-icon">✓</span>
                       </button>
-                      <button class="action-btn reject-btn" (click)="onAction(row, false)">
-                        <span class="action-icon">✖</span>
+                      <button class="action-btn reject-btn" (click)="onAction(row, false)" title="Refuser">
+                        <span class="action-icon">✕</span>
                       </button>
                     </ng-container>
                     <ng-template #processingTemplate>
-                      <button class="cancel-btn" (click)="cancelAction(row)">
+                      <button 
+                        class="cancel-btn" 
+                        [class.accept-processing]="row.processingAction === 'accept'"
+                        [class.reject-processing]="row.processingAction === 'reject'"
+                        (click)="cancelAction(row)">
                         <span class="cancel-text">Annuler</span>
                         <span class="loading-ring"></span>
                       </button>
@@ -113,64 +122,62 @@
           </div>
         </section>
 
-        <section class="history-section" *ngIf="activeTab === 'history'">
+        <section class="history-section" *ngIf="activeTab === 'history'" [@tabAnimation]>
           <div class="history-content">
             <ngx-datatable
-              class="material"
+              class="material custom-datatable"
               [rows]="historyDemandes"
               [columns]="historyColumns"
               [columnMode]="'force'"
               [headerHeight]="50"
               [footerHeight]="50"
-              [rowHeight]="50"
+              [rowHeight]="60"
               [scrollbarH]="false"
               [scrollbarV]="true">
               
               <ngx-datatable-column name="Collaborateur" prop="userDetails" [width]="200">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   <div class="collaborateur-cell">
-                    <img
-                      [src]="getNormalizedImage(row.image)"
-                      alt="Photo de {{ row.userDetails }}"
-                      class="profile-photo"
-                    />
-                    <span>{{ row.userDetails }}</span>
+                    <div class="profile-photo-container">
+                      <img
+                        [src]="getNormalizedImage(row.image)"
+                        alt="Photo de {{ row.userDetails }}"
+                        class="profile-photo"
+                      />
+                    </div>
+                    <span class="user-name">{{ row.userDetails }}</span>
                   </div>
                 </ng-template>
               </ngx-datatable-column>
 
               <ngx-datatable-column name="Congés" prop="nomConges" [width]="120">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                  <span>{{ row.nomConges }}</span>
+                  <span class="conge-badge">{{ row.nomConges }}</span>
                 </ng-template>
               </ngx-datatable-column>
 
               <ngx-datatable-column name="Date Début" prop="dateDebut" [width]="110">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                  <span>{{ row.dateDebut }}</span>
+                  <span class="date">{{ row.dateDebut }}</span>
                 </ng-template>
               </ngx-datatable-column>
 
               <ngx-datatable-column name="Date Fin" prop="dateFin" [width]="110">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                  <span>{{ row.dateFin }}</span>
+                  <span class="date">{{ row.dateFin }}</span>
                 </ng-template>
               </ngx-datatable-column>
 
               <ngx-datatable-column name="Durée" prop="dureeUnite" [width]="90">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                  <span>{{ row.dureeUnite }}</span>
+                  <span class="duration-pill">{{ row.dureeUnite }}</span>
                 </ng-template>
               </ngx-datatable-column>
 
               <ngx-datatable-column name="Statut" prop="statut" [width]="100">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                  <span [ngClass]="{
-                    'status-pending': row.statut === 'EN_ATTENTE',
-                    'status-accepted': row.statut === 'VALIDEE',
-                    'status-rejected': row.statut === 'REFUSEE'
-                  }">
-                    {{ row.statut }}
+                  <span [ngClass]="getStatusClass(row.statut)" class="status-badge">
+                    {{ getStatusLabel(row.statut) }}
                   </span>
                 </ng-template>
               </ngx-datatable-column>
@@ -186,13 +193,21 @@
           </div>
         </section>
 
-        <div class="container2" *ngIf="activeTab === 'pending'">
-          <h3>Calendrier :</h3>
-          <div class="calendar-card">
+        <div class="container2" *ngIf="activeTab === 'pending'" [@fadeAnimation]>
+          <h3>Calendrier des absences :</h3>
+          <div 
+            class="calendar-card" 
+            [class.calendar-hovered]="isCalendarHovered"
+            (mouseenter)="setCalendarHover(true)" 
+            (mouseleave)="setCalendarHover(false)">
             <div class="calendar-header">
-              <button class="nav-button" (click)="previousMonth()"><</button>
+              <button class="nav-button" (click)="previousMonth()">
+                <span class="nav-icon">❮</span>
+              </button>
               <span class="month-year">{{ currentMonth }} {{ currentYear }}</span>
-              <button class="nav-button" (click)="nextMonth()">></button>
+              <button class="nav-button" (click)="nextMonth()">
+                <span class="nav-icon">❯</span>
+              </button>
             </div>
             <div class="calendar-grid">
               <div class="day-label" *ngFor="let day of daysOfWeek">{{ day }}</div>
@@ -207,13 +222,15 @@
               >
                 <span class="day-number">{{ day.date.getDate() }}</span>
                 <div class="users-on-leave" *ngIf="day.usersOnLeave.length > 0">
-                  <img
-                    *ngFor="let user of day.usersOnLeave"
-                    [src]="getNormalizedImage(user.image)"
-                    [alt]="user.userDetails"
-                    class="leave-photo"
-                    [title]="user.userDetails"
-                  />
+                  <div *ngFor="let user of day.usersOnLeave" class="leave-user-container">
+                    <img
+                      [src]="getNormalizedImage(user.image)"
+                      [alt]="user.userDetails"
+                      class="leave-photo"
+                      [title]="user.userDetails"
+                    />
+                    <span *ngIf="user.totalUsers" class="more-users">+{{ user.totalUsers - 2 }}</span>
+                  </div>
                 </div>
               </div>
             </div>

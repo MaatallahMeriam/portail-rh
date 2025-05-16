@@ -1,42 +1,78 @@
-import { Component, OnInit, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SidebarComponent } from '../sidebar-RH/sidebar.component';
-import { HeaderComponent } from '../../../../shared/components/header/header.component';
-import { RightSidebarComponent } from '../../../../shared/components/right-sidebar/right-sidebar.component';
-import { CarouselModule } from 'ngx-owl-carousel-o';
-import { MatCardModule } from '@angular/material/card';
-import { ActivatedRoute, Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
-import { CreateEquipeRequest, EquipeDTO, EquipeService } from '../../../../services/equipe.service';
-import { UserService, UserDTO } from '../../../../services/users.service';
-import { NgxDatatableModule } from '@swimlane/ngx-datatable';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
+import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
+
+import { HeaderComponent } from '../../../../shared/components/header/header.component';
+import { SidebarComponent } from '../sidebar-RH/sidebar.component';
+import { RightSidebarComponent } from '../../../../shared/components/right-sidebar/right-sidebar.component';
+import { UserService, UserDTO } from '../../../../services/users.service';
+import { EquipeService, EquipeDTO } from '../../../../services/equipe.service';
 
 @Component({
   selector: 'app-details-equipe',
   standalone: true,
   imports: [
     CommonModule,
-    CarouselModule,
-    MatCardModule,
+    FormsModule,
+    MatIconModule,
     MatCheckboxModule,
     MatRadioModule,
-    FormsModule,
-    SidebarComponent,
     HeaderComponent,
-    RightSidebarComponent,
-    NgxDatatableModule,
-    MatBadgeModule,
-    MatButtonModule,
-    MatIconModule,
+    SidebarComponent,
   ],
   templateUrl: './details-equipe.component.html',
   styleUrl: './details-equipe.component.scss',
+  animations: [
+    trigger('cardAnimation', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(20px)' }))
+      ])
+    ]),
+    trigger('listAnimation', [
+      transition('* => *', [
+        query(':enter', [
+          style({ opacity: 0, transform: 'translateY(20px)' }),
+          stagger(50, [
+            animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+          ])
+        ], { optional: true })
+      ])
+    ]),
+    trigger('dropdownAnimation', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-10px)' }),
+        animate('200ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('150ms ease-in', style({ opacity: 0, transform: 'translateY(-10px)' }))
+      ])
+    ]),
+    trigger('modalAnimation', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms ease-out', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0 }))
+      ])
+    ]),
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms ease-out', style({ opacity: 1 }))
+      ])
+    ])
+  ]
 })
 export class DetailsEquipeComponent implements OnInit {
   equipe: EquipeDTO | null = null;
@@ -55,28 +91,11 @@ export class DetailsEquipeComponent implements OnInit {
   selectedManagerId: number | null = null;
   isSidebarCollapsed = false;
 
-  columns = [
-    { name: 'User', width: 200 },
-    { prop: 'departement', name: 'Département', width: 150 },
-    { prop: 'poste', name: 'Poste', width: 150 },
-    { prop: 'role', name: 'Rôle', width: 100 },
-    { name: 'Select', sortable: false, width: 50 },
-  ];
-
-  memberColumns = [
-    { name: 'User', width: 200 },
-    { prop: 'departement', name: 'Département', width: 150 },
-    { prop: 'poste', name: 'Poste', width: 150 },
-    { prop: 'role', name: 'Rôle', width: 100 },
-    { name: 'Actions', sortable: false, width: 50 },
-  ];
-
   constructor(
     private equipeService: EquipeService,
     private userService: UserService,
     private route: ActivatedRoute,
-    private router: Router,
-    private cdr: ChangeDetectorRef
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -87,7 +106,7 @@ export class DetailsEquipeComponent implements OnInit {
       this.loadManager(equipeId);
       this.loadUsers();
     } else {
-      Swal.fire('Erreur', 'ID de l\'équipe non valide', 'error');
+      this.showError('ID de l\'équipe non valide');
       this.router.navigate(['/list-equipes']);
     }
   }
@@ -96,12 +115,11 @@ export class DetailsEquipeComponent implements OnInit {
     this.equipeService.getEquipeById(equipeId).subscribe({
       next: (equipe) => {
         this.equipe = equipe;
-        this.cdr.detectChanges();
       },
       error: () => {
-        Swal.fire('Erreur', 'Impossible de charger les détails de l\'équipe', 'error');
+        this.showError('Impossible de charger les détails de l\'équipe');
         this.router.navigate(['/list-equipes']);
-      },
+      }
     });
   }
 
@@ -109,11 +127,10 @@ export class DetailsEquipeComponent implements OnInit {
     this.equipeService.getUsersByEquipeIdExcludingManager(equipeId).subscribe({
       next: (members) => {
         this.teamMembers = members;
-        this.cdr.detectChanges();
       },
       error: () => {
-        Swal.fire('Erreur', 'Impossible de charger les membres de l\'équipe', 'error');
-      },
+        this.showError('Impossible de charger les membres de l\'équipe');
+      }
     });
   }
 
@@ -121,12 +138,10 @@ export class DetailsEquipeComponent implements OnInit {
     this.equipeService.getManagerByEquipeId(equipeId).subscribe({
       next: (manager) => {
         this.manager = manager;
-        this.cdr.detectChanges();
       },
       error: () => {
         this.manager = null;
-        this.cdr.detectChanges();
-      },
+      }
     });
   }
 
@@ -135,39 +150,35 @@ export class DetailsEquipeComponent implements OnInit {
       next: (users) => {
         this.users = users.map(user => ({ ...user, checked: false }));
         this.filteredUsers = [...this.users];
-        this.cdr.detectChanges();
       },
       error: () => {
-        Swal.fire('Erreur', 'Impossible de charger les utilisateurs actifs sans équipe', 'error');
-      },
+        this.showError('Impossible de charger les utilisateurs');
+      }
     });
 
     this.userService.getAllActiveUsers().subscribe({
-      next: (managerUsers) => {
-        this.managerUsers = managerUsers;
-        this.filteredManagerUsers = [...managerUsers];
-        this.cdr.detectChanges();
+      next: (users) => {
+        this.managerUsers = users;
+        this.filteredManagerUsers = [...users];
       },
       error: () => {
-        Swal.fire('Erreur', 'Impossible de charger les utilisateurs actifs', 'error');
-      },
+        this.showError('Impossible de charger les managers potentiels');
+      }
     });
   }
 
   filterUsers(): void {
-    if (!this.searchText) {
+    if (!this.searchText.trim()) {
       this.filteredUsers = [...this.users];
       return;
     }
-    const search = this.searchText.toLowerCase();
-    this.filteredUsers = this.users.filter(
-      (user) =>
-        (user.id?.toString().includes(search) || '') ||
-        (user.nom?.toLowerCase().includes(search) || '') ||
-        (user.prenom?.toLowerCase().includes(search) || '') ||
-        (user.departement?.toLowerCase().includes(search) || '') ||
-        (user.poste?.toLowerCase().includes(search) || '') ||
-        (user.role?.toLowerCase().includes(search) || '')
+    const search = this.searchText.toLowerCase().trim();
+    this.filteredUsers = this.users.filter(user =>
+      user.nom?.toLowerCase().includes(search) ||
+      user.prenom?.toLowerCase().includes(search) ||
+      user.departement?.toLowerCase().includes(search) ||
+      user.poste?.toLowerCase().includes(search) ||
+      user.role?.toLowerCase().includes(search)
     );
   }
 
@@ -177,20 +188,17 @@ export class DetailsEquipeComponent implements OnInit {
       return;
     }
     const search = this.managerSearchText.toLowerCase().trim();
-    this.filteredManagerUsers = this.managerUsers.filter(
-      (user) =>
-        `${user.prenom} ${user.nom}`.toLowerCase().includes(search) ||
-        user.prenom.toLowerCase().includes(search) ||
-        user.nom.toLowerCase().includes(search)
+    this.filteredManagerUsers = this.managerUsers.filter(user =>
+      user.nom?.toLowerCase().includes(search) ||
+      user.prenom?.toLowerCase().includes(search) ||
+      user.departement?.toLowerCase().includes(search)
     );
   }
 
   toggleAddMemberForm(): void {
     this.showAddMemberForm = !this.showAddMemberForm;
     if (!this.showAddMemberForm) {
-      this.selectedUserIds = [];
-      this.searchText = '';
-      this.filterUsers();
+      this.resetAddMemberForm();
     }
   }
 
@@ -198,9 +206,7 @@ export class DetailsEquipeComponent implements OnInit {
     this.showManagerForm = !this.showManagerForm;
     this.showManagerMenu = false;
     if (!this.showManagerForm) {
-      this.managerSearchText = '';
-      this.selectedManagerId = null;
-      this.filteredManagerUsers = [...this.managerUsers];
+      this.resetManagerForm();
     }
   }
 
@@ -214,21 +220,21 @@ export class DetailsEquipeComponent implements OnInit {
 
   confirmManagerSelection(): void {
     if (!this.selectedManagerId) {
-      Swal.fire('Avertissement', 'Veuillez sélectionner un manager', 'warning');
+      this.showWarning('Veuillez sélectionner un manager');
       return;
     }
 
     if (this.equipe) {
       this.equipeService.updateManager(this.equipe.id, this.selectedManagerId).subscribe({
         next: () => {
-          Swal.fire('Succès', 'Manager mis à jour avec succès', 'success');
+          this.showSuccess('Manager mis à jour avec succès');
           this.loadManager(this.equipe!.id);
           this.loadTeamMembers(this.equipe!.id);
           this.toggleManagerForm();
         },
         error: (error) => {
-          Swal.fire('Erreur', error.error || 'Erreur lors de la mise à jour du manager', 'error');
-        },
+          this.showError(error.error || 'Erreur lors de la mise à jour du manager');
+        }
       });
     }
   }
@@ -237,68 +243,99 @@ export class DetailsEquipeComponent implements OnInit {
     if (checked) {
       this.selectedUserIds.push(userId);
     } else {
-      this.selectedUserIds = this.selectedUserIds.filter((id) => id !== userId);
+      this.selectedUserIds = this.selectedUserIds.filter(id => id !== userId);
     }
   }
 
   addSelectedUsersToTeam(): void {
-    if (!this.equipe || this.selectedUserIds.length === 0) {
-      Swal.fire('Avertissement', 'Veuillez sélectionner au moins un utilisateur', 'warning');
+    if (!this.equipe) {
+      this.showError('Équipe non trouvée');
       return;
     }
 
-    const equipeId = this.equipe.id;
-    this.equipeService.assignUsersToEquipe(equipeId, this.selectedUserIds).subscribe({
+    if (this.selectedUserIds.length === 0) {
+      this.showWarning('Veuillez sélectionner au moins un utilisateur');
+      return;
+    }
+
+    this.equipeService.assignUsersToEquipe(this.equipe.id, this.selectedUserIds).subscribe({
       next: () => {
-        Swal.fire('Succès', 'Utilisateurs ajoutés à l\'équipe avec succès', 'success');
+        this.showSuccess('Membres ajoutés avec succès');
+        this.loadTeamMembers(this.equipe!.id);
         this.toggleAddMemberForm();
-        this.loadTeamMembers(equipeId);
-        this.loadUsers();
       },
       error: (error) => {
-        Swal.fire('Erreur', error.error || 'Erreur lors de l\'ajout des utilisateurs à l\'équipe', 'error');
-      },
+        this.showError(error.error || 'Erreur lors de l\'ajout des membres');
+      }
     });
   }
 
   removeUserFromTeam(userId: number): void {
     if (!this.equipe) {
-      Swal.fire('Erreur', 'Équipe non chargée', 'error');
+      this.showError('Équipe non trouvée');
       return;
     }
 
     Swal.fire({
-      title: 'Êtes-vous sûr ?',
-      text: 'Voulez-vous vraiment retirer cet utilisateur de l\'équipe ?',
+      title: 'Confirmation',
+      text: 'Voulez-vous vraiment retirer ce membre de l\'équipe ?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#230046',
-      cancelButtonColor: '#ccc',
+      cancelButtonColor: '#6c757d',
       confirmButtonText: 'Oui, retirer',
-      cancelButtonText: 'Annuler',
+      cancelButtonText: 'Annuler'
     }).then((result) => {
       if (result.isConfirmed) {
         this.equipeService.removeUserFromEquipe(this.equipe!.id, userId).subscribe({
           next: () => {
-            Swal.fire('Succès', 'Utilisateur retiré de l\'équipe avec succès', 'success');
+            this.showSuccess('Membre retiré avec succès');
             this.loadTeamMembers(this.equipe!.id);
-            this.loadUsers();
           },
           error: (error) => {
-            Swal.fire('Erreur', error.error || 'Erreur lors du retrait de l\'utilisateur', 'error');
-          },
+            this.showError(error.error || 'Erreur lors du retrait du membre');
+          }
         });
       }
     });
   }
 
-  onRowClick(event: any): void {
-    if (event.target) {
-      const target = event.target as HTMLElement;
-      if (target.closest('.dropdown-menu') || target.closest('.menu-button') || target.closest('.action-button')) {
-        event.stopPropagation();
-      }
-    }
+  resetAddMemberForm(): void {
+    this.selectedUserIds = [];
+    this.searchText = '';
+    this.filteredUsers = [...this.users];
+  }
+
+  resetManagerForm(): void {
+    this.selectedManagerId = null;
+    this.managerSearchText = '';
+    this.filteredManagerUsers = [...this.managerUsers];
+  }
+
+  showSuccess(message: string): void {
+    Swal.fire({
+      icon: 'success',
+      title: 'Succès',
+      text: message,
+      timer: 2000,
+      showConfirmButton: false
+    });
+  }
+
+  showError(message: string): void {
+    Swal.fire({
+      icon: 'error',
+      title: 'Erreur',
+      text: message
+    });
+  }
+
+  showWarning(message: string): void {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Attention',
+      text: message
+    });
   }
 
   @HostListener('document:click', ['$event'])

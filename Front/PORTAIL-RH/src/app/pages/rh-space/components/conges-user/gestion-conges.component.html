@@ -5,266 +5,176 @@
     <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
 
     <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
-      <p *ngIf="!user && !congeTypes.length">Chargement...</p>
+      <p *ngIf="!user && !congeTypes.length" class="loading-text">Chargement...</p>
 
       <div class="leave-balance">
-        <div class="history-header">
-          <h2 *ngIf="user">Congés de {{ user.nom }} {{ user.prenom }}</h2>
-          <button class="add-button-conges" (click)="toggleForm()"></button>
+        <div class="page-header">
+          <h2 *ngIf="user">
+            <span class="user-name">Détail Congés {{ user.nom }} {{ user.prenom }}</span>
+            <span class="subtitle">Gestion des congés</span>
+          </h2>
+          <button class="add-button" (click)="toggleForm()" aria-label="Ajouter un congé">
+            <mat-icon>add</mat-icon>
+          </button>
         </div>
 
-        <div class="slider-container">
+        <div class="slider-container" [class.empty]="congeTypes.length === 0">
           <owl-carousel-o [options]="carouselOptions" *ngIf="congeTypes.length > 0">
             <ng-container *ngFor="let conge of congeTypes">
               <ng-template carouselSlide>
                 <mat-card class="leave-card" [ngClass]="getColorForType(conge.type)">
-                  <div class="actions-cell">
-                    <button mat-icon-button class="edit-button" (click)="toggleEditForm(conge)" title="Modifier">
-                      <mat-icon>edit</mat-icon>
-                    </button>
-                    <button mat-icon-button class="delete-button" (click)="deleteConge(conge)" title="Supprimer">
-                      <mat-icon>delete</mat-icon>
-                    </button>
+                  <div class="card-header">
+                    <h3 class="card-title">{{ conge.nom }}</h3>
+                    <div class="card-actions">
+                      <button mat-icon-button class="action-button edit" (click)="toggleEditForm(conge)" title="Modifier">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                      <button mat-icon-button class="action-button delete" (click)="deleteConge(conge)" title="Supprimer">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
                   </div>
-                  <mat-card-content class="content-card">
-                    <p><strong>Nom :</strong> {{ conge.nom }}</p>
-                    <p><strong>Type :</strong> {{ conge.type }}</p>
-                    <p><strong>Solde :</strong> {{ conge.soldeInitial }} {{ conge.unite }}</p>
-                    <p><strong>Validité :</strong> {{ conge.validite }}</p>
+                  <mat-card-content class="card-content">
+                    <div class="info-row">
+                      <span class="label">Type:</span>
+                      <span class="value">{{ conge.type }}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="label">Solde:</span>
+                      <span class="value">{{ conge.soldeInitial }} {{ conge.unite }}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="label">Validité:</span>
+                      <span class="value">{{ conge.validite }}</span>
+                    </div>
                   </mat-card-content>
                 </mat-card>
               </ng-template>
             </ng-container>
           </owl-carousel-o>
-          <p *ngIf="congeTypes.length === 0">Aucun type de congé disponible.</p>
+          <div class="empty-state" *ngIf="congeTypes.length === 0">
+            <mat-icon>event_busy</mat-icon>
+            <p>Aucun type de congé disponible</p>
+          </div>
         </div>
 
-        <div class="history-table-container">
-          <div class="history-header">
+        <div class="table-section">
+          <div class="search-container">
             <input
-              class="search"
+              class="search-input"
               type="text"
               placeholder="Rechercher un congé..."
               [(ngModel)]="searchText"
               (ngModelChange)="filterConges()"
             />
           </div>
-          <ngx-datatable
-            class="material"
-            [rows]="filteredConges"
-            [columns]="columns"
-            [columnMode]="'force'"
-            [headerHeight]="40"
-            [footerHeight]="40"
-            [rowHeight]="'auto'"
-            [scrollbarV]="false"
-            [scrollbarH]="true"
-            [sorts]="[{ prop: 'nom', dir: 'asc' }]"
-            [messages]="{
-              emptyMessage: 'Aucun congé trouvé',
-              totalMessage: 'congés au total'
-            }"
-          ></ngx-datatable>
+          
+          <div class="table-wrapper">
+            <ngx-datatable
+              class="material"
+              [rows]="filteredConges"
+              [columns]="columns"
+              [columnMode]="'force'"
+              [headerHeight]="50"
+              [footerHeight]="50"
+              [rowHeight]="'auto'"
+              [scrollbarV]="false"
+              [scrollbarH]="true"
+              [sorts]="[{ prop: 'nom', dir: 'asc' }]"
+              [messages]="{
+                emptyMessage: 'Aucun congé trouvé',
+                totalMessage: 'congés au total'
+              }"
+            ></ngx-datatable>
+          </div>
         </div>
       </div>
 
-      <!-- Formulaire pour ajouter un congé -->
-      <div *ngIf="showForm" class="form-container">
-        <button class="close-button" (click)="toggleForm()">
-          <mat-icon>close</mat-icon>
-        </button>
-        <h2>Créer Motif Congé</h2>
-        <form (ngSubmit)="submitForm(false)">
-          <div class="form-group">
-            <label for="congesType">Type congé :</label>
-            <select
-              id="congesType"
-              [(ngModel)]="congesType"
-              name="congesType"
-              (ngModelChange)="onTypeChange()"
-              required
-            >
-              <option value="RENOUVELABLE">Renouvelable</option>
-              <option value="INCREMENTALE">Incrémentale</option>
-              <option value="DECREMENTALE">Décrémentale</option>
-            </select>
+      <!-- Form Modals -->
+      <div class="modal" *ngIf="showForm || showEditForm">
+        <div class="modal-overlay" (click)="showForm ? toggleForm() : toggleEditForm()"></div>
+        <div class="modal-container">
+          <div class="modal-header">
+            <h2>{{ showForm ? 'Créer' : 'Modifier' }} Motif Congé</h2>
+            <button class="close-button" (click)="showForm ? toggleForm() : toggleEditForm()">
+              <mat-icon>close</mat-icon>
+            </button>
           </div>
+          
+          <div class="modal-content">
+            <form (ngSubmit)="submitForm(showEditForm)" class="leave-form">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="congesType">Type congé</label>
+                  <select
+                    id="congesType"
+                    [(ngModel)]="congesType"
+                    name="congesType"
+                    (ngModelChange)="onTypeChange()"
+                    required
+                  >
+                    <option value="RENOUVELABLE">Renouvelable</option>
+                    <option value="INCREMENTALE">Incrémentale</option>
+                    <option value="DECREMENTALE">Décrémentale</option>
+                  </select>
+                </div>
 
-          <div class="form-group">
-            <label for="nom">Nom :</label>
-            <input type="text" id="nom" [(ngModel)]="nom" name="nom" required />
-          </div>
+                <div class="form-group">
+                  <label for="nom">Nom</label>
+                  <input type="text" id="nom" [(ngModel)]="nom" name="nom" required />
+                </div>
 
-          <div class="form-group">
-            <label for="abreviation">Abréviation :</label>
-            <input
-              type="text"
-              id="abreviation"
-              [(ngModel)]="abreviation"
-              name="abreviation"
-              required
-            />
-          </div>
+                <div class="form-group">
+                  <label for="abreviation">Abréviation</label>
+                  <input type="text" id="abreviation" [(ngModel)]="abreviation" name="abreviation" required />
+                </div>
 
-          <div class="form-group">
-            <label for="unite">Unité :</label>
-            <select id="unite" [(ngModel)]="unite" name="unite" required>
-              <option value="Jours">Jours</option>
-              <option value="Heure">Heure</option>
-            </select>
-          </div>
+                <div class="form-group">
+                  <label for="unite">Unité</label>
+                  <select id="unite" [(ngModel)]="unite" name="unite" required>
+                    <option value="Jours">Jours</option>
+                    <option value="Heure">Heure</option>
+                  </select>
+                </div>
 
-          <div class="form-group">
-            <label for="solde">Solde initial :</label>
-            <input
-              type="number"
-              id="solde"
-              [(ngModel)]="solde"
-              name="solde"
-              min="1"
-              required
-            />
-          </div>
+                <div class="form-group">
+                  <label for="solde">Solde initial</label>
+                  <input type="number" id="solde" [(ngModel)]="solde" name="solde" min="1" required />
+                </div>
 
-          <div class="form-group">
-            <label for="validite">Validité :</label>
-            <input
-              id="validite"
-              type="date"
-              [(ngModel)]="validite"
-              name="validite"
-              required
-            />
-          </div>
+                <div class="form-group">
+                  <label for="validite">Validité</label>
+                  <input type="date" id="validite" [(ngModel)]="validite" name="validite" required />
+                </div>
 
-          <div class="form-group" *ngIf="congesType === 'RENOUVELABLE' || congesType === 'INCREMENTALE'">
-            <label for="periodicite">Périodicité :</label>
-            <select id="periodicite" [(ngModel)]="periodicite" name="periodicite" required>
-              <option value="MENSUELLE">Mensuelle (1 mois)</option>
-              <option value="TRIMESTRIELLE">Trimestrielle (3 mois)</option>
-              <option value="SEMESTRIELLE">Semestrielle (6 mois)</option>
-              <option value="ANNUELLE">Annuelle (12 mois)</option>
-            </select>
-          </div>
+                <div class="form-group" *ngIf="congesType === 'RENOUVELABLE' || congesType === 'INCREMENTALE'">
+                  <label for="periodicite">Périodicité</label>
+                  <select id="periodicite" [(ngModel)]="periodicite" name="periodicite" required>
+                    <option value="MENSUELLE">Mensuelle (1 mois)</option>
+                    <option value="TRIMESTRIELLE">Trimestrielle (3 mois)</option>
+                    <option value="SEMESTRIELLE">Semestrielle (6 mois)</option>
+                    <option value="ANNUELLE">Annuelle (12 mois)</option>
+                  </select>
+                </div>
 
-          <div class="form-group" *ngIf="congesType === 'INCREMENTALE'">
-            <label for="pasIncrementale">Pas incrémental :</label>
-            <input
-              type="number"
-              id="pasIncrementale"
-              [(ngModel)]="pasIncrementale"
-              name="pasIncrementale"
-              min="1"
-              required
-            />
-          </div>
+                <div class="form-group" *ngIf="congesType === 'INCREMENTALE'">
+                  <label for="pasIncrementale">Pas incrémental</label>
+                  <input type="number" id="pasIncrementale" [(ngModel)]="pasIncrementale" name="pasIncrementale" min="1" required />
+                </div>
+              </div>
 
-          <div class="form-actions">
-            <button type="submit" class="submit-button">Créer</button>
-            <button type="button" class="cancel-button" (click)="toggleForm()">Annuler</button>
+              <div class="form-actions">
+                <button type="button" class="cancel-button" (click)="showForm ? toggleForm() : toggleEditForm()">
+                  Annuler
+                </button>
+                <button type="submit" class="submit-button">
+                  {{ showForm ? 'Créer' : 'Modifier' }}
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
-
-      <!-- Formulaire pour modifier un congé -->
-      <div *ngIf="showEditForm" class="form-container">
-        <button class="close-button" (click)="toggleEditForm()">
-          <mat-icon>close</mat-icon>
-        </button>
-        <h2>Modifier Motif Congé</h2>
-        <form (ngSubmit)="submitForm(true)">
-          <div class="form-group">
-            <label for="congesTypeEdit">Type congé :</label>
-            <select
-              id="congesTypeEdit"
-              [(ngModel)]="congesType"
-              name="congesType"
-              (ngModelChange)="onTypeChange()"
-              required
-            >
-              <option value="RENOUVELABLE">Renouvelable</option>
-              <option value="INCREMENTALE">Incrémentale</option>
-              <option value="DECREMENTALE">Décrémentale</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="nomEdit">Nom :</label>
-            <input type="text" id="nomEdit" [(ngModel)]="nom" name="nom" required />
-          </div>
-
-          <div class="form-group">
-            <label for="abreviationEdit">Abréviation :</label>
-            <input
-              type="text"
-              id="abreviationEdit"
-              [(ngModel)]="abreviation"
-              name="abreviation"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="uniteEdit">Unité :</label>
-            <select id="uniteEdit" [(ngModel)]="unite" name="unite" required>
-              <option value="Jours">Jours</option>
-              <option value="Heure">Heure</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="soldeEdit">Solde initial :</label>
-            <input
-              type="number"
-              id="soldeEdit"
-              [(ngModel)]="solde"
-              name="solde"
-              min="1"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="validiteEdit">Validité :</label>
-            <input
-              id="validiteEdit"
-              type="date"
-              [(ngModel)]="validite"
-              name="validite"
-              required
-            />
-          </div>
-
-          <div class="form-group" *ngIf="congesType === 'RENOUVELABLE' || congesType === 'INCREMENTALE'">
-            <label for="periodiciteEdit">Périodicité :</label>
-            <select id="periodiciteEdit" [(ngModel)]="periodicite" name="periodicite" required>
-              <option value="MENSUELLE">Mensuelle (1 mois)</option>
-              <option value="TRIMESTRIELLE">Trimestrielle (3 mois)</option>
-              <option value="SEMESTRIELLE">Semestrielle (6 mois)</option>
-              <option value="ANNUELLE">Annuelle (12 mois)</option>
-            </select>
-          </div>
-
-          <div class="form-group" *ngIf="congesType === 'INCREMENTALE'">
-            <label for="pasIncrementaleEdit">Pas incrémental :</label>
-            <input
-              type="number"
-              id="pasIncrementaleEdit"
-              [(ngModel)]="pasIncrementale"
-              name="pasIncrementale"
-              min="1"
-              required
-            />
-          </div>
-
-          <div class="form-actions">
-            <button type="submit" class="submit-button">Modifier</button>
-            <button type="button" class="cancel-button" (click)="toggleEditForm()">Annuler</button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
-
-    <app-right-sidebar></app-right-sidebar>
   </div>
 </div>

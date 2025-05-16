@@ -41,27 +41,25 @@ export class PlanningManagerComponent implements OnInit {
   selectedDays: string[] = [];
   isValidated: boolean = false;
   validatedMonth: string | null = null;
-  isSidebarCollapsed = false; // Track sidebar state
+  isSidebarCollapsed = false;
 
   constructor(
     private teletravailService: TeletravailService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
-        private router: Router 
-    
+    private router: Router 
   ) {}
 
   ngOnInit(): void {
     this.loadUserPlanning();
   }
 
-  // Handle sidebar state changes
   onSidebarStateChange(isCollapsed: boolean) {
     this.isSidebarCollapsed = isCollapsed;
-    this.cdr.markForCheck(); // Ensure change detection runs
+    this.cdr.markForCheck();
   }
 navigateToPointage(): void {
-    this.router.navigate(['/pointage-manager']);
+    this.router.navigate(['/pointage-collab']);
   }
   loadUserPlanning(): void {
     const userId = this.authService.getUserIdFromToken();
@@ -165,6 +163,11 @@ navigateToPointage(): void {
 
     const dateString = this.formatDate(date);
     const nombreJoursMax = this.userPlanning.planning.nombreJoursMax;
+    const politique = this.userPlanning.planning.politique;
+
+    if (politique === 'PLANNING_FIXE' || politique === 'PLANNING_FIXE_JOURS_LIBRES') {
+      return this.userPlanning.planning.joursFixes.includes(dateString);
+    }
 
     if (nombreJoursMax && this.selectedDays.length >= nombreJoursMax && !this.selectedDays.includes(dateString)) {
       return false;

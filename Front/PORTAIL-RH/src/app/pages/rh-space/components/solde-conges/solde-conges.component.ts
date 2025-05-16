@@ -26,7 +26,6 @@ import { MatIconModule } from '@angular/material/icon';
     FormsModule,
     SidebarComponent,
     HeaderComponent,
-    RightSidebarComponent,
     NgxDatatableModule,
     MatBadgeModule,
     MatButtonModule,
@@ -89,9 +88,9 @@ export class SoldeCongesComponent implements OnInit {
   };
 
   columns = [
-    { name: 'User', width: 200 },
-    { prop: 'departement', name: 'Département', width: 150 },
-    { prop: 'poste', name: 'Poste', width: 100 },
+    { name: 'User', width: 80 },
+    { prop: 'departement', name: 'Département', width: 100 },
+    { prop: 'poste', name: 'Poste', width: 80 },
     { name: 'Congés', width: 200 },
   ];
 

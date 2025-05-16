@@ -188,14 +188,22 @@ public class NotificationServiceImpl implements NotificationService {
             );
         }
     }
-
-    // New method to notify the requester about status change
+    @Override
     @Transactional
-    public void notifyRequesterStatusChange(Demande demande, String status) {
+    public void notifyRequesterStatusChange(Demande demande, String status, Users triggeredByUser) {
         Users user = demande.getUser();
         String type = demande.getType().toString();
-        String message = String.format("Votre demande de %s a été %s",
-                type.toLowerCase(), status.toLowerCase());
+        String message;
+
+        // Ajouter le nom de l'utilisateur qui a traité la demande dans le message
+        if (triggeredByUser != null) {
+            String processingUserName = triggeredByUser.getPrenom() + " " + triggeredByUser.getNom();
+            message = String.format("Votre demande de %s a été %s par %s",
+                    type.toLowerCase(), status.toLowerCase(), processingUserName);
+        } else {
+            message = String.format("Votre demande de %s a été %s",
+                    type.toLowerCase(), status.toLowerCase());
+        }
 
         Notification notification = new Notification();
         notification.setUser(user);
@@ -203,7 +211,7 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setType(type);
         notification.setDemandeId(demande.getId());
         notification.setRead(false);
-        notification.setTriggeredByUser(null); // No specific user triggered this
+        notification.setTriggeredByUser(triggeredByUser); // Utiliser le triggeredByUser passé
         notificationRepository.save(notification);
 
         // Envoyer via WebSocket

@@ -1,34 +1,38 @@
-<div class="team-card" (click)="onViewDetails()">
-  <div class="actions-menu" (click)="$event.stopPropagation()">
-    <button class="menu-button" (click)="onToggleDropdown(); $event.stopPropagation()">
-      <mat-icon class="icon">more_vert</mat-icon>
-    </button>
-    <div class="dropdown-menu" *ngIf="equipe.showDropdown">
-      <div class="dropdown-item" (click)="onEditTeam(); $event.stopPropagation()">
+<div class="team-card">
+  <div class="team-card-header">
+    <div class="department-badge">{{ equipe.departement }}</div>
+    <div class="action-buttons">
+      <button mat-icon-button class="action-button edit" (click)="onEditTeam(); $event.stopPropagation()" aria-label="Modifier l'équipe">
         <mat-icon>edit</mat-icon>
-        <span>Modifier</span>
-      </div>
-      <div class="dropdown-item" (click)="onDeleteTeam(); $event.stopPropagation()">
+      </button>
+      <button mat-icon-button class="action-button delete" (click)="onDeleteTeam(); $event.stopPropagation()" aria-label="Supprimer l'équipe">
         <mat-icon>delete</mat-icon>
-        <span>Supprimer</span>
-      </div>
+      </button>
     </div>
   </div>
   
   <h3 class="team-name">{{ equipe.nom }}</h3>
-  <div class="team-department">{{ equipe.departement }}</div>
   
   <div class="manager-info">
-    <img
-      [src]="equipe.manager?.image || 'assets/icons/user-login-icon-14.png'"
-      alt="Manager Photo"
-      class="manager-photo"
-    />
+    <div class="manager-photo-container">
+      <img
+        [src]="equipe.manager?.image || 'assets/icons/user-login-icon-14.png'"
+        alt="Photo du manager"
+        class="manager-photo"
+      />
+    </div>
     <div class="manager-details">
       <div class="manager-name">
         {{ equipe.manager ? equipe.manager.prenom + ' ' + equipe.manager.nom : 'Aucun manager' }}
       </div>
       <div class="manager-role">Manager</div>
     </div>
+  </div>
+  
+  <div class="card-footer">
+    <button class="view-details-button" (click)="onViewDetails(); $event.stopPropagation()">
+      <span>Voir les détails</span>
+      <mat-icon>arrow_forward</mat-icon>
+    </button>
   </div>
 </div>

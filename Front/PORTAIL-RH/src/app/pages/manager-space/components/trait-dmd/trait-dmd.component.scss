@@ -1,6 +1,7 @@
 $primary-color: #230046;
 $secondary-color: #56142F;
 $accent-color: #FF6B00;
+$brand-magenta: #C3016C;
 $success-color: #2E7D32;
 $warning-color: #ED6C02;
 $error-color: #D32F2F;
@@ -8,7 +9,43 @@ $background-color: #F8F9FA;
 $card-background: #FFFFFF;
 $border-radius: 12px;
 $transition: all 0.3s ease;
+$box-shadow: 0 4px 20px rgba(35, 0, 70, 0.1);
 
+// Enhanced variables
+$table-row-hover: rgba($primary-color, 0.04);
+$active-tab-color: $brand-magenta;
+$calendar-day-hover: rgba($primary-color, 0.05);
+$button-hover-scale: 1.05;
+$badge-border-radius: 12px;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin button-hover {
+  transition: $transition;
+  &:hover {
+    transform: scale($button-hover-scale);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+@mixin pill-style {
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+  text-align: center;
+}
+
+// Base styles
 .collab-home {
   overflow: hidden;
   display: flex;
@@ -42,7 +79,22 @@ $transition: all 0.3s ease;
   }
 
   &::-webkit-scrollbar {
-    display: none;
+    width: 6px;
+    height: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background:transparent;
+    border-radius: 8px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 8px;
+    
+    &:hover {
+      background: rgba($primary-color, 0.3);
+    }
   }
 }
 
@@ -50,29 +102,44 @@ $transition: all 0.3s ease;
   max-width: 100%;
   margin: 20px auto;
   margin-left: -10px;
-  padding: 20px;
+  padding: 25px;
   margin-top: -10px;
   background-color: #ffffff;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+  border-radius: 18px;
+  box-shadow: $box-shadow;
+  animation: slideIn 0.5s ease;
 }
 
 .container2 {
   max-width: 100%;
-  margin: 20px auto;
+  margin: 30px auto 20px;
   margin-left: -10px;
-  padding: 20px;
+  padding: 25px;
   background-color: #ffffff;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+  border-radius: 18px;
+  box-shadow: $box-shadow;
   overflow-x: auto;
+  animation: fadeIn 0.5s ease;
 }
 
 h3 {
   color: $primary-color;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  position: relative;
+  display: inline-block;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, $brand-magenta, $accent-color);
+    border-radius: 2px;
+  }
 }
 
 .title {
@@ -93,13 +160,19 @@ h3 {
   height: 4px;
   background: linear-gradient(90deg, $primary-color, $accent-color);
   border-radius: 2px;
+  animation: expandWidth 0.5s ease-out;
+}
+
+@keyframes expandWidth {
+  from { width: 0; }
+  to { width: 80px; }
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   padding-bottom: 15px;
   border-bottom: 2px solid rgba($primary-color, 0.1);
 }
@@ -107,15 +180,22 @@ h3 {
 .history-section {
   background: $card-background;
   border-radius: $border-radius;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: $transition;
+  
+  &:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  }
 }
 
 .history-content {
   padding: 15px;
 }
 
+// Custom datatable styling
 :host ::ng-deep {
-  .ngx-datatable {
+  .custom-datatable {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -125,7 +205,7 @@ h3 {
       border-bottom: 1px solid rgba($primary-color, 0.1);
 
       .datatable-header-cell {
-        padding: 12px 10px;
+        padding: 14px 10px;
         font-weight: 600;
         color: $primary-color;
         font-size: 15px;
@@ -133,6 +213,11 @@ h3 {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        transition: background-color 0.3s ease;
+        
+        &:hover {
+          background-color: rgba($primary-color, 0.05);
+        }
       }
     }
 
@@ -142,13 +227,14 @@ h3 {
         transition: $transition;
 
         &:hover {
-          background: rgba(35, 0, 70, 0.02);
+          background: $table-row-hover;
           transform: translateY(-1px);
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         .datatable-body-cell {
           align-items: center;
-          justify-content: center;
+          justify-content: flex-start;
           padding: 12px 12px;
           font-size: 15px;
           color: #2c3e50;
@@ -166,32 +252,72 @@ h3 {
       font-size: 14px;
       color: $primary-color;
     }
+    
+    .datatable-body::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    .datatable-body::-webkit-scrollbar-track {
+      background: rgba($primary-color, 0.05);
+    }
+    
+    .datatable-body::-webkit-scrollbar-thumb {
+      background: rgba($primary-color, 0.2);
+      border-radius: 8px;
+      
+      &:hover {
+        background: rgba($primary-color, 0.3);
+      }
+    }
   }
 }
 
+// Enhanced collaborateur cell
 .collaborateur-cell {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+}
+
+.profile-photo-container {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: $transition;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 
 .profile-photo {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border: 1px solid rgba($primary-color, 0.1);
+  border-radius: 50%;
+  transition: $transition;
 }
 
+.user-name {
+  font-weight: 500;
+  color: $primary-color;
+}
+
+// Footer styles
 .footer-total {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   font-weight: 600;
+  color: $primary-color;
 }
 
+// Enhanced action buttons
 .action-buttons {
-  margin-left: -55px;
   display: flex;
   gap: 15px;
   align-items: center;
@@ -199,75 +325,80 @@ h3 {
 }
 
 .action-btn {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
   cursor: pointer;
-  transition: $transition;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  @include button-hover;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 
   .action-icon {
-    font-size: 14px;
+    font-size: 16px;
     color: white;
   }
 
   &.accept-btn {
-    background: $success-color;
+    background: linear-gradient(145deg, lighten($success-color, 5%), $success-color);
 
     &:hover {
-      background: lighten($success-color, 10%);
-      transform: scale(1.1);
+      background: linear-gradient(145deg, lighten($success-color, 10%), lighten($success-color, 5%));
     }
   }
 
   &.reject-btn {
-    background: $error-color;
+    background: linear-gradient(145deg, lighten($error-color, 5%), $error-color);
 
     &:hover {
-      background: lighten($error-color, 10%);
-      transform: scale(1.1);
+      background: linear-gradient(145deg, lighten($error-color, 10%), lighten($error-color, 5%));
     }
   }
 }
 
+// Enhanced cancel button
 .cancel-btn {
   position: relative;
-  width: 60px;
-  height: 30px;
-  border-radius: 15px;
-  background: $warning-color;
+  width: 80px;
+  height: 36px;
+  border-radius: 18px;
   border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
   cursor: pointer;
   color: white;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   transition: $transition;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+
+  &.accept-processing {
+    background: $success-color;
+  }
+  
+  &.reject-processing {
+    background: $error-color;
+  }
 
   &:hover {
-    background: lighten($warning-color, 10%);
     transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   }
 
   .cancel-text {
     z-index: 2;
+    position: relative;
   }
 
   .loading-ring {
     position: absolute;
-    top: -2px;
-    left: -2px;
-    width: 64px;
-    height: 34px;
-    border: 2px solid transparent;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-top: 2px solid white;
-    border-radius: 17px;
+    border-radius: 18px;
     animation: spin 3s linear forwards;
     z-index: 1;
   }
@@ -284,40 +415,55 @@ h3 {
   }
 }
 
+// Enhanced Calendar
 .calendar-card {
-  padding: 15px;
+  padding: 20px;
   border-radius: $border-radius;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   background: $card-background;
   position: relative;
   width: 100%;
   box-sizing: border-box;
+  transition: $transition;
+  
+  &.calendar-hovered {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
 }
 
 .calendar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 
   .month-year {
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 600;
     color: $primary-color;
     text-transform: uppercase;
+    letter-spacing: 1px;
   }
 
   .nav-button {
-    background: none;
+    background: rgba($primary-color, 0.05);
     border: none;
-    font-size: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    @include flex-center;
     cursor: pointer;
     color: $primary-color;
-    padding: 5px 10px;
     transition: $transition;
 
     &:hover {
-      color: darken($primary-color, 10%);
+      background: rgba($primary-color, 0.1);
+      transform: scale(1.1);
+    }
+    
+    .nav-icon {
+      font-size: 16px;
     }
   }
 }
@@ -325,10 +471,11 @@ h3 {
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
+  gap: 8px;
   text-align: center;
   position: relative;
   width: 100%;
+  grid-template-rows: auto repeat(6, minmax(70px, auto));
 }
 
 .day-label {
@@ -336,114 +483,237 @@ h3 {
   font-weight: 500;
   color: $primary-color;
   padding: 5px 0;
+  margin-bottom: 5px;
 }
 
 .calendar-day {
   position: relative;
-  padding: 5px;
-  font-size: 13px;
+  padding: 8px 5px;
+  font-size: 14px;
   color: #2c3e50;
-  height: 60px;
+  min-height: 70px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   transition: $transition;
+  border-radius: 8px;
+  
+  &:hover {
+    background-color: $calendar-day-hover;
+  }
 
   &.filler {
     color: #ccc;
+    background-color: rgba($primary-color, 0.02);
   }
 
   &.today {
-    background: #5e86a7;
+    background: linear-gradient(145deg, #5e86a7, #4a7a9e);
     color: #ffffff;
+    box-shadow: 0 3px 10px rgba(94, 134, 167, 0.3);
 
     .day-number {
       color: #ffffff;
+      font-weight: 600;
     }
   }
 
   &.leave-day {
     background: rgba($primary-color, 0.05);
+    border: 1px dashed rgba($primary-color, 0.2);
   }
 
   &.today.leave-day {
-    background: #5e86a7;
+    background: linear-gradient(145deg, #5e86a7, #4a7a9e);
     color: #ffffff;
+    border: none;
   }
 
   .day-number {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    border-radius: 50%;
+    transition: $transition;
   }
 }
 
 .users-on-leave {
   display: flex;
   flex-wrap: wrap;
-  gap: 3px;
+  gap: 5px;
   justify-content: center;
 }
 
+.leave-user-container {
+  position: relative;
+  display: inline-block;
+}
+
 .leave-photo {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid rgba($primary-color, 0.1);
+  border: 2px solid white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: $transition;
 
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    z-index: 2;
   }
 }
 
-.calendar-grid {
-  grid-template-rows: auto repeat(6, 70px);
+.more-users {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: $accent-color;
+  color: white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
+  @include flex-center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+// Enhanced tabs
 .tabs {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 15px;
+  margin-bottom: 25px;
   border-bottom: 1px solid rgba($primary-color, 0.1);
 }
 
 .tab-button {
   background: none;
   border: none;
-  padding: 10px 20px;
+  padding: 12px 20px;
   font-size: 16px;
   font-weight: 500;
   color: $primary-color;
   cursor: pointer;
   transition: $transition;
   border-bottom: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+
+  .tab-icon {
+    margin-top: -8px;
+    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+    transition: $transition;
+    
+    &.pending-icon:before {
+      content: "⏱";
+    }
+    
+    &.history-icon:before {
+      content: "🕒";
+    }
+  }
+  
+  .badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: $accent-color;
+    color: white;
+    border-radius: 50%;
+    min-width: 18px;
+    height: 18px;
+    font-size: 11px;
+    @include flex-center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
 
   &.active {
-    color: #c3016c;
-    border-bottom: 2px solid #c3016c;
+    color: $active-tab-color;
+    border-bottom: 2px solid $active-tab-color;
+    
+    .tab-icon {
+      opacity: 1;
+    }
   }
 
   &:hover {
-    color: #c3016c;
+    color: $active-tab-color;
   }
 }
 
+// Status badges
+.status-badge {
+  @include pill-style;
+  font-weight: 500;
+}
+
 .status-pending {
+  background-color: rgba($warning-color, 0.1);
   color: $warning-color;
-  font-weight: 400;
+  border: 1px solid rgba($warning-color, 0.2);
 }
 
 .status-accepted {
+  background-color: rgba($success-color, 0.1);
   color: $success-color;
-  font-weight: 400;
+  border: 1px solid rgba($success-color, 0.2);
 }
 
 .status-rejected {
+  background-color: rgba($error-color, 0.1);
   color: $error-color;
-  font-weight: 400;
+  border: 1px solid rgba($error-color, 0.2);
 }
 
+// Other badges and pills
+.conge-badge {
+  @include pill-style;
+  background: rgba($primary-color, 0.08);
+  color: $primary-color;
+  border: 1px solid rgba($primary-color, 0.1);
+}
+
+.duration-pill {
+  @include pill-style;
+  background: rgba($brand-magenta, 0.08);
+  color: $brand-magenta;
+  border: 1px solid rgba($brand-magenta, 0.1);
+}
+
+.solde-badge {
+  @include pill-style;
+  background: rgba($accent-color, 0.1);
+  color: darken($accent-color, 10%);
+  font-weight: 600;
+}
+
+.date {
+  font-weight: 500;
+  color: #444;
+}
+
+// Animations
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+// Responsive styles
 @media (max-width: 1200px) {
   .feed {
     left: 250px;
@@ -473,9 +743,45 @@ h3 {
     gap: 10px;
   }
 
-  .radio-group {
-    flex-direction: column;
-    gap: 10px;
+  .tabs {
+    overflow-x: auto;
+    padding-bottom: 5px;
+    
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba($primary-color, 0.2);
+      border-radius: 4px;
+    }
+  }
+  
+  .tab-button {
+    white-space: nowrap;
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+  
+  .title {
+    font-size: 24px;
+  }
+  
+  h3 {
+    font-size: 18px;
+  }
+  
+  .container, .container2 {
+    padding: 15px;
+  }
+  
+  .calendar-grid {
+    gap: 4px;
+  }
+  
+  .calendar-day {
+    min-height: 60px;
+    padding: 5px 2px;
   }
 }
 
@@ -485,7 +791,6 @@ h3 {
 
     &.sidebar-collapsed {
       left: 100px;
-      
       max-width: 1550px;
     }
   }
@@ -501,10 +806,22 @@ h3 {
       max-width: 1200px;
     }
   }
+  
+  .action-buttons {
+    gap: 10px;
+  }
+  
+  .action-btn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .cancel-btn {
+    width: 70px;
+    height: 32px;
+    font-size: 12px;
+  }
 }
-
-
-
 
 @media (max-width: 1457px) {
   .app-side-bar-manager{
@@ -544,12 +861,13 @@ h3 {
   }
 
   .feed {
-    left: 200px;
+    left: 0;
+    padding: 15px;
 
     &.sidebar-collapsed {
-      left: 100px;
-      right: 100px;
-      max-width: 1200px;
+      left: 0;
+      right: 0;
+      max-width: 100%;
     }
   }
 
@@ -571,8 +889,28 @@ h3 {
 
     &.sidebar-collapsed {
       left: 0px;
-      right: 50px;
-      max-width: 1200px;
+      right: 0px;
+      max-width: 100%;
     }
+  }
+  
+  .container, .container2 {
+    padding: 12px;
+    margin-left: 0;
+  }
+  
+  .tabs {
+    gap: 5px;
+  }
+  
+  .profile-photo-container {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    margin-left: 0;
   }
 }

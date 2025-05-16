@@ -8,6 +8,7 @@ import { DemandeService, ManagerCongesDemandeDTO } from '../../../../services/de
 import { AuthService } from '../../../../shared/services/auth.service';
 import { EquipeService, TeamMemberDTO } from '../../../../services/equipe.service';
 import Swal from 'sweetalert2';
+import { fadeAnimation, listAnimation, slideInAnimation, tabAnimation } from '../../../../animation';
 
 interface Demande {
   userDetails: string;
@@ -42,7 +43,8 @@ interface CalendarDay {
   ],
   templateUrl: './trait-dmd.component.html',
   styleUrls: ['./trait-dmd.component.scss'],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  animations: [fadeAnimation, listAnimation, slideInAnimation, tabAnimation]
 })
 export class TraitDmdComponent implements OnInit {
   demandes: Demande[] = [];
@@ -76,6 +78,7 @@ export class TraitDmdComponent implements OnInit {
   teamMembers: TeamMemberDTO[] = [];
   activeTab: 'pending' | 'history' = 'pending';
   isSidebarCollapsed: boolean = false;
+  isCalendarHovered: boolean = false;
 
   constructor(
     private demandeService: DemandeService,
@@ -95,6 +98,9 @@ export class TraitDmdComponent implements OnInit {
         icon: 'error',
         title: 'Erreur',
         text: 'Utilisateur non authentifié. Veuillez vous connecter.',
+        background: '#fff',
+        confirmButtonColor: '#230046',
+        iconColor: '#D32F2F'
       }).then(() => {
         this.authService.logout();
       });
@@ -124,6 +130,9 @@ export class TraitDmdComponent implements OnInit {
           icon: 'error',
           title: 'Erreur',
           text: 'Erreur lors du chargement des demandes validées.',
+          background: '#fff',
+          confirmButtonColor: '#230046',
+          iconColor: '#D32F2F'
         });
         console.error('Error fetching validated demands:', error);
       }
@@ -157,6 +166,9 @@ export class TraitDmdComponent implements OnInit {
           icon: 'error',
           title: 'Erreur',
           text: 'Erreur lors du chargement des demandes de congé.',
+          background: '#fff',
+          confirmButtonColor: '#230046',
+          iconColor: '#D32F2F'
         });
         console.error('Error fetching demands:', error);
       }
@@ -184,6 +196,9 @@ export class TraitDmdComponent implements OnInit {
           icon: 'error',
           title: 'Erreur',
           text: 'Erreur lors du chargement de l\'historique des demandes.',
+          background: '#fff',
+          confirmButtonColor: '#230046',
+          iconColor: '#D32F2F'
         });
         console.error('Error fetching history demands:', error);
       }
@@ -206,7 +221,7 @@ export class TraitDmdComponent implements OnInit {
 
     row.timeoutId = setTimeout(() => {
       this.confirmAction(row);
-    }, 2000);
+    }, 3000);
 
     this.demandes = [...this.demandes];
   }
@@ -234,6 +249,9 @@ export class TraitDmdComponent implements OnInit {
           icon: 'success',
           title: 'Succès',
           text: `Demande ${row.processingAction === 'accept' ? 'acceptée' : 'refusée'} avec succès.`,
+          background: '#fff',
+          confirmButtonColor: '#230046',
+          iconColor: '#2E7D32'
         });
 
         this.demandes = this.demandes.filter(d => d.demandeId !== row.demandeId);
@@ -258,6 +276,9 @@ export class TraitDmdComponent implements OnInit {
           icon: 'error',
           title: 'Erreur',
           text: `Erreur lors de ${row.processingAction === 'accept' ? 'l\'acceptation' : 'le refus'} de la demande.`,
+          background: '#fff',
+          confirmButtonColor: '#230046',
+          iconColor: '#D32F2F'
         });
         console.error('Error processing demand:', error);
 
@@ -267,6 +288,10 @@ export class TraitDmdComponent implements OnInit {
         this.demandes = [...this.demandes];
       }
     });
+  }
+
+  setCalendarHover(isHovered: boolean): void {
+    this.isCalendarHovered = isHovered;
   }
 
   private generateCalendar(): void {
@@ -343,5 +368,23 @@ export class TraitDmdComponent implements OnInit {
 
   setActiveTab(tab: 'pending' | 'history') {
     this.activeTab = tab;
+  }
+  
+  getStatusClass(status: string): string {
+    switch(status) {
+      case 'EN_ATTENTE': return 'status-pending';
+      case 'VALIDEE': return 'status-accepted';
+      case 'REFUSEE': return 'status-rejected';
+      default: return '';
+    }
+  }
+  
+  getStatusLabel(status: string): string {
+    switch(status) {
+      case 'EN_ATTENTE': return 'En attente';
+      case 'VALIDEE': return 'Validée';
+      case 'REFUSEE': return 'Refusée';
+      default: return status;
+    }
   }
 }

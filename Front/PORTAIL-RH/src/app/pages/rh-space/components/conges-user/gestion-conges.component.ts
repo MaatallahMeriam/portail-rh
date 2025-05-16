@@ -10,7 +10,6 @@ import Swal from 'sweetalert2';
 import { CongeTypeService, CongeTypeDTO, UserCongesDTO } from '../../../../services/conge-type.service';
 import { SidebarComponent } from '../sidebar-RH/sidebar.component';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
-import { RightSidebarComponent } from '../../../../shared/components/right-sidebar/right-sidebar.component';
 import { UserService, UserDTO } from '../../../../services/users.service';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { MatMenuModule } from '@angular/material/menu';
@@ -29,7 +28,6 @@ import { MatMenuModule } from '@angular/material/menu';
     MatIconModule,
     SidebarComponent,
     HeaderComponent,
-    RightSidebarComponent,
   ],
   templateUrl: './gestion-conges.component.html',
   styleUrls: ['./gestion-conges.component.scss'],

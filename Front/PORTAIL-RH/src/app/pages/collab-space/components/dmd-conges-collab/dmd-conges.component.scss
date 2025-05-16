@@ -151,7 +151,7 @@ h3 {
 .search-container {
   position: relative;
   margin-bottom: 20px;
-  width: 100%;
+  width: 94%;
   max-width: 560px;
 
   .search-icon {
@@ -250,7 +250,7 @@ h3 {
     border-radius: 15px;
     overflow: hidden;
     padding: 20px;
-    background: #f8f9fa;
+    background: white;
   }
 
   .leave-card {
@@ -329,7 +329,7 @@ h3 {
   gap: 20px;
   border-radius: $border-radius;
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: white;
   box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
 
   @media (max-width: 768px) {
@@ -401,9 +401,17 @@ h3 {
   background: #fff;
   transition: all 0.3s ease-in-out; // Smooth transition for changes
 }
-
 .feed.sidebar-collapsed {
-  left: 100px;
+  .calendar-history {
+    .history {
+      .search-container {
+        max-width: 640px; // Augmente la largeur lorsque la sidebar est fermée
+      }
+    }
+  }
+}
+.feed.sidebar-collapsed {
+  left: 85px;
   width: calc(100% - 100px);
 }
 

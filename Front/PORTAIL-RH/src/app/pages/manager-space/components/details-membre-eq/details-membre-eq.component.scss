@@ -1,170 +1,276 @@
+// Brand Colors
 $primary-color: #230046;
 $secondary-color: #56142F;
 $accent-color: #FF6B00;
+$pink-color: #e900ab;
 $success-color: #2E7D32;
 $warning-color: #ED6C02;
 $error-color: #D32F2F;
 $background-color: #F8F9FA;
 $card-background: #FFFFFF;
-$border-radius: 12px;
+
+// Design Variables
+$border-radius-sm: 8px;
+$border-radius-md: 12px;
+$border-radius-lg: 16px;
+$box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+$box-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+$transition-fast: all 0.2s ease;
 $transition: all 0.3s ease;
 
+// Layout
 .collab-home {
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 100vh;
   background-color: $background-color;
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
 }
 
 .main-content {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 .feed {
   position: fixed;
   top: 80px;
   left: 280px;
-  right: 50px;
+  right: 20px;
   bottom: 0;
   overflow-y: auto;
-  background: transparent;
-  max-width: 1200;
-  padding: 20px;
-  transition: all 0.3s ease-in-out;
-
+  transition: $transition;
+  padding: 24px;
+  
   &.sidebar-collapsed {
     left: 100px;
-    right: 20px;
-    max-width: 1500px;
   }
 
   &::-webkit-scrollbar {
-    display: none;
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 10px;
+    
+    &:hover {
+      background: transparent;
+    }
   }
 }
 
 .container {
   max-width: 100%;
-  margin: 20px auto;
-  margin-left: -10px;
-  padding: 20px;
-  margin-top: -10px;
-  background-color: #ffffff;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+  margin: 0 auto;
+  padding: 24px;
+  background-color: $card-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $box-shadow;
+  transition: $transition;
 }
 
+// Loading Spinner
 .loading-spinner {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100px;
-  font-size: 16px;
-  color: $primary-color;
+  height: 200px;
+  
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba($primary-color, 0.1);
+    border-radius: 50%;
+    border-top-color: $primary-color;
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 16px;
+  }
+  
+  span {
+    color: $primary-color;
+    font-size: 16px;
+    font-weight: 500;
+  }
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Section Titles
 .section-title {
   color: $primary-color;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 600;
-  margin-bottom: 25px;
-  margin-top: -5px;
+  margin-bottom: 24px;
   position: relative;
-  padding-bottom: 15px;
-
+  padding-bottom: 12px;
+  
   &::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 80px;
+    width: 60px;
     height: 4px;
-    background: linear-gradient(135deg, $primary-color, $accent-color, #ff00ea);
+    background: linear-gradient(135deg, $primary-color, $pink-color);
     border-radius: 2px;
+    transition: $transition;
   }
 }
 
-/* Carte Utilisateur */
+// User Section
+.user-section {
+  margin-bottom: 32px;
+}
+
 .user-card {
   background: $card-background;
-  border-radius: $border-radius;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  padding: 20px;
-  margin-bottom: 20px;
+  border-radius: $border-radius-md;
+  box-shadow: $box-shadow;
+  overflow: hidden;
   transition: $transition;
-  max-width: 450px;
-
+  
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+    box-shadow: $box-shadow-hover;
+  }
+  
+  .card-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba($primary-color, 0.1);
+    
+    .section-title {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      
+      &::after {
+        display: none;
+      }
+    }
   }
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 15px;
+  padding: 24px;
+  gap: 24px;
 }
 
 .profile-photo {
-  width: 80px;
-  height: 80px;
+  position: relative;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  border: 2px solid $primary-color;
+  border: 3px solid $primary-color;
+  box-shadow: 0 4px 12px rgba($primary-color, 0.2);
+  transition: $transition;
+  
+  .profile-status {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: $success-color;
+    border: 2px solid $card-background;
+  }
 }
-.membre{
-  color: $primary-color;
-}
+
 .user-details {
-  h3 {
-    margin: 0;
-    font-size: 20px;
+  flex: 1;
+  
+  .user-name {
+    margin: 0 0 8px;
+    font-size: 24px;
     color: $primary-color;
     font-weight: 600;
   }
-
+  
   .poste {
-    font-size: 16px;
-    color: #e900ab;
-    margin: 5px 0;
-  }
-
-  .contact-info {
-    margin: 5px 0;
-    font-size: 14px;
-    color: #2c3e50;
-
-    strong {
-      font-weight: 600;
-      margin-right: 5px;
-    }
+    font-size: 18px;
+    color: $pink-color;
+    margin: 0 0 16px;
+    font-weight: 500;
   }
 }
 
-/* Carrousel des Congés */
-.conges-slider-container {
-  margin-top: 20px;
+.contact-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.contact-info {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  color: #2c3e50;
+  
+  .contact-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    opacity: 0.7;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  
+  .phone-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M21 16.42v3.536a1 1 0 0 1-.93.998c-.437.03-.794.046-1.07.046-8.837 0-16-7.163-16-16 0-.276.015-.633.046-1.07A1 1 0 0 1 4.044 3H7.58a.5.5 0 0 1 .498.45c.023.23.044.413.064.552A13.901 13.901 0 0 0 9.35 8.003c.095.2.033.439-.147.567l-2.158 1.542a13.047 13.047 0 0 0 6.844 6.844l1.54-2.154a.462.462 0 0 1 .573-.149 13.901 13.901 0 0 0 4 1.205c.139.02.322.042.55.064a.5.5 0 0 1 .449.498z' fill='rgba(35,0,70,0.7)'/%3E%3C/svg%3E");
+  }
+  
+  .email-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M3 3h18a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm17 4.238l-7.928 7.1L4 7.216V19h16V7.238zM4.511 5l7.55 6.662L19.502 5H4.511z' fill='rgba(35,0,70,0.7)'/%3E%3C/svg%3E");
+  }
+  
+  .location-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M12 20.9l4.95-4.95a7 7 0 1 0-9.9 0L12 20.9zm0 2.828l-6.364-6.364a9 9 0 1 1 12.728 0L12 23.728zM12 13a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 2a4 4 0 1 1 0-8 4 4 0 0 1 0 8z' fill='rgba(35,0,70,0.7)'/%3E%3C/svg%3E");
+  }
+}
+
+// Congés Section
+.conges-section {
+  margin: 40px 0;
+}
+
+.conges-wrapper {
   position: relative;
-  border-radius: 15px;
   overflow: hidden;
-  padding: 20px;
+}
+
+.conge-card-wrapper {
+  padding: 8px;
+  transition: $transition;
+  
+  &:hover {
+    transform: translateY(-5px);
+  }
 }
 
 .conge-card {
-  background: #ffffff;
-  border-radius: 15px;
-  padding: 25px;
-  margin: 10px;
-  min-height: 150px;
+  border-radius: $border-radius-md !important;
+  box-shadow: $box-shadow !important;
+  overflow: hidden;
+  min-height: 180px;
   position: relative;
-  transition: $transition;
-  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
-
+  display: flex;
+  flex-direction: column;
+  
   &.leave-renouvelable {
     background: linear-gradient(135deg, #948185, #B39DA2);
   }
@@ -176,240 +282,348 @@ $transition: all 0.3s ease;
   &.leave-decrementale {
     background: linear-gradient(135deg, #3E204C, $secondary-color);
   }
-
-  .content-card {
-    margin-top: 10px;
-    color: #fff;
-
-    p {
-      margin: 8px 0;
+  
+  .conge-card-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  
+  .conge-header {
+    margin-bottom: 16px;
+    
+    .conge-name {
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+  
+  .conge-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+  
+  .conge-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .info-label {
+      color: rgba(255, 255, 255, 0.8);
       font-size: 14px;
-      line-height: 1.5;
-
-      strong {
-        font-weight: 600;
-        margin-right: 5px;
-      }
+    }
+    
+    .info-value {
+      color: white;
+      font-weight: 600;
+      font-size: 15px;
     }
   }
 }
 
-.no-conges-message {
-  text-align: center;
-  padding: 15px;
-  background: rgba($primary-color, 0.05);
-  border-radius: $border-radius;
-  margin-top: 20px;
+.no-conges {
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  color: rgba($primary-color, 0.7);
+  background-color: rgba($primary-color, 0.05);
+  border-radius: $border-radius-md;
+  
+  .no-data-icon {
+    width: 48px;
+    height: 48px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M20 22H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1zm-1-2V4H5v16h14zM8 7h8v2H8V7zm0 4h8v2H8v-2zm0 4h5v2H8v-2z' fill='rgba(35,0,70,0.5)'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-bottom: 16px;
+    opacity: 0.6;
+  }
+  
   p {
     margin: 0;
     font-size: 16px;
-    color: $primary-color;
+    font-weight: 500;
   }
 }
 
-/* Section Télétravail */
+// Calendar Section
 .teletravail-section {
-  margin-top: 30px;
+  margin-top: 40px;
 }
 
-.calendar-card {
-  padding: 15px;
-  border-radius: $border-radius;
-  background: rgba($primary-color, 0.03);
+.calendar-container {
+  display: flex;
+  justify-content: center;
+}
+
+.calendar-card, .no-planning-card {
+  width: 100%;
+  max-width: 800px;
+  background-color: $card-background;
+  border-radius: $border-radius-md;
+  box-shadow: $box-shadow;
+  overflow: hidden;
+  transition: $transition;
+  
+  &:hover {
+    box-shadow: $box-shadow-hover;
+  }
 }
 
 .calendar-header {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 15px;
-
+  background-color: rgba($primary-color, 0.05);
+  padding: 16px;
+  text-align: center;
+  border-bottom: 1px solid rgba($primary-color, 0.1);
+  
   .month-year {
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 600;
     color: $primary-color;
-    text-transform: uppercase;
+    text-transform: capitalize;
   }
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
-  text-align: center;
-}
-
-.day-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: $primary-color;
-  padding: 5px 0;
-}
-
-.calendar-day {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  color: #2c3e50;
-  border-radius: 50%;
-  transition: $transition;
-  margin: 0 auto;
-
-  &.filler {
-    color: #ccc;
-  }
-
-  &.today {
-    background-color: #a2cfff;
-    color: #fff;
-  }
-
-  &.teletravail {
-    background: linear-gradient(135deg, $primary-color, #3a0073);
-    color: #fff;
-  }
-}
-
-.no-planning-message {
-  text-align: center;
-  padding: 15px;
-  background: rgba($error-color, 0.05);
-  border-radius: $border-radius;
-
-  p {
-    margin: 0;
+  gap: 8px;
+  padding: 16px;
+  
+  .day-label {
+    text-align: center;
+    font-weight: 600;
+    color: $primary-color;
     font-size: 14px;
-    color: $error-color;
+    padding: 8px 0;
+  }
+  
+  .calendar-day {
+    aspect-ratio: 1/1;
+    border-radius: $border-radius-sm;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: $transition-fast;
+    
+    .day-number {
+      font-size: 16px;
+      font-weight: 500;
+      z-index: 1;
+    }
+    
+    .day-indicator {
+      position: absolute;
+      bottom: 4px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: $accent-color;
+      z-index: 1;
+    }
+    
+    &.filler {
+      color: #ccc;
+    }
+    
+    &.today {
+      background-color: rgba($primary-color, 0.1);
+      font-weight: 700;
+      color: $primary-color;
+      box-shadow: 0 2px 8px rgba($primary-color, 0.2);
+    }
+    
+    &.teletravail {
+      background: linear-gradient(135deg, $primary-color, #3a0073);
+      color: white;
+      box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+      transform: scale(1.05);
+      z-index: 2;
+      
+      .day-indicator {
+        background-color: white;
+      }
+    }
+    
+    &.weekend {
+      background-color: rgba($primary-color, 0.03);
+      color: rgba($primary-color, 0.5);
+    }
   }
 }
 
-/* Responsivité */
+.no-planning-card {
+  padding: 32px;
+  
+  .calendar-icon {
+    width: 48px;
+    height: 48px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M17 3h4a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4V1h2v2h6V1h2v2zm-2 2H9v2H7V5H4v4h16V5h-3v2h-2V5zm5 6H4v8h16v-8z' fill='rgba(211,47,47,0.5)'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-bottom: 16px;
+  }
+}
+
+// Responsive Adjustments
 @media (max-width: 1200px) {
   .feed {
     left: 250px;
-    right: 0 px;
-    max-width: none;
-
+    padding: 16px;
+    
     &.sidebar-collapsed {
-      left: 100px;
-      right: 100px;
-      max-width: 1200px;
+      left: 80px;
     }
   }
-
+  
+  .container {
+    padding: 16px;
+  }
+  
   .user-info {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
   }
-
+  
   .profile-photo {
-    width: 60px;
-    height: 60px;
+    margin-bottom: 16px;
+  }
+  
+  .contact-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 992px) {
+  .feed {
+    left: 220px;
+  }
+  
+  .user-info {
+    padding: 16px;
+  }
+  
+  .calendar-grid {
+    gap: 4px;
+    
+    .calendar-day {
+      .day-number {
+        font-size: 14px;
+      }
+    }
   }
 }
 
 @media (max-width: 768px) {
   .feed {
     left: 0;
-    right: 0;
-    max-width: 100%;
-
+    top: 70px;
+    padding: 12px;
+    
     &.sidebar-collapsed {
-      left: 100px;
-      right: 100px;
-      max-width: 1200px;
+      left: 70px;
     }
   }
-
+  
+  .section-title {
+    font-size: 20px;
+  }
+  
   .user-details {
-    h3 {
-      font-size: 18px;
+    .user-name {
+      font-size: 20px;
     }
-
+    
     .poste {
-      font-size: 14px;
-    }
-
-    .contact-info {
-      font-size: 12px;
-    }
-  }
-
-  .calendar-day {
-    width: 25px;
-    height: 25px;
-    font-size: 10px;
-  }
-}
-
-@media screen and (max-width: 1470px) and (min-width: 1022px) {
-  .feed {
-    left: 270px;
-    max-width: 1300px;
-
-    &.sidebar-collapsed {
-      left: 100px;
-      right: 100px;
-      max-width: 1200px;
-    }
-  }
-}
-
-@media screen and (max-width: 1024px) {
-  .feed {
-    left: 250px;
-
-
-    &.sidebar-collapsed {
-      left: 100px;
-      right: 100px;
-      max-width: 1200px;
-    }
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .feed {
-    right: 0;
-    width: 100%;
-
-    &.sidebar-collapsed {
-      left: 100px;
-      right: 100px;
-      max-width: 1200px;
-    }
-  }
-
-  .user-card {
-    padding: 15px;
-  }
-
-  .profile-photo {
-    width: 50px;
-    height: 50px;
-  }
-
-  .user-details {
-    h3 {
       font-size: 16px;
     }
-
-    .poste {
+  }
+  
+  .profile-photo {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .calendar-grid {
+    .day-label {
       font-size: 12px;
     }
-
-    .contact-info {
-      font-size: 11px;
+    
+    .calendar-day {
+      .day-number {
+        font-size: 12px;
+      }
     }
   }
+}
 
-  .calendar-day {
-    width: 20px;
-    height: 20px;
-    font-size: 9px;
+@media (max-width: 576px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .profile-photo {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .user-details {
+    .user-name {
+      font-size: 18px;
+    }
+    
+    .poste {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+  }
+  
+  .contact-info {
+    font-size: 14px;
+  }
+  
+  .section-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+  
+  .calendar-grid {
+    gap: 2px;
+    padding: 8px;
+    
+    .day-label {
+      font-size: 10px;
+      padding: 4px 0;
+    }
+    
+    .calendar-day {
+      .day-number {
+        font-size: 10px;
+      }
+      
+      .day-indicator {
+        width: 3px;
+        height: 3px;
+      }
+    }
   }
 }

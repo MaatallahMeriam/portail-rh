@@ -44,7 +44,6 @@ $transition: all 0.3s ease;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    
     .datatable-header {
       background: white;
       border-bottom: 1px solid rgba($primary-color, 0.1);
@@ -85,6 +84,7 @@ $transition: all 0.3s ease;
       display: flex;
       align-items: center;
     }
+    
   }
 }
 
@@ -230,14 +230,11 @@ $transition: all 0.3s ease;
       background: none;
       border: none;
       color: $primary-color;
+      margin-top: -50px;
       cursor: pointer;
       padding: 8px;
       border-radius: 50%;
       transition: $transition;
-
-      &:hover {
-        background: rgba($primary-color, 0.1);
-      }
 
       &:disabled {
         opacity: 0.5;
@@ -304,6 +301,7 @@ $transition: all 0.3s ease;
 
 // Form Styles
 .request-form {
+  margin-top: -35px;
   padding: 20px;
 
   .form-group {
@@ -312,7 +310,6 @@ $transition: all 0.3s ease;
     input, textarea {
       width: 97%;
     }
-
     label {
       display: block;
       color: $primary-color;
@@ -347,6 +344,7 @@ $transition: all 0.3s ease;
   }
 
   .select-wrapper {
+    width: 97%;
     position: relative;
 
     &::after {
@@ -366,7 +364,22 @@ $transition: all 0.3s ease;
     }
   }
 }
+.history-card .card-header h3 {
+  position: relative;
+  padding-left: 30px; // Espace pour l'icône
 
+  &::before {
+    content: "\f1da"; // Code Font Awesome pour fa-history
+    font-family: "Font Awesome 5 Free"; // Assurez-vous que Font Awesome est chargé
+    font-weight: 900; // Icône solide
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $primary-color;
+    font-size: 18px;
+  }
+}
 // Form Actions
 .form-actions {
   display: flex;
@@ -378,15 +391,20 @@ $transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
+    width: 100px;
+    height: 35px;
+
+
     border: none;
     border-radius: 25px;
-    font-weight: 500;
+    font-weight: 400;
     cursor: pointer;
     transition: $transition;
 
     mat-icon {
-      font-size: 18px;
+      margin-bottom: -14px;
+      margin-right: -5px;
+      font-size: 15px;
     }
 
     &:disabled {
@@ -417,6 +435,7 @@ $transition: all 0.3s ease;
 
 // History Table
 .history-content {
+  margin-top:-20px;
   padding: 20px;
 }
 

@@ -3,14 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SidebarComponent } from '../sidebar-RH/sidebar.component';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
-import { RightSidebarComponent } from '../../../../shared/components/right-sidebar/right-sidebar.component';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { UserService, UserDTO, RegisterRequest, RegisterResponse } from '../../../../services/users.service';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-
+import { trigger, transition, style, animate } from '@angular/animations';
+import { EquipeService, EquipeDTO } from '../../../../services/equipe.service'; // Ajout de EquipeService
 @Component({
   selector: 'app-gestion-dossier',
   standalone: true,
@@ -19,13 +19,23 @@ import { MatIconModule } from '@angular/material/icon';
     FormsModule,
     SidebarComponent,
     HeaderComponent,
-    RightSidebarComponent,
     NgxDatatableModule,
     MatButtonModule,
     MatIconModule,
   ],
   templateUrl: './gestion-dossier.component.html',
   styleUrls: ['./gestion-dossier.component.scss'],
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('200ms ease-in', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-out', style({ opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class GestionDossierComponent {
   showFirstForm = false;
@@ -55,14 +65,20 @@ export class GestionDossierComponent {
   roleOptions: string[] = ['COLLAB', 'RH', 'ADMIN', 'MANAGER'];
 
   columns = [
-    { name: 'Utilisateur', width: 200 },
+    { name: 'Utilisateur', width: 180 },
     { prop: 'departement', name: 'Département', width: 150 },
     { prop: 'poste', name: 'Poste', width: 150 },
+    { prop: 'mail', name: 'Mail', width: 200 }, // Nouvelle colonne
+    { prop: 'nomEquipe', name: 'Équipe', width: 150 },
     { prop: 'role', name: 'Rôle', width: 100 },
-    { name: 'Actions', sortable: false, width: 50 },
+    { name: 'Actions', sortable: false, width: 60 },
   ];
 
-  constructor(private userService: UserService, private router: Router) {
+  constructor(
+    private userService: UserService,
+    private equipeService: EquipeService, // Ajout de EquipeService
+    private router: Router
+  ) {
     this.loadUsers();
   }
 
@@ -72,7 +88,6 @@ export class GestionDossierComponent {
 
   toggleMenu(row: UserDTO, event: Event): void {
     event.stopPropagation();
-    console.log('Toggling menu for row:', row, 'Current selectedUser:', this.selectedUser);
     this.selectedUser = this.selectedUser?.id === row.id ? null : row;
   }
   
@@ -80,7 +95,6 @@ export class GestionDossierComponent {
   closeMenu(event: Event) {
     const target = event.target as HTMLElement;
     if (!target.closest('.menu-button') && !target.closest('.dropdown-menu')) {
-      console.log('Closing dropdown due to outside click');
       this.selectedUser = null;
     }
   }
@@ -97,8 +111,27 @@ export class GestionDossierComponent {
   loadUsers() {
     this.userService.getAllActiveUsers().subscribe({
       next: (users) => {
-        this.users = users;
-        this.filteredUsers = [...users];
+        // Récupérer toutes les équipes pour associer les noms
+        this.equipeService.getAllEquipes().subscribe({
+          next: (equipes) => {
+            // Mapper les utilisateurs avec le nom de l'équipe
+            this.users = users.map(user => {
+              const equipe = equipes.find(e => e.id === user.equipeId);
+              return {
+                ...user,
+                nomEquipe: equipe ? equipe.nom : undefined // Ajout du nom de l'équipe
+              };
+            });
+            this.filteredUsers = [...this.users];
+          },
+          error: (err) => {
+            console.error('Erreur lors du chargement des équipes:', err);
+            Swal.fire('Erreur', 'Impossible de charger les équipes', 'error');
+            // Charger les utilisateurs sans nom d'équipe en cas d'erreur
+            this.users = users;
+            this.filteredUsers = [...users];
+          }
+        });
       },
       error: (err) => {
         console.error('Erreur lors du chargement des utilisateurs actifs:', err);
@@ -120,7 +153,9 @@ export class GestionDossierComponent {
         (user.prenom?.toLowerCase().includes(search) || '') ||
         (user.departement?.toLowerCase().includes(search) || '') ||
         (user.poste?.toLowerCase().includes(search) || '') ||
-        (user.role?.toLowerCase().includes(search) || '')
+        (user.role?.toLowerCase().includes(search) || '') ||
+        (user.mail?.toLowerCase().includes(search) || '') || // Ajout de la recherche par mail
+        (user.nomEquipe?.toLowerCase().includes(search) || '') // Ajout de la recherche par nom d'équipe
     );
   }
 
@@ -268,7 +303,21 @@ export class GestionDossierComponent {
     }
     this.router.navigate(['/details-dossier', user.id]);
   }
-
+          onRowActivate(event: any) {
+              // Vérifier que l'événement est un clic sur une ligne (type 'click')
+              if (event.type === 'click') {
+                const target = event.event.target as HTMLElement;
+                // Ignorer si le clic provient d'un bouton d'action
+                if (target.closest('.action-icon')) {
+                  return;
+                }
+                // Rediriger vers la page des détails de l'utilisateur
+                const user: UserDTO = event.row;
+                if (user.id) {
+                  this.viewDetails(user);
+                }
+              }
+            }
   deleteUser(user: UserDTO): void {
     if (!user.id) {
       Swal.fire({

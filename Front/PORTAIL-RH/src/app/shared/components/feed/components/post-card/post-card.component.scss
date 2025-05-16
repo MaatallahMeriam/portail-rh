@@ -528,7 +528,7 @@
 
 // Comments Section
 .comments-section {
-  background-color: $background-light;
+  background-color: white;
   border-radius: $border-radius-md;
   padding: $spacing-md;
 }
@@ -577,11 +577,11 @@
 
 .comment-submit {
   background-color: $primary-color;
-  margin-bottom: 9px;
+  margin-bottom: 10px;
   color: white;
   border: none;
-  width: 30px;
-  height: 30px;
+  width: 27px;
+  height: 27px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -648,6 +648,8 @@
 
 .comment-content {
   background-color: white;
+    border: 1px solid $border-color;
+
   border-radius: $border-radius-md;
   padding: $spacing-sm;
   flex-grow: 1;

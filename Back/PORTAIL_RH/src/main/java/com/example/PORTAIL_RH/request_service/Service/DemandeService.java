@@ -12,14 +12,13 @@ import java.util.List;
 public interface DemandeService {
     DemandeDTO createDemande(DemandeRequest demandeRequest);
     DemandeDTO updateDemande(Long id, DemandeRequest demandeRequest);
-    DemandeDTO changeStatut(Long id, Demande.StatutType nouveauStatut);
     List<DemandeDTO> getDemandesByUserIdAndType(Long userId, String type);
     List<DemandeDTO> getAllDemandes();
     List<DemandeDTO> getAllDemandesByUserId(Long userId);
     void deleteDemande(Long id);
     DemandeDTO getDemandeById(Long id);
-    DemandeDTO acceptDemande(Long id);
-    DemandeDTO refuseDemande(Long id);
+    DemandeDTO acceptDemande(Long id, Long userId); // Ajout de userId
+    DemandeDTO refuseDemande(Long id, Long userId); // Ajout de userId
     List<ManagerCongesDemandeDTO> getCongesDemandesByManagerId(Long managerId);
     List<ManagerCongesDemandeDTO> getCongesDemandesByManagerIdAndStatus(Long managerId, Demande.StatutType statut);
     List<LogisticDemandeDTO> getPendingLogisticDemandes();

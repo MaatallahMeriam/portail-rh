@@ -9,6 +9,7 @@ import { HeaderComponent } from '../../../../shared/components/header/header.com
 import { UserService, UserDTO } from '../../../../services/users.service';
 import { CongeTypeService, CongeTypeDTO } from '../../../../services/conge-type.service';
 import { TeletravailService, UserTeletravailDTO } from '../../../../services/teletravail.service';
+import { animate, style, transition, trigger } from '@angular/animations';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -23,7 +24,21 @@ import Swal from 'sweetalert2';
   ],
   templateUrl: './details-membre-eq.component.html',
   styleUrl: './details-membre-eq.component.scss',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    trigger('slideIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateX(-20px)' }),
+        animate('400ms ease-out', style({ opacity: 1, transform: 'translateX(0)' }))
+      ])
+    ])
+  ]
 })
 export class DetailsMembreEqComponent implements OnInit {
   user: UserDTO | null = null;
@@ -36,20 +51,24 @@ export class DetailsMembreEqComponent implements OnInit {
   isSidebarCollapsed: boolean = false;
 
   carouselOptions = {
-    loop: true,
+    loop: false,
     mouseDrag: true,
     touchDrag: true,
     pullDrag: false,
-    dots: false,
+    dots: true,
     navSpeed: 700,
     navText: ['<', '>'],
     responsive: {
       0: { items: 1 },
-      400: { items: 2 },
-      740: { items: 3 },
-      940: { items: 4 }
+      576: { items: 2 },
+      768: { items: 2 },
+      992: { items: 3 },
+      1200: { items: 4 }
     },
-    nav: true
+    nav: true,
+    autoplay: false,
+    autoplayTimeout: 5000,
+    autoplayHoverPause: true
   };
 
   constructor(
@@ -68,11 +87,7 @@ export class DetailsMembreEqComponent implements OnInit {
         this.loadUserConges(memberId);
         this.loadUserTeletravail(memberId);
       } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
-          text: 'ID du membre manquant.',
-        });
+        this.showError('ID du membre manquant.');
         this.router.navigate(['/list-member-manager']);
       }
     });
@@ -83,18 +98,17 @@ export class DetailsMembreEqComponent implements OnInit {
   }
 
   loadUserDetails(userId: number): void {
+    this.loading = true;
     this.userService.getUserById(userId).subscribe({
       next: (user: UserDTO) => {
         this.user = user;
-        this.loading = false;
+        setTimeout(() => {
+          this.loading = false;
+        }, 500); // Add slight delay for smoother transition
       },
       error: (err) => {
         console.error('Erreur lors du chargement des détails de l\'utilisateur:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
-          text: 'Impossible de charger les détails de l\'utilisateur.',
-        });
+        this.showError('Impossible de charger les détails de l\'utilisateur.');
         this.loading = false;
         this.router.navigate(['/list-member-manager']);
       }
@@ -108,11 +122,7 @@ export class DetailsMembreEqComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erreur lors du chargement des congés:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
-          text: 'Impossible de charger les congés de l\'utilisateur.',
-        });
+        this.showError('Impossible de charger les congés de l\'utilisateur.');
       }
     });
   }
@@ -138,12 +148,15 @@ export class DetailsMembreEqComponent implements OnInit {
   }
 
   getBackgroundImage(user: UserDTO): string {
-    const imagePath = user.image ? user.image.replace(/\\/g, '/') : 'assets/icons/user-login-icon-14.png';
+    const defaultImage = 'assets/icons/user-login-icon-14.png';
+    if (!user.image) return `url(${defaultImage})`;
+    
+    const imagePath = user.image.replace(/\\/g, '/');
     return `url(${imagePath})`;
   }
 
   getColorForType(type: string): string {
-    switch (type) {
+    switch (type?.toUpperCase()) {
       case 'RENOUVELABLE':
         return 'leave-renouvelable';
       case 'INCREMENTALE':
@@ -168,29 +181,32 @@ export class DetailsMembreEqComponent implements OnInit {
     const lastDayOfMonth = new Date(year, month + 1, 0);
     const today = new Date();
 
+    // Get the day of the week for the first day (0 = Sunday, 1 = Monday, etc.)
     const startDay = firstDayOfMonth.getDay();
+    // Adjust for Monday as first day of week
     const offset = startDay === 0 ? 6 : startDay - 1;
+    
+    // Add days from previous month
     for (let i = offset; i > 0; i--) {
       const date = new Date(year, month, 1 - i);
       calendarDays.push({
         date,
         isCurrentMonth: false,
-        isToday: false
+        isToday: this.isSameDay(date, today)
       });
     }
 
+    // Add days from current month
     for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
       const date = new Date(year, month, day);
       calendarDays.push({
         date,
         isCurrentMonth: true,
-        isToday:
-          date.getDate() === today.getDate() &&
-          date.getMonth() === today.getMonth() &&
-          date.getFullYear() === today.getFullYear()
+        isToday: this.isSameDay(date, today)
       });
     }
 
+    // Add days from next month to complete the grid
     const lastDay = lastDayOfMonth.getDay();
     const endOffset = lastDay === 0 ? 0 : 7 - lastDay;
     for (let i = 1; i <= endOffset; i++) {
@@ -198,11 +214,17 @@ export class DetailsMembreEqComponent implements OnInit {
       calendarDays.push({
         date,
         isCurrentMonth: false,
-        isToday: false
+        isToday: this.isSameDay(date, today)
       });
     }
 
     return calendarDays;
+  }
+
+  isSameDay(date1: Date, date2: Date): boolean {
+    return date1.getDate() === date2.getDate() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getFullYear() === date2.getFullYear();
   }
 
   formatDate(date: Date): string {
@@ -210,5 +232,14 @@ export class DetailsMembreEqComponent implements OnInit {
       .getDate()
       .toString()
       .padStart(2, '0')}`;
+  }
+  
+  showError(message: string): void {
+    Swal.fire({
+      icon: 'error',
+      title: 'Erreur',
+      text: message,
+      confirmButtonColor: '#230046'
+    });
   }
 }

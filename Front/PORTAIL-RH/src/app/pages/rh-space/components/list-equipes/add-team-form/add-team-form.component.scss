@@ -36,7 +36,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px; /* Adjusted from form-modal h3 margin-bottom */
+  margin-bottom: 25px;
+  margin-top: -20px; /* Adjusted from form-modal h3 margin-bottom */
 }
 
 .modal-header h3 {
@@ -62,6 +63,7 @@
 }
 
 .form-group {
+  margin-left: 30px;
   margin-bottom: var(--spacing-lg, 20px);
 }
 
@@ -100,9 +102,10 @@
 }
 
 .btn {
-  padding: 12px 24px;
+  height: 40px;
+  width: 90px;
   border-radius: 25px;
-  font-weight: 600;
+  font-weight: 500;
   transition: all var(--animation-duration, 0.3s) ease;
   border: none;
   cursor: pointer;
@@ -132,7 +135,7 @@
 /* Modal de sélection */
 .modal-overlay {
   position: fixed;
-  top: 0;
+  top: 30px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -147,6 +150,7 @@
   background: var(--card-background, #ffffff);
   border-radius: var(--radius-md, 15px);
   width: 90%;
+
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
@@ -159,6 +163,22 @@
   align-items: center;
   padding: var(--spacing-md, 20px);
   border-bottom: 1px solid #eee;
+}
+
+
+.modal-headerr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md, 20px);
+  border-bottom: 1px solid #eee;
+}
+.manager {
+  margin-top: 10px;
+  color: var(--primary-color, #230046);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
 }
 
 .modal-header h3 {
@@ -255,6 +275,36 @@
 }
 
 .modal-actions {
+  .btn {
+  height: 40px;
+  width: 90px;
+  border-radius: 25px;
+  font-weight: 400;
+  transition: all var(--animation-duration, 0.3s) ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-submit {
+  background: #230046;
+  color: white;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md, 0 4px 15px rgba(35, 0, 70, 0.1));
+  }
+}
+
+.btn-cancel {
+  background: #dbdbdb;
+  color: var(--text-secondary, #494848);
+
+  &:hover {
+    background: #eee;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+}
   display: flex;
   justify-content: flex-end;
   gap: 15px;
