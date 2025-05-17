@@ -53,7 +53,9 @@ $transition: all 0.3s ease;
     border-radius: 2px;
   }
 }
-
+.tab-content{
+  box-shadow:0 4px 20px rgba(0, 0, 0, 0.08); ;
+}
 // Tabs
 .tabs-container {
   display: flex;
@@ -61,6 +63,7 @@ $transition: all 0.3s ease;
   margin-bottom: 2rem;
   border-bottom: 2px solid #e0e0e0;
   padding-bottom: 0.5rem;
+  border-radius: 15px;
 }
 
 .tab-button {
@@ -98,7 +101,6 @@ $transition: all 0.3s ease;
   padding: 20px;
   background: white;
   border-radius: $border-radius;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .password-form {
@@ -165,7 +167,7 @@ $transition: all 0.3s ease;
 }
 
 .content {
-  margin-top: -28px;
+  margin-top: -15px;
   flex-grow: 1;
   padding: 20px;
   overflow-y: auto;
@@ -810,7 +812,7 @@ h4 {
   position: fixed;
   top: 70px;
   bottom: 0;
-  left: 250px;
+  left: 240px;
   right: 0;
   width: calc(100% - 250px);
   overflow-y: auto;
@@ -819,8 +821,8 @@ h4 {
   transition: all 0.3s ease-in-out;
 
   &.sidebar-collapsed {
-    left: 100px;
-    width: calc(100% - 100px);
+    left: 70px;
+    width: calc(100% - 60px);
   }
 
   &::-webkit-scrollbar {

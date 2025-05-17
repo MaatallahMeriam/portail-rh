@@ -20,7 +20,7 @@ import Swal from 'sweetalert2';
     FormsModule,
     SidebarComponent,
     HeaderComponent,
-    RightSidebarComponent,
+
     NgxDatatableModule,
     MatButtonModule,
     MatIconModule,

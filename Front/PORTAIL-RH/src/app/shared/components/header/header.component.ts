@@ -266,6 +266,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
       case 'MANAGER':
         this.router.navigate(['/details-eq']);
         break;
+
+       case 'ADMIN':
+        this.router.navigate(['/eq-admin']);
+        break;
       default:
         this.router.navigate(['/login']);
     }

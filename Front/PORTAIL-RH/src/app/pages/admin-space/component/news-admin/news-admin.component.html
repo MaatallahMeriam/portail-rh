@@ -4,19 +4,24 @@
   <div class="main-content">
     <app-sidebar-admin (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar-admin>
 
+  
     <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
       <div class="container">
-        <h2>Affichage :</h2>
+        <div class="page-header">
+          <h2 class="section-title">Actualités</h2>
+          <p class="section-description">Gérez les actualités de l'entreprise</p>
+        </div>
 
-        <div class="slider-container">
+        <!-- Carousel Section -->
+        <div class="carousel-section" @fadeIn>
           <owl-carousel-o [options]="customOptions">
             <ng-container *ngFor="let news of News">
               <ng-template carouselSlide>
                 <div class="slide-content">
-                  <img [src]="getImageUrl(news.imageUrl)" alt="News image" class="slide-img" />
-                  <div class="image-description">
-                    <h4 class="title">{{ news.titre }}</h4>
-                    <p class="description">{{ news.description }}</p>
+                  <div class="slide-image" [style.backgroundImage]="'url(' + getImageUrl(news.imageUrl) + ')'"></div>
+                  <div class="slide-overlay">
+                    <h4 class="slide-title">{{ news.titre }}</h4>
+                    <p class="slide-description">{{ news.description }}</p>
                   </div>
                 </div>
               </ng-template>
@@ -24,119 +29,161 @@
           </owl-carousel-o>
         </div>
 
-        <div class="history">
-          <h3>Liste des News :</h3>
-          <div class="history-header">
-            <input
-              class="search"
-              type="text"
-              placeholder="Rechercher une news..."
-              [(ngModel)]="searchText"
-              (ngModelChange)="filterNews()"
-            />
-            <button class="add-button" (click)="toggleForm()">+</button>
+        <!-- News List Section -->
+        <div class="news-section" @fadeIn>
+          <div class="section-header">
+            <h3 class="subsection-title">
+              <mat-icon>article</mat-icon>
+              Liste des actualités
+            </h3>
+            <div class="header-actions">
+              <div class="search-container">
+                <mat-icon>search</mat-icon>
+                <input
+                  type="text"
+                  [(ngModel)]="searchText"
+                  (ngModelChange)="filterNews()"
+                  placeholder="Rechercher une actualité..."
+                  class="search-input"
+                />
+              </div>
+              <button class="add-button" (click)="toggleForm()" matRipple>
+                <mat-icon>add</mat-icon>
+                <span>Nouvelle actualité</span>
+              </button>
+            </div>
           </div>
 
-          <div class="history-table-container">
+          <div class="table-container">
             <ngx-datatable
               class="material"
               [rows]="filteredNews"
               [columns]="columns"
               [columnMode]="'force'"
-              [headerHeight]="40"
-              [footerHeight]="40"
+              [headerHeight]="50"
+              [footerHeight]="50"
               [rowHeight]="'auto'"
-              [scrollbarV]="false"
               [scrollbarH]="true"
-              [sorts]="[{ prop: 'id', dir: 'asc' }]"
+              [sorts]="[{ prop: 'createdAt', dir: 'desc' }]"
               [messages]="{
-                emptyMessage: 'Aucune news trouvée',
-                totalMessage: 'news au total'
+                emptyMessage: 'Aucune actualité trouvée',
+                totalMessage: 'actualités au total'
               }"
             >
-              <!-- Définir explicitement les colonnes -->
-              <ngx-datatable-column prop="titre" name="Titre" [width]="200"></ngx-datatable-column>
-              <ngx-datatable-column prop="description" name="Description" [width]="300"></ngx-datatable-column>
-              <ngx-datatable-column prop="createdAt" name="Date Création" [width]="150"></ngx-datatable-column>
-              <!-- Colonne pour les actions -->
-              <ngx-datatable-column name="Actions" [sortable]="false" [width]="70">
+              <ngx-datatable-column name="Titre" prop="titre" [width]="150">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <div class="cell-content">
+                    <span class="news-title">{{ row.titre }}</span>
+                  </div>
+                </ng-template>
+              </ngx-datatable-column>
+
+              <ngx-datatable-column name="Description" prop="description" [width]="300">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <div class="cell-content">
+                    <p class="news-description">{{ row.description }}</p>
+                  </div>
+                </ng-template>
+              </ngx-datatable-column>
+
+              <ngx-datatable-column name="Date" prop="createdAt" [width]="150">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <div class="cell-content">
+                    <span class="news-date">{{ row.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                </ng-template>
+              </ngx-datatable-column>
+
+              <ngx-datatable-column name="Actions" [sortable]="false" [width]="20">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   <div class="actions-cell">
-                    <button mat-icon-button (click)="toggleMenu(row); $event.stopPropagation()" class="menu-button">
+                    <button mat-icon-button [matMenuTriggerFor]="menu" class="action-button">
                       <mat-icon>more_vert</mat-icon>
                     </button>
-                    <div class="dropdown-menu" *ngIf="selectedNews === row">
-                      <button mat-button (click)="supprimer(row)">
-                        <mat-icon>delete</mat-icon>
-                        Supprimer
-                      </button>
-                      <button mat-button (click)="modifier(row)">
+                    <mat-menu #menu="matMenu" class="actions-menu">
+                      <button mat-menu-item (click)="modifier(row)">
                         <mat-icon>edit</mat-icon>
-                        Modifier
+                        <span>Modifier</span>
                       </button>
-                    </div>
+                      <button mat-menu-item (click)="supprimer(row)">
+                        <mat-icon>delete</mat-icon>
+                        <span>Supprimer</span>
+                      </button>
+                    </mat-menu>
                   </div>
                 </ng-template>
               </ngx-datatable-column>
             </ngx-datatable>
-
-            <!-- Formulaire pour ajouter/modifier une news -->
-            <div *ngIf="showForm" class="form-container">
-              <h2>{{ isEditing ? 'Modifier News' : 'Post News' }}</h2>
-              <form (ngSubmit)="submitForm()">
-                <div class="form-group">
-                  <label for="titre">Titre :</label>
-                  <input
-                    id="titre"
-                    type="text"
-                    [(ngModel)]="titre"
-                    name="titre"
-                    placeholder="Titre"
-                    required
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label for="description">Description :</label>
-                  <textarea
-                    id="description"
-                    [(ngModel)]="description"
-                    name="description"
-                    placeholder="Description"
-                    required
-                  ></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label for="doc-file">
-                    {{ isEditing ? 'Modifier l\'image (optionnel) :' : 'Joindre une image :' }}
-                  </label>
-                  <input
-                    id="doc-file"
-                    type="file"
-                    (change)="onFileChange($event)"
-                    accept="image/*"
-                    [required]="!isEditing"
-                  />
-                </div>
-
-                <div class="form-actions">
-                  <button type="submit" class="submit-button" mat-raised-button color="primary">
-                    {{ isEditing ? 'Modifier' : 'Soumettre' }}
-                  </button>
-                  <button type="button" class="cancel-button" mat-raised-button color="warn"
-                    (click)="toggleForm()"
-                  >
-                    Annuler
-                  </button>
-                </div>
-              </form>
-            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <app-right-sidebar></app-right-sidebar>
+  <!-- News Form Dialog -->
+  <div class="dialog-overlay" *ngIf="showForm" @fadeIn>
+    <div class="dialog-content" @slideIn>
+      <div class="dialog-header">
+        <h3>{{ isEditing ? 'Modifier l\'actualité' : 'Nouvelle actualité' }}</h3>
+        <button class="close-button" (click)="toggleForm()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <form class="news-form" (ngSubmit)="submitForm()">
+        <div class="form-field">
+          <label for="titre">Titre</label>
+          <input
+            id="titre"
+            type="text"
+            [(ngModel)]="titre"
+            name="titre"
+            placeholder="Saisissez le titre"
+            required
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            [(ngModel)]="description"
+            name="description"
+            placeholder="Saisissez la description"
+            required
+            rows="4"
+          ></textarea>
+        </div>
+
+        <div class="form-field">
+          <label for="image">
+            {{ isEditing ? 'Modifier l\'image (optionnel)' : 'Image' }}
+          </label>
+          <div class="file-upload">
+            <input
+              id="image"
+              type="file"
+              (change)="onFileChange($event)"
+              accept="image/*"
+              [required]="!isEditing"
+              class="file-input"
+            />
+            <div class="upload-placeholder">
+              <mat-icon>cloud_upload</mat-icon>
+              <span>{{ imageFile ? imageFile.name : 'Choisir une image' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="cancel-button" (click)="toggleForm()">
+            Annuler
+          </button>
+          <button type="submit" class="submit-button">
+            {{ isEditing ? 'Enregistrer' : 'Publier' }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

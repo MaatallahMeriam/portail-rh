@@ -15,9 +15,7 @@ import { UserService, UserDTO } from "../../../../../../services/users.service";
           <span class="total-count">Total: {{ getTotalEmployees() }}</span>
         </div>
         <div class="header-actions">
-          <button class="refresh-btn" (click)="loadUserAges()">
-            <i class="fas fa-sync-alt"></i>
-          </button>
+          
         </div>
       </div>
       <div class="chart-container">

@@ -18,6 +18,14 @@ $transition: all 0.3s ease;
   background: $background-color;
   font-family: 'Roboto', sans-serif;
 }
+.team-content{
+  background-color: white;
+  padding: 30px;
+  border-radius: 30px;
+  margin-top: -10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);;
+}
+
 
 .main-content {
   display: flex;
@@ -62,6 +70,7 @@ $transition: all 0.3s ease;
 /* Team Header */
 .team-header {
   display: flex;
+  margin-top: -5px;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 40px;
@@ -90,9 +99,9 @@ $transition: all 0.3s ease;
   }
   
   .team-description {
-    color: $text-secondary;
+    color: #230046;
     margin: 0;
-    font-size: 16px;
+    font-size: 14px;
   }
 }
 
@@ -182,7 +191,7 @@ $transition: all 0.3s ease;
 /* Cards */
 .manager-card{
   background: $card-background;
-  border-radius: $border-radius;
+  border-radius: 18px;
   padding: 24px;
   display: flex;
   gap: 24px;
@@ -202,6 +211,7 @@ $transition: all 0.3s ease;
   padding: 24px;
   display: flex;
   gap: 24px;
+  
   box-shadow: $box-shadow;
   transition: $transition;
   margin-bottom: 24px;

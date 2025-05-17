@@ -18,7 +18,6 @@ import Swal from 'sweetalert2';
     FormsModule,
     SidebarAdminComponent,
     HeaderComponent,
-    RightSidebarComponent,
     NgxDatatableModule,
     MatButtonModule,
     MatIconModule,
@@ -33,13 +32,14 @@ export class DocAdminComponent {
   showForm = false;
   isEditing = false;
   editingDocument: DocumentDTO | null = null;
+
   docName: string = '';
   docType: string = '';
   docDescription: string = '';
   docCategorie: string = '';
   docFile: File | null = null;
   searchText: string = '';
-  isSidebarCollapsed: boolean = false;
+  isSidebarCollapsed = false;
 
   columns = [
     { prop: 'id', name: 'ID', width: 50 },
@@ -50,10 +50,6 @@ export class DocAdminComponent {
 
   constructor(private documentService: DocumentService) {
     this.loadDocuments();
-  }
-
-  onSidebarStateChange(isCollapsed: boolean): void {
-    this.isSidebarCollapsed = isCollapsed;
   }
 
   loadDocuments() {
@@ -217,5 +213,9 @@ export class DocAdminComponent {
         });
       },
     });
+  }
+
+  onSidebarStateChange(isCollapsed: boolean): void {
+    this.isSidebarCollapsed = isCollapsed;
   }
 }

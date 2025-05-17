@@ -1,159 +1,207 @@
+// Variables
+$primary-color: #230046;
+$accent-color: #FF6B00;
+$secondary-accent: #ff00ea;
+$text-color: #333333;
+$light-bg: #f8f9fa;
+$white: #ffffff;
+$box-shadow: 0 6px 20px rgba(35, 0, 70, 0.1);
+$transition-standard: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$spacing-unit: 8px;
+$gradient-primary: linear-gradient(135deg, $primary-color, $accent-color, $secondary-accent);
+
 .collab-home {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: $light-bg;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.feed {
+  position: fixed;
+  top: 60px;
+  left: 240px;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  padding: $spacing-unit * 4;
+  transition: $transition-standard;
+
+  &.sidebar-collapsed {
+    left: 100px;
   }
-  
-  .main-content {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-    padding: 0;
-  }
-  
-  .app-sidebar-admin {
-    position: fixed;
-    left: 0;
-    top: 70px;
-    bottom: 0;
-    width: 250px;
-    background: #f4f4f4;
-    z-index: 100;
-  }
-  
-  .feed {
-    position: fixed;
-    top: 70px;
-    bottom: 0;
-    left: 250px;
-    width: calc(100% - 250px);
-    overflow-y: auto;
-    background: #fff;
-    transition: all 0.3s ease-in-out;
-  
-    &.sidebar-collapsed {
-      left: 70px;
-      width: calc(100% - 70px);
-    }
-  }
-  
-  .feed::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .feed::-webkit-scrollbar-thumb {
-    background-color: #aaa;
-    border-radius: 5px;
-  }
-  
-  .feed::-webkit-scrollbar-track {
+
+  &::-webkit-scrollbar {
+    width: 8px;
     background: transparent;
   }
-  
-  @media screen and (max-width: 1473px) {
-    .app-sidebar-admin {
-      width: 220px;
-    }
-  
-    .feed {
-      left: 220px;
-      width: calc(100% - 220px);
-  
-      &.sidebar-collapsed {
-        left: 70px;
-        width: calc(100% - 70px);
-      }
+
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 4px;
+
+    &:hover {
+    background: transparent;
     }
   }
-  
-  @media screen and (max-width: 1024px) {
-    .app-sidebar-admin {
-      width: 200px;
-    }
-  
-    .feed {
-      left: 200px;
-      width: calc(100% - 200px);
-  
-      &.sidebar-collapsed {
-        left: 70px;
-        width: calc(100% - 70px);
-      }
-    }
-  }
-  
-  @media screen and (max-width: 768px) and (min-width: 481px) {
-    .app-sidebar-admin {
-      display: none;
-    }
-  
-    .feed {
+}
+
+.dashboard-header {
+  margin-bottom: $spacing-unit * 4;
+
+  h1 {
+    margin-top: -35x;
+    color: $primary-color;
+    font-size: 25px;
+    margin: 0;
+    position: relative;
+    padding-bottom: 10px;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
       left: 0;
-      width: 100%;
-  
-      &.sidebar-collapsed {
-        left: 70px;
-        width: calc(100% - 70px);
-      }
+      width: 110px;
+      height: 6px;
+      background: $gradient-primary;
+      border-radius: 3px;
+      animation: gradientShift 6s infinite alternate;
     }
   }
-  
-  @media screen and (max-width: 480px) {
-    .app-sidebar-admin {
-      display: none;
-    }
-  
-    .feed {
-      left: 0;
-      width: 100%;
-  
-      &.sidebar-collapsed {
-        left: 70px;
-        width: calc(100% - 70px);
-      }
+
+  .subtitle {
+    color: rgba($text-color, 0.7);
+    font-size: 14px;
+    margin-top: $spacing-unit;
+  }
+}
+
+.dashboard-container {
+  margin-top: -15px;
+  display: grid;
+  gap: $spacing-unit * 4;
+  max-width: 1600px;
+}
+
+.dashboard-row {
+  display: grid;
+  gap: $spacing-unit * 3;
+
+  &:first-child {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  &:not(:first-child) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  &.metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.dashboard-widget {
+  background: $white;
+  border-radius: 16px;
+  box-shadow: $box-shadow;
+  transition: $transition-standard;
+  overflow: hidden;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: $gradient-primary;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(35, 0, 70, 0.15);
+
+    &::before {
+      opacity: 1;
     }
   }
-  
-  .dashboard-container {
+
+  &.wide {
+    grid-column: auto; // Override the wide class to allow two columns
+  }
+
+  &.metric-card {
+    padding: $spacing-unit * 3;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
-  
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+// Responsive Styles
+@media screen and (max-width: 1400px) {
+  .dashboard-row.metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .feed {
+    left: 200px;
+    padding: $spacing-unit * 3;
+  }
+
   .dashboard-row {
-    display: flex;
-    gap: 20px;
-    width: 100%;
-  }
-  
-  .dashboard-row2 {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    display: flex;
-    gap: 20px;
-    width: 100%;
-  }
-  
-  .dashboard-widget {
-    flex: 1;
-    min-width: 0;
-  }
-  
-  .wide {
-    flex: 2;
-  }
-  
-  @media (max-width: 768px) {
-    .dashboard-row {
-      flex-direction: column;
-    }
-  
-    .dashboard-row2 {
-      flex-direction: column;
+    grid-template-columns: 1fr;
+
+    &:first-child {
+      grid-template-columns: 1fr;
     }
   }
+
+  .dashboard-widget.wide {
+    grid-column: auto;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .feed {
+    left: 0;
+    padding: $spacing-unit * 2;
+  }
+
+  .dashboard-header h1 {
+    font-size: 28px;
+  }
+
+  .dashboard-row.metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .feed {
+    padding: $spacing-unit;
+  }
+
+  .dashboard-header h1 {
+    font-size: 24px;
+  }
+}

@@ -114,6 +114,7 @@ $transition: all 0.3s ease;
   background: white;
   transition: all 0.3s ease;
   cursor: pointer;
+  max-width: 200px;
 
   &:focus {
     border-color:#abaaaa;

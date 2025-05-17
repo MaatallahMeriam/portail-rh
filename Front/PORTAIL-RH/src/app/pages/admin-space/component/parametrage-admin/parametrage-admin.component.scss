@@ -1,287 +1,370 @@
-/* Styles existants pour header, sidebar et right-sidebar */
+// Variables
+$primary-color: #230046;
+$secondary-color: #c1006a;
+$accent-color: #FF6B00;
+$background-color: #f8f9fa;
+$card-background: #ffffff;
+$border-radius: 16px;
+$transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$box-shadow: 0 8px 24px rgba(35, 0, 70, 0.12);
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@mixin card-hover {
+  transform: translateY(-5px);
+  box-shadow: $box-shadow;
+}
+
+// Base Layout
 .collab-home {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: linear-gradient(135deg, rgba($primary-color, 0.05), rgba($secondary-color, 0.05));
 }
 
 .main-content {
-    display: flex;
-    flex: 1;
-    overflow: hidden; 
-    background-color: #f8f9fa;
-}
-
-.app-sidebar, .app-right-sidebar {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  
+  &::before {
+    content: '';
     position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     bottom: 0;
-    z-index: 100; 
+    background: 
+      radial-gradient(circle at 10% 20%, rgba($primary-color, 0.03) 0%, transparent 20%),
+      radial-gradient(circle at 90% 80%, rgba($secondary-color, 0.03) 0%, transparent 20%);
+    pointer-events: none;
+  }
+}
+
+// Sidebar Styles
+.app-sidebar, .app-right-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  @include glass-effect;
 }
 
 .app-sidebar {
-    left: 0;
-    width: 250px; 
-    background: #f4f4f4;
+  left: 0;
+  width: 250px;
 }
 
 .app-right-sidebar {
-    right: 0;
-    width: 250px; 
-    background: #f4f4f4;
+  right: 0;
+  width: 250px;
 }
 
-/* Styles améliorés pour la zone feed */
+// Feed Container
 .feed {
-    position: fixed; 
-    top: 70px; 
-    left: 350px; 
-    right: 250px; 
-    bottom: 0; 
-    overflow-y: auto; 
-    max-width: 1200px;
-    padding: 20px 40px;
-    margin: 0 auto;
-}
-.feed::-webkit-scrollbar {
-    display: none;
-}
-
-.feed::-webkit-scrollbar-thumb {
-    background-color: transparent;
-    border-radius: 5px;
-}
-
-.feed::-webkit-scrollbar-track {
-    background: transparent;
-}
-/* Style amélioré pour le titre */
-h2 { 
-    color: #230046;
-    font-size: 32px;
-    font-weight: 600;
-    margin: 30px 0;
-    position: relative;
-    padding-bottom: 15px;
-}
-
-h2::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 80px;
-    height: 4px;
-    background: linear-gradient(135deg, #230046, #FF6B00,#ff00ea);
-    border-radius: 2px;
-}
-
-/* Style amélioré pour la grille de paramétrage */
-.parametrage-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    padding: 30px 0;
-    margin-top: 20px;
-    justify-items: start;
-    
-}
-
-/* Style amélioré pour les cards */
-.option-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 30px;
-    height: 200px; /* Fixed height */
-    width: 100%; /* Ensures card takes full grid cell width */
-    max-width: 280px; /* Matches grid’s minimum column width for consistency */
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(35, 0, 70, 0.1);
-    box-sizing: border-box;
-}
-
-.option-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #230046, #FF6B00);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.option-card:hover::before {
-    opacity: 1;
-}
-
-.option-card img {
-    width: 70px;
-    height: 70px;
-    margin-bottom: 20px;
-    transition: transform 0.3s ease;
-}
-
-.option-card span {
-    color: #230046;
-    font-weight: 600;
-    font-size: 18px;
-    text-align: center;
-    margin-top: 15px;
-}
-
-.option-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(35, 0, 70, 0.1);
-}
-
-.option-card:hover img {
-    transform: scale(1.1);
-}
-
-/* Scrollbar personnalisée */
-.feed::-webkit-scrollbar {
+  position: fixed;
+  top: 70px;
+  left: 240px;
+  right: 250px;
+  bottom: 0;
+  background: white;
+  max-width: 1200px;
+  padding: 8px * 3;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  
+  &.sidebar-collapsed {
+    left: 70px;
+    right: 250px;
+    max-width: calc(100% - 350px);
+  }
+  
+  &::-webkit-scrollbar {
     width: 8px;
-}
-
-.feed::-webkit-scrollbar-thumb {
-    background-color: rgba(35, 0, 70, 0.2);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
     border-radius: 4px;
-}
-
-.feed::-webkit-scrollbar-track {
-    background: transparent;
-}
-@media (max-width: 1139px) {
-    .parametrage-container {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @media (max-width: 768px) {
-    .parametrage-container {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @media (max-width: 892px) {
-    .parametrage-container {
-      grid-template-columns: repeat(1, 1fr);
-    }
-  }
-  @media (max-width: 480px) {
-    .parametrage-container {
-      grid-template-columns: repeat(1, 1fr);
+    
+    &:hover {
+      background-color: transparent;
     }
   }
   
-@media screen and (max-width: 1457px) {
-    .app-sidebar {
-        width: 200px; 
-    }
-
-    .app-right-sidebar {
-        display: none; 
-    }
-
-    .feed {
-        left: 250px; 
-        right: 300px; 
-        max-width: calc(100% - 150px);
-    }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }
 
-
-@media screen and (max-width: 1300px) {
-    .app-sidebar {
-        width: 200px; 
-    }
-
-    .app-right-sidebar {
-        display: none; 
-    }
-
-    .feed {
-        left: 250px; 
-        right: 300px; 
-        max-width: calc(100% - 150px);
-    }
+// Page Header
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba($primary-color, 0.1);
 }
 
-
-
-@media screen and (max-width: 1139px) {
-    .app-sidebar {
-        width: 200px; 
+.header-content {
+  h2 {
+    color: $primary-color;
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0 0 12px 0;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(135deg, $primary-color, $secondary-color, $accent-color);
+      border-radius: 2px;
     }
-
-    .app-right-sidebar {
-        display: none; 
-    }
-
-    .feed {
-        left: 250px; 
-        right: 300px; 
-        max-width: calc(100% - 150px);
-    }
+  }
+  
+  .header-description {
+    color: rgba($primary-color, 0.7);
+    font-size: 16px;
+    margin: 0;
+  }
 }
 
-
-
-
-@media screen and (max-width: 1024px) {
-    .app-sidebar {
-        width: 200px; 
-    }
-
-    .app-right-sidebar {
-        display: none; 
-    }
-
-    .feed {
-        left: 220px; 
-        right: 250px; 
-        max-width: calc(100% - 150px);
-    }
+.header-badge {
+  background:  $primary-color;
+  padding: 12px 20px;
+  border-radius: 24px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba($secondary-color, 0.2);
+  animation: float 3s ease-in-out infinite;
+  
+  .badge-icon {
+    font-size: 22px;
+  }
+  
+  .badge-text {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
 }
 
-
-
-
-@media screen and (max-width: 768px) {
-    .app-sidebar {
-        display: none; 
-    }
-
-    .app-right-sidebar {
-        width: 180px;
-    }
-
-    .feed {
-        left: 200px; 
-        right: 250px; 
-        max-width: calc(100% - 180px);
-    }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
+// Grid Container
+.parametrage-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 32px;
+  margin-top: -40px;
+  padding: 16px 0;
+}
 
-
-
-
-
-@media screen and (max-width: 480px) {
-    .app-right-sidebar {
-        display: none; 
+// Card Styles
+.option-card {
+  position: relative;
+  background: $card-background;
+  border-radius: $border-radius;
+  height: 250px;
+  width: 80%;
+  cursor: pointer;
+  margin-left: 50px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(35, 0, 70, 0.12);;
+  transition: $transition;
+  @include glass-effect;
+  
+  &:hover {
+    @include card-hover;
+    
+    .card-overlay {
+      opacity: 1;
+      transform: translateY(0);
     }
-
-    .feed {
-        right: 0; 
-        width: 100%; 
+    
+    .icon-wrapper {
+      transform: translateY(-5px);
+      
+      img {
+        transform: scale(1.1) rotate(5deg);
+      }
     }
+  }
+}
+
+.card-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.icon-wrapper {
+  @include flex-center;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+  background: rgba($primary-color, 0.05);
+  transition: $transition;
+  
+  img {
+    width: 48px;
+    height: 48px;
+    transition: $transition;
+  }
+}
+
+.card-label {
+  color: $primary-color;
+  font-weight: 600;
+  font-size: 20px;
+  margin: 0 0 12px 0;
+}
+
+.card-description {
+  color: rgba($primary-color, 0.7);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, $primary-color, $secondary-color,#FF6B00);
+  color: white;
+  padding: 10px 18px;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: $transition;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  .overlay-text {
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  
+  .overlay-icon {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+  }
+  
+  &:hover .overlay-icon {
+    transform: translateX(5px);
+  }
+}
+
+// Responsive Design
+@media (max-width: 1457px) {
+  .app-sidebar {
+    width: 200px;
+  }
+  
+  .app-right-sidebar {
+    display: none;
+  }
+  
+  .feed {
+    left: 250px;
+    right: 50px;
+    max-width: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .feed {
+    left: 220px;
+    padding: 32px;
+  }
+  
+  .parametrage-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .header-content h2 {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-sidebar {
+    display: none;
+  }
+  
+  .feed {
+    left: 0;
+    right: 0;
+    padding: 24px;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  
+  .header-badge {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .parametrage-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .option-card {
+    height: 220px;
+  }
+  
+  .header-content h2 {
+    font-size: 28px;
+  }
+  
+  .feed {
+    padding: 20px;
+  }
+  
+  .header-badge {
+    padding: 10px 16px;
+    
+    .badge-icon {
+      font-size: 18px;
+    }
+    
+    .badge-text {
+      font-size: 14px;
+    }
+  }
 }

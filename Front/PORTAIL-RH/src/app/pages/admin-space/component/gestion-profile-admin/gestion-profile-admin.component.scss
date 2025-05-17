@@ -1,319 +1,127 @@
+// Variables
 $primary-color: #230046;
-$pink-background: #35004F;
-$blue-background: #65538B;
-$gray-background: #5A0C35;
-$background-color: #F8F9FA;
+$secondary-color: #df017b;
+$accent-color: #F8B000;
+$text-color: #333333;
 $border-radius: 12px;
 $transition: all 0.3s ease;
-$success-color: #2E7D32;
-$warning-color: #ED6C02;
-$error-color: #D32F2F;
-.password-section {
-    max-width: 800px;
-    margin-left: 150px;
-    padding: 20px;
-    background: white;
-    border-radius: $border-radius;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+// Mixins
+@mixin card-shadow {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.password-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    max-width: 400px;
-}
-
-.form-field {
-    display: flex;
-    flex-direction: column;
-
-    label {
-        font-size: 16px;
-        color: $primary-color;
-        margin-bottom: 5px;
-    }
-
-    input {
-        padding: 12px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 16px;
-
-        &:focus {
-            border-color: $primary-color;
-            outline: none;
-        }
-    }
-}
-
-.form-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-
-    button {
-        padding: 10px 20px;
-        border-radius: 25px;
-        border: none;
-        cursor: pointer;
-        font-weight: 500;
-        transition: $transition;
-
-        &.save-button {
-            background: $primary-color;
-            color: white;
-
-            &:hover {
-                background: darken($primary-color, 10%);
-            }
-        }
-
-        &.cancel-button {
-            background: #e0e0e0;
-            color: #333;
-
-            &:hover {
-                background: #d0d0d0;
-            }
-        }
-    }
-}
-.content {
-  flex-grow: 1;
-  padding: 20px;
-  overflow-y: auto;
-  background-color: white;
-  position: relative;
-}
-.delete-photo-button {
-  margin-left: 15px;
-    margin-top: 10px;
-    padding: 6px 10px;
-    background-color: #F8B000;
-    color: white;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: $transition;
-
-    &:hover {
-        background-color: darken(#F8B000, 10%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(211, 47, 47, 0.2);
-    }
-}
-h2 {
-  margin-left: 30px;
-  color: $primary-color;
-  font-size: 29px;
-  font-weight: 600;
-  margin-bottom: 30px;
-  position: relative;
-  padding-bottom: 15px;
-}
-
-h2::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, $primary-color, #FF6B00, #f10687);
-  border-radius: 2px;
-}
-
-h3 {
-  color: $primary-color;
-  margin-left: 30px;
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
-h4 {
-  color: $primary-color;
-  margin-bottom: 5px;
-  font-size: 18px;
-}
-
-/* Tabs Styles */
-.tabs {
+@mixin flex-center {
   display: flex;
-  gap: 10px;
-  margin-left: 30px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #e0e0e0;
+  align-items: center;
+  justify-content: center;
+}
 
-  .tab-button {
-    padding: 10px 20px;
-    font-weight: 400;
-    background: none;
-    border: none;
-    font-size: 17px;
-    color: #df017b;
-    cursor: pointer;
-    position: relative;
-    transition: $transition;
+@mixin button-base {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: $transition;
+  font-weight: 500;
+  @include flex-center;
+  gap: 0.5rem;
 
-    &.active {
-      color: #d10475;
-      font-weight: 600;
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 100%;
-        height: 3px;
-        background: #b20163;
-      }
-    }
-
-    &:hover {
-      color: darken(#b20163, 10%);
-    }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
   }
 }
 
-.tab-content {
-  padding: 0 20px;
+.page-title {
+  color: $primary-color;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  position: relative;
+  padding-bottom: 1rem;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, $primary-color, $accent-color, $secondary-color);
+    border-radius: 2px;
+  }
 }
 
-/* Profile Card (Informations Personnelles) */
-.profile-card {
+// Tabs
+.tabs-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+}
+
+.tab-button {
+  @include button-base;
+  background: none;
+  color: $secondary-color;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  position: relative;
+
+  &.active {
+    color: darken($secondary-color, 10%);
+    font-weight: 600;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -0.6rem;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: $secondary-color;
+      border-radius: 3px 3px 0 0;
+    }
+  }
+
+  mat-icon {
+    margin-right: 0.5rem;
+  }
+}
+
+.password-section {
   max-width: 800px;
   margin-left: 150px;
   padding: 20px;
   background: white;
   border-radius: $border-radius;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  display: flex;
-  gap: 30px;
 }
 
-.profile-picture-container {
-  position: relative;
-  width: 115px;
-  height: 115px;
-}
-
-.profile-picture {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #F8B000;
-}
-
-.camera-overlay {
-  position: absolute;
-  top: -3px;
-  left: -3px;
-  width: 120px;
-  height: 120px;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: $transition;
-  cursor: pointer;
-
-  &:hover {
-    opacity: 1;
-  }
-
-  .camera-icon {
-    color: white;
-    font-size: 24px;
-  }
-}
-
-.user-info {
-  flex: 1;
+.password-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  max-width: 400px;
 }
 
-.info-row {
+.form-field {
   display: flex;
-  gap: 20px;
-}
-
-.info-field {
-  flex: 1;
+  flex-direction: column;
 
   label {
-    display: block;
     font-size: 16px;
     color: $primary-color;
     margin-bottom: 5px;
   }
 
-  .input-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background: #f5f5f5;
-
-    span {
-      font-size: 14px;
-      color: #333;
-    }
-
-    .edit-icon {
-      color: $primary-color;
-      cursor: pointer;
-      transition: $transition;
-
-      &:hover {
-        color: darken($primary-color, 10%);
-        transform: scale(1.1);
-      }
-    }
-  }
-}
-
-/* Edit Modal */
-.edit-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
-  width: 90%;
-  max-width: 400px;
-
-  h3 {
-    color: $primary-color;
-    margin-bottom: 20px;
-  }
-
   input {
-    width: 100%;
     padding: 12px;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
-    margin-bottom: 20px;
     font-size: 16px;
 
     &:focus {
@@ -323,7 +131,7 @@ h4 {
   }
 }
 
-.modal-actions {
+.form-actions {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
@@ -356,159 +164,269 @@ h4 {
   }
 }
 
-/* Save Animation */
-.save-animation {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  color: $success-color;
-  font-size: 14px;
-  font-weight: 500;
-  animation: fadeOut 3s forwards;
-
-  .spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid $success-color;
-    border-top: 2px solid transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  .done-icon {
-    font-size: 16px;
-    color: $success-color;
-    animation: showDone 1s forwards;
-    animation-delay: 1s;
-    opacity: 0;
-  }
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes fadeOut {
-  0% {
-    opacity: 1;
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    display: none;
-  }
-}
-
-@keyframes showDone {
-  0% {
-    opacity: 0;
-    transform: scale(0);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.dossier-section {
-  max-width: 900px;
-  margin-left: 100px;
+.content {
+  margin-top: -28px;
+  flex-grow: 1;
   padding: 20px;
+  overflow-y: auto;
+  background-color: white;
+  position: relative;
+}
+
+h3 {
+  color: $primary-color;
+  margin-left: 30px;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+h4 {
+  color: $primary-color;
+  margin-bottom: 5px;
+  font-size: 18px;
+}
+
+// Profile Section
+.profile-card {
   background: white;
   border-radius: $border-radius;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.files-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 20px;
-}
-
-.file-card {
-  background: white;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 2rem;
+  @include card-shadow;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  position: relative;
+  gap: 2rem;
+  align-items: flex-start;
 
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  .profile-picture-section {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  .separator-line {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 1rem 0;
+  }
+
+  .user-info-section {
+    flex: 1;
   }
 }
 
-.file-card .actions {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-.file-card .menu-button {
-  font-size: 20px;
-  padding: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  width: 30px;
-  height: 30px;
-  color: #666;
-}
-
-.file-card .dropdown-menu {
-  position: absolute;
-  top: 30px;
-  right: 0;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+.profile-picture-wrapper {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-picture-container {
+  position: relative;
   width: 120px;
-  z-index: 100;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid $accent-color;
+}
+
+.profile-picture {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  @include flex-center;
+  opacity: 0;
+  transition: $transition;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  .camera-icon {
+    color: white;
+    font-size: 24px;
+  }
+}
+
+.delete-photo-button {
+  @include button-base;
+  background-color: $accent-color;
+  color: white;
+
+  &:hover {
+    background-color: darken($accent-color, 10%);
+    transform: translateY(-2px);
+  }
+}
+
+// User Info Grid
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.info-field {
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    display: block;
+    color: $primary-color;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
 
   button {
-    background: none;
+    height: 30px;
+    width: 100px;
+    border-radius: 15px;
     border: none;
-    padding: 8px 10px;
-    width: 100%;
-    text-align: left;
     cursor: pointer;
+    font-weight: 400;
+    transition: $transition;
 
-    &:hover {
-      background: #e5dfe0;
+    &.save-button {
+      background: $primary-color;
+      color: white;
+
+      &:hover {
+        background: darken($primary-color, 10%);
+      }
+    }
+
+    &.cancel-button {
+      background: #e0e0e0;
+      color: #333;
+
+      &:hover {
+        background: #d0d0d0;
+      }
     }
   }
 }
 
-.file-icon-container {
+.input-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
   background: #f5f5f5;
-  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: $transition;
+
+  &:hover {
+    border-color: $primary-color;
+  }
+
+  span {
+    color: $text-color;
+  }
+}
+
+.edit-button {
+  @include button-base;
+  background: none;
+  color: $primary-color;
+  padding: 0.25rem;
+
+  &:hover {
+    color: $secondary-color;
+    transform: scale(1.1);
+  }
+}
+
+// File Cards
+.dossier-section {
+  padding: 2rem;
+}
+
+.files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.file-card {
+  background: white;
+  border-radius: $border-radius;
+  padding: 1.5rem;
+  @include card-shadow;
+  position: relative;
+  transition: $transition;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+.file-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.file-icon-container {
+  @include flex-center;
+  width: 50px;
+  height: 50px;
+  background: #f5f5f5;
   border-radius: 50%;
-  margin-bottom: 10px;
 
   .file-icon {
-    width: 60px;
-    height: 60px;
+    color: $primary-color;
+    font-size: 24px;
   }
+}
+
+.action-icons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-icon,
+.delete-icon {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  transition: $transition;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #666;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.edit-icon:hover mat-icon {
+  color: $primary-color;
+}
+
+.delete-icon:hover mat-icon {
+  color: #dc3545;
 }
 
 .attach-form {
@@ -517,60 +435,124 @@ h4 {
   left: 50%;
   transform: translate(-50%, -50%);
   background: white;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 1.5rem;
+  border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 200;
   text-align: center;
+  width: 280px;
+  max-width: 90%;
 
   h4 {
     color: $primary-color;
-    margin-bottom: 15px;
-    font-size: 18px;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
   }
 
-  input[type="file"] {
-    display: block;
-    margin: 0 auto 15px;
-    padding: 5px;
-    border-radius: 5px;
+  .file-upload-container {
+    margin-bottom: 1rem;
+  }
+
+  .file-upload-button {
+    @include button-base;
+    background: #f5f5f5;
+    color: $primary-color;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
+    transition: $transition;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .file-input-hidden {
+    display: none;
   }
 
   .form-buttons {
     display: flex;
-    gap: 10px;
+    gap: 0.5rem;
     justify-content: center;
   }
 
+  .submit-button,
+  .cancel-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-width: 90px;
+    transition: $transition;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
   .submit-button {
-    padding: 8px 16px;
     background-color: $primary-color;
     color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.2s;
 
     &:hover {
       background-color: darken($primary-color, 10%);
       transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(35, 0, 70, 0.2);
+      box-shadow: 0 2px 8px rgba(35, 0, 70, 0.2);
     }
   }
 
   .cancel-button {
-    padding: 8px 16px;
-    background-color: #ccc;
-    color: #303030;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+    background-color: #e0e0e0;
+    color: $text-color;
 
     &:hover {
-      background-color: #aaa;
+      background-color: darken(#e0e0e0, 10%);
       transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(35, 0, 70, 0.2);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  @media (max-width: 480px) {
+    width: 240px;
+    padding: 1rem;
+
+    h4 {
+      font-size: 1rem;
+    }
+
+    .file-upload-button {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+    }
+
+    .submit-button,
+    .cancel-button {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      min-width: 80px;
+
+      mat-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+      }
     }
   }
 }
@@ -580,91 +562,221 @@ h4 {
 
   h4 {
     color: $primary-color;
-    margin-bottom: 5px;
-    font-size: 18px;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
   }
 
   .file-description {
     color: #666;
-    font-size: 14px;
-    margin-bottom: 15px;
+    margin-bottom: 1rem;
   }
 }
 
 .download-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background-color: $primary-color;
+  @include button-base;
+  background: $primary-color;
   color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  width: 100%;
 
   &:hover {
-    background-color: darken($primary-color, 10%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(35, 0, 70, 0.2);
-  }
-
-  .download-icon {
-    width: 20px;
-    height: 20px;
-    filter: brightness(0) invert(1);
-  }
-
-  span {
-    font-size: 14px;
+    background: darken($primary-color, 10%);
   }
 }
 
-/* History Section */
-.history-section {
-  max-width: 800px;
-  margin-left: 150px;
-  padding: 20px;
+// Password Section
+.password-card {
+  max-width: 500px;
+  margin: 0 auto;
   background: white;
   border-radius: $border-radius;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  @include card-shadow;
 }
 
-.history-table-container {
-  max-height: 400px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .form-field {
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: $primary-color;
+      margin-bottom: 0.5rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      transition: $transition;
+
+      &:focus {
+        border-color: $primary-color;
+        outline: none;
+      }
+    }
+  }
 }
 
-.history-table {
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+
+  .save-button {
+    @include button-base;
+    background: $primary-color;
+    color: white;
+
+    &:hover {
+      background: darken($primary-color, 10%);
+    }
+  }
+
+  .cancel-button {
+    @include button-base;
+    background: #e0e0e0;
+    color: $text-color;
+
+    &:hover {
+      background: darken(#e0e0e0, 10%);
+    }
+  }
+}
+
+// Modal
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  @include flex-center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: $border-radius;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  @include card-shadow;
+}
+
+.modal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: $primary-color;
+  margin-bottom: 1.5rem;
+}
+
+.modal-input {
   width: 100%;
-  border-collapse: collapse;
-  background-color: white;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  transition: $transition;
 
-  th, td {
-    padding: 10px;
-    border: 1px solid #B39DA2;
-    text-align: left;
+  &:focus {
+    border-color: $primary-color;
+    outline: none;
+  }
+}
+
+// Animations
+.save-animation {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #2E7D32;
+  font-size: 0.875rem;
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #2E7D32;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Responsive Design
+@media (max-width: 1200px) {
+  .feed {
+    margin-left: 200px;
+
+    &.sidebar-collapsed {
+      margin-left: 80px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .feed {
+    margin-left: 0;
+    padding: 1rem;
   }
 
-  th {
-    background: #e5dfe0;
-    color: $primary-color;
+  .tabs-container {
+    flex-direction: column;
   }
 
-  .status-pending {
-    color: $warning-color;
-    font-weight: 500;
+  .profile-card {
+    flex-direction: column;
+    align-items: center;
+
+    .profile-picture-section {
+      margin-bottom: 1rem;
+    }
+
+    .separator-line {
+      width: 100%;
+    }
+
+    .user-info-section {
+      width: 100%;
+    }
   }
 
-  .status-validated {
-    color: $success-color;
-    font-weight: 500;
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-picture-container {
+    width: 100px;
+    height: 100px;
   }
 
-  .status-rejected {
-    color: $error-color;
-    font-weight: 500;
+  .modal-content {
+    padding: 1.5rem;
+  }
+
+  .action-icons {
+    gap: 0.3rem;
+
+    .edit-icon,
+    .delete-icon {
+      padding: 0.2rem;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
   }
 }
 
@@ -683,7 +795,7 @@ h4 {
   padding: 0;
 }
 
-.app-sidebar-admin{
+.app-sidebar-admin {
   position: fixed;
   left: 0;
   top: 70px;
@@ -698,7 +810,7 @@ h4 {
   position: fixed;
   top: 70px;
   bottom: 0;
-  left: 250px;
+  left: 240px;
   right: 0;
   width: calc(100% - 250px);
   overflow-y: auto;
@@ -707,8 +819,8 @@ h4 {
   transition: all 0.3s ease-in-out;
 
   &.sidebar-collapsed {
-    left: 100px;
-    width: calc(100% - 100px);
+    left: 70px;
+    width: calc(100% - 60px);
   }
 
   &::-webkit-scrollbar {
@@ -780,7 +892,7 @@ h4 {
 }
 
 @media screen and (max-width: 1473px) {
-  .app-sidebar-admin{
+  .app-sidebar-admin {
     width: 220px;
   }
 

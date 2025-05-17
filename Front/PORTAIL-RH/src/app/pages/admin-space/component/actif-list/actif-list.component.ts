@@ -10,6 +10,8 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { SidebarAdminComponent } from '../sidebar-admin/sidebar-admin.component';
+import { trigger, transition, style, animate } from '@angular/animations';
+import { EquipeService, EquipeDTO } from '../../../../services/equipe.service'; // Ajout de EquipeService
 
 @Component({
   selector: 'app-actif-list',
@@ -18,13 +20,23 @@ import { SidebarAdminComponent } from '../sidebar-admin/sidebar-admin.component'
     FormsModule,
     SidebarAdminComponent,
     HeaderComponent,
-    RightSidebarComponent,
     NgxDatatableModule,
     MatButtonModule,
     MatIconModule,
   ],
   templateUrl: './actif-list.component.html',
-  styleUrl: './actif-list.component.scss'
+  styleUrl: './actif-list.component.scss',
+animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('200ms ease-in', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-out', style({ opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class ActifListComponent {
   showFirstForm = false;
@@ -34,18 +46,16 @@ export class ActifListComponent {
   filteredUsers: UserDTO[] = [];
   searchText: string = '';
   showMenu = false;
-  isSidebarCollapsed: boolean = false;
 
   userName: string = '';
   nom: string = '';
   prenom: string = '';
   mail: string = '';
-  password: string = '';
-  confirmPassword: string = '';
   dateNaissance: string = '';
   poste: string = '';
   departement: string = '';
   role: string = '';
+  isSidebarCollapsed = false;
 
   cvFile: File | null = null;
   diplomeFile: File | null = null;
@@ -56,15 +66,20 @@ export class ActifListComponent {
   roleOptions: string[] = ['COLLAB', 'RH', 'ADMIN', 'MANAGER'];
 
   columns = [
-    { prop: 'id', name: 'ID user', width: 100 },
-    { name: 'User', width: 200 },
+    { name: 'Utilisateur', width: 180 },
     { prop: 'departement', name: 'Département', width: 150 },
     { prop: 'poste', name: 'Poste', width: 150 },
+    { prop: 'mail', name: 'Mail', width: 200 }, // Nouvelle colonne
+    { prop: 'nomEquipe', name: 'Équipe', width: 150 },
     { prop: 'role', name: 'Rôle', width: 100 },
-    { name: 'Actions', sortable: false, width: 50 },
+    { name: 'Actions', sortable: false, width: 60 },
   ];
 
-  constructor(private userService: UserService, private router: Router) {
+  constructor(
+    private userService: UserService,
+    private equipeService: EquipeService, // Ajout de EquipeService
+    private router: Router
+  ) {
     this.loadUsers();
   }
 
@@ -72,47 +87,11 @@ export class ActifListComponent {
     this.isSidebarCollapsed = isCollapsed;
   }
 
-  getDropdownTopPosition(event: any): number {
-    const buttonHeight = 40;
-    return buttonHeight;
-  }
-  
-  toggleMenu(row: any, event: Event): void {
+  toggleMenu(row: UserDTO, event: Event): void {
     event.stopPropagation();
-    this.selectedUser = this.selectedUser === row ? null : row;
-    if (this.selectedUser) {
-      setTimeout(() => {
-        const closeMenuHandler = (e: any) => {
-          if (!e.target.closest('.dropdown-menu') && !e.target.closest('.menu-button')) {
-            this.selectedUser = null;
-            document.removeEventListener('click', closeMenuHandler);
-          }
-        };
-        document.addEventListener('click', closeMenuHandler);
-      });
-    }
+    this.selectedUser = this.selectedUser?.id === row.id ? null : row;
   }
   
-  ngOnInit() {
-    document.addEventListener('click', (event) => {
-      if (this.selectedUser && event.target) {
-        const target = event.target as HTMLElement;
-        if (!target.closest('.dropdown-menu') && !target.closest('.menu-button')) {
-          this.selectedUser = null;
-        }
-      }
-    });
-  }
-
-  onRowClick(event: any) {
-    if (event.target) {
-      const target = event.target as HTMLElement;
-      if (target.closest('.dropdown-menu') || target.closest('.menu-button')) {
-        event.stopPropagation();
-      }
-    }
-  }
-
   @HostListener('document:click', ['$event'])
   closeMenu(event: Event) {
     const target = event.target as HTMLElement;
@@ -121,15 +100,39 @@ export class ActifListComponent {
     }
   }
 
-  get passwordMismatch(): boolean {
-    return this.password !== this.confirmPassword && this.confirmPassword.length > 0;
+  onRowClick(event: any) {
+    // Ne fait rien si le clic provient du menu ou du bouton
+    const target = event.target as HTMLElement;
+    if (target.closest('.dropdown-menu') || target.closest('.menu-button')) {
+      return;
+    }
+    // Vous pouvez ajouter une logique ici si un clic sur la ligne doit faire quelque chose
   }
 
   loadUsers() {
     this.userService.getAllActiveUsers().subscribe({
       next: (users) => {
-        this.users = users;
-        this.filteredUsers = [...users];
+        // Récupérer toutes les équipes pour associer les noms
+        this.equipeService.getAllEquipes().subscribe({
+          next: (equipes) => {
+            // Mapper les utilisateurs avec le nom de l'équipe
+            this.users = users.map(user => {
+              const equipe = equipes.find(e => e.id === user.equipeId);
+              return {
+                ...user,
+                nomEquipe: equipe ? equipe.nom : undefined // Ajout du nom de l'équipe
+              };
+            });
+            this.filteredUsers = [...this.users];
+          },
+          error: (err) => {
+            console.error('Erreur lors du chargement des équipes:', err);
+            Swal.fire('Erreur', 'Impossible de charger les équipes', 'error');
+            // Charger les utilisateurs sans nom d'équipe en cas d'erreur
+            this.users = users;
+            this.filteredUsers = [...users];
+          }
+        });
       },
       error: (err) => {
         console.error('Erreur lors du chargement des utilisateurs actifs:', err);
@@ -151,7 +154,9 @@ export class ActifListComponent {
         (user.prenom?.toLowerCase().includes(search) || '') ||
         (user.departement?.toLowerCase().includes(search) || '') ||
         (user.poste?.toLowerCase().includes(search) || '') ||
-        (user.role?.toLowerCase().includes(search) || '')
+        (user.role?.toLowerCase().includes(search) || '') ||
+        (user.mail?.toLowerCase().includes(search) || '') || // Ajout de la recherche par mail
+        (user.nomEquipe?.toLowerCase().includes(search) || '') // Ajout de la recherche par nom d'équipe
     );
   }
 
@@ -174,8 +179,6 @@ export class ActifListComponent {
     this.nom = '';
     this.prenom = '';
     this.mail = '';
-    this.password = '';
-    this.confirmPassword = '';
     this.dateNaissance = '';
     this.poste = '';
     this.departement = '';
@@ -196,7 +199,6 @@ export class ActifListComponent {
       !this.nom ||
       !this.prenom ||
       !this.mail ||
-      !this.password ||
       !this.dateNaissance ||
       !this.poste ||
       !this.departement ||
@@ -210,21 +212,11 @@ export class ActifListComponent {
       return;
     }
 
-    if (this.passwordMismatch) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Erreur',
-        text: 'Les mots de passe ne correspondent pas.',
-      });
-      return;
-    }
-    
     const registerRequest: RegisterRequest = {
       userName: this.userName,
       nom: this.nom,
       prenom: this.prenom,
       mail: this.mail,
-      password: this.password,
       dateNaissance: this.dateNaissance,
       poste: this.poste,
       departement: this.departement,
@@ -236,7 +228,7 @@ export class ActifListComponent {
         Swal.fire({
           icon: 'success',
           title: 'Succès',
-          text: response.message || 'Utilisateur enregistré avec succès !',
+          text: response.message || 'Utilisateur enregistré avec succès ! Un mot de passe a été envoyé par e-mail.',
         });
         this.newUserId = response.id;
         this.showFirstForm = false;
@@ -301,11 +293,16 @@ export class ActifListComponent {
     });
   }
 
-  viewDetails(user: UserDTO): void {
-    this.router.navigate(['/details-user-admin/:id', user.id]);
-  }
-
   deleteUser(user: UserDTO): void {
+    if (!user.id) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'ID utilisateur invalide.',
+      });
+      return;
+    }
+
     Swal.fire({
       title: 'Voulez-vous vraiment supprimer cet utilisateur ?',
       text: `Vous allez supprimer ${user.nom} ${user.prenom}. Cette action est irréversible.`,
@@ -342,6 +339,15 @@ export class ActifListComponent {
   }
 
   archiveUser(user: UserDTO): void {
+    if (!user.id) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'ID utilisateur invalide.',
+      });
+      return;
+    }
+
     Swal.fire({
       title: 'Voulez-vous vraiment archiver cet utilisateur ?',
       text: `L'utilisateur ${user.nom} ${user.prenom} sera archivé et ne sera plus affiché dans la liste des utilisateurs actifs.`,
@@ -374,6 +380,26 @@ export class ActifListComponent {
           },
         });
       }
+    });
+  }
+
+  exportUsers(): void {
+    this.userService.exportActiveUsersToCSV().subscribe({
+      next: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'Les utilisateurs actifs ont été exportés avec succès au format CSV.',
+        });
+      },
+      error: (err) => {
+        console.error('Erreur lors de l\'exportation des utilisateurs:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Une erreur est survenue lors de l\'exportation des utilisateurs.',
+        });
+      },
     });
   }
 }

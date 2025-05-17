@@ -5,74 +5,106 @@
     <app-sidebar-admin (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar-admin>
 
     <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
-      <div class="container">
+      <div class="page-header">
         <h2 class="title">Utilisateurs Archivés</h2>
+        
+      </div>
 
-        <div class="history-header">
-          <input
-            class="search"
-            type="text"
-            placeholder="Rechercher un utilisateur..."
-            [(ngModel)]="searchText"
-            (ngModelChange)="filterUsers()"
-          />
+      <div class="container">
+        <div class="filter-section">
+          <div class="search-wrapper">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input
+              class="search-input"
+              type="text"
+              placeholder="Rechercher un utilisateur..."
+              [(ngModel)]="searchText"
+              (ngModelChange)="filterUsers()"
+            />
+          </div>
         </div>
 
-        <ngx-datatable
-          class="material"
-          [rows]="filteredUsers"
-          [columns]="columns"
-          [columnMode]="'force'"
-          [headerHeight]="40"
-          [footerHeight]="40"
-          [rowHeight]="'auto'"
-          [scrollbarV]="false"
-          [scrollbarH]="true"
-          [sorts]="[{ prop: 'id', dir: 'asc' }]"
-          (activate)="onRowClick($event)"
-          [messages]="{
-            emptyMessage: 'Aucun utilisateur trouvé',
-            totalMessage: 'utilisateurs au total'
-          }"
-        >
-          <ngx-datatable-column name="User" [width]="200">
-            <ng-template let-row="row" ngx-datatable-cell-template>
-              <div class="user-cell">
-                <img
-                  [src]="row.image"
-                  alt="Photo de {{ row.nom }} {{ row.prenom }}"
-                  class="profile-photo"
-                />
-                <span>{{ row.nom }} {{ row.prenom }}</span>
-              </div>
-            </ng-template>
-          </ngx-datatable-column>
-          <ngx-datatable-column prop="departement" name="Département" [width]="150"></ngx-datatable-column>
-          <ngx-datatable-column prop="poste" name="Poste" [width]="150"></ngx-datatable-column>
-          <ngx-datatable-column prop="role" name="Rôle" [width]="100"></ngx-datatable-column>
-          <ngx-datatable-column name="Actions" [sortable]="false" [width]="50">
-            <ng-template let-row="row" ngx-datatable-cell-template>
-              <div class="actions-cell">
-                <button mat-icon-button (click)="toggleMenu(row, $event)" class="menu-button">
-                  <mat-icon>more_vert</mat-icon>
-                </button>
-                <div class="dropdown-menu" *ngIf="selectedUser === row">
-                  <button mat-button (click)="activateUser(row); $event.stopPropagation()">
+        <div class="table-container">
+          <ngx-datatable
+            class="material"
+            [rows]="filteredUsers"
+            [columns]="columns"
+            [columnMode]="'force'"
+            [headerHeight]="48"
+            [footerHeight]="48"
+            [rowHeight]="'auto'"
+            [scrollbarV]="false"
+            [scrollbarH]="true"
+            [sorts]="[{ prop: 'id', dir: 'asc' }]"
+            [messages]="{
+              emptyMessage: 'Aucun utilisateur trouvé',
+              totalMessage: 'utilisateurs au total'
+            }"
+          >
+            <ngx-datatable-column name="Utilisateur" [width]="180">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <div class="user-cell">
+                  <div class="user-avatar">
+                    <img
+                      [src]="row.image || '/assets/icons/user-login-icon-14.png'"
+                      alt="Photo de {{ row.nom }} {{ row.prenom }}"
+                      class="profile-photo"
+                    />
+                  </div>
+                  <div class="user-info">
+                    <span class="user-name">{{ row.nom }} {{ row.prenom }}</span>
+                  </div>
+                </div>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column prop="departement" name="Département" [width]="150">
+              <ng-template let-value="value" ngx-datatable-cell-template>
+                <div class="department-cell">
+                  <span class="department-value">{{ value }}</span>
+                </div>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column prop="nomEquipe" name="Équipe" [width]="150">
+              <ng-template let-value="value" ngx-datatable-cell-template>
+                <span class="equipe-value">{{ value || 'Aucune équipe' }}</span>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column prop="poste" name="Poste" [width]="150">
+              <ng-template let-value="value" ngx-datatable-cell-template>
+                <span class="position-value">{{ value }}</span>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column prop="mail" name="Mail" [width]="200">
+              <ng-template let-value="value" ngx-datatable-cell-template>
+                <span class="mail-value">{{ value }}</span>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column prop="role" name="Rôle" [width]="100">
+              <ng-template let-value="value" ngx-datatable-cell-template>
+                <span class="role-value">{{ value }}</span>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Actions" [sortable]="false" [width]="120">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <div class="actions-cell">
+                  <button mat-icon-button (click)="activateUser(row); $event.stopPropagation()" class="action-icon" title="Activer">
                     <mat-icon>person_add</mat-icon>
-                    Activer user
                   </button>
-                  <button mat-button (click)="deleteUser(row); $event.stopPropagation()">
+                  <button mat-icon-button (click)="deleteUser(row); $event.stopPropagation()" class="action-icon delete" title="Supprimer">
                     <mat-icon>delete</mat-icon>
-                    Supprimer user
                   </button>
                 </div>
-              </div>
-            </ng-template>
-          </ngx-datatable-column>
-        </ngx-datatable>
+              </ng-template>
+            </ngx-datatable-column>
+          </ngx-datatable>
+        </div>
       </div>
     </div>
-
-    <app-right-sidebar></app-right-sidebar>
   </div>
 </div>

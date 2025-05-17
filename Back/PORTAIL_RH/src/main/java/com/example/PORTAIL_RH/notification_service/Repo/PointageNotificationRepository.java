@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface PointageNotificationRepository extends JpaRepository<PointageNotification, Long> {
     Optional<PointageNotification> findByUserAndPointageDateAndIsAcknowledgedFalse(Users user, LocalDate date);
     boolean existsByUserAndPointageDateAndIsAcknowledgedFalse(Users user, LocalDate date);
+    void deleteByUser(Users user); // Add this method
 }

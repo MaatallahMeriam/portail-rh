@@ -2,16 +2,35 @@
     <app-header></app-header>
 
     <div class="main-content">
-        <app-sidebar-admin></app-sidebar-admin>
+        <app-sidebar-admin (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar-admin>
         
-        <div class="feed">
-            <h2>Espace Paramétrage : </h2>
+        <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+            <div class="page-header">
+                <div class="header-content">
+                    <h2>Espace Paramétrage</h2>
+                    <p class="header-description">Gérez les utilisateurs, les actualités et les documents</p>
+                </div>
+                <div class="header-badge">
+                    <span class="badge-icon">⚙️</span>
+                    <span class="badge-text">Administration</span>
+                </div>
+            </div>
+
             <div class="parametrage-container">
                 <div class="option-card" *ngFor="let option of options" (click)="navigateTo(option.route)">
-                  <img [src]="option.icon" alt="{{ option.label }}">
-                  <span>{{ option.label }}</span>
+                    <div class="card-content">
+                        <div class="icon-wrapper">
+                            <img [src]="option.icon" [alt]="option.label">
+                        </div>
+                        <h3 class="card-label">{{ option.label }}</h3>
+                        <p class="card-description">{{ option.description }}</p>
+                    </div>
+                    <div class="card-overlay">
+                        <span class="overlay-text">Accéder</span>
+                        <span class="overlay-icon">→</span>
+                    </div>
                 </div>
-              </div>
+            </div>
         </div>
 
         <app-right-sidebar></app-right-sidebar>

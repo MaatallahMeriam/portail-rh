@@ -1,6 +1,9 @@
 package com.example.PORTAIL_RH.user_service.user_service.Service.IMPL;
-
+import com.example.PORTAIL_RH.notification_service.Repo.PointageNotificationRepository;
 import com.example.PORTAIL_RH.KPI_service.Service.KpiService;
+import com.example.PORTAIL_RH.notification_service.Repo.NotificationRepository; // Add this import
+import com.example.PORTAIL_RH.request_service.Entity.Demande;
+import com.example.PORTAIL_RH.request_service.Entity.Dmd_Conges;
 import com.example.PORTAIL_RH.user_service.conges_service.DTO.UserCongesDTO;
 import com.example.PORTAIL_RH.user_service.conges_service.Entity.CongeType;
 import com.example.PORTAIL_RH.user_service.conges_service.Entity.UserConges;
@@ -42,6 +45,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -56,8 +60,13 @@ public class UsersServiceImpl implements UsersService {
     private UsersRepository usersRepository;
 
     @Autowired
+    private PointageNotificationRepository pointageNotificationRepository;
+
+    @Autowired
     private EquipeRepository equipeRepository;
 
+    @Autowired
+    private NotificationRepository notificationRepository;
     @Autowired
     private DossierUserRepository dossierUserRepository;
 
@@ -425,10 +434,33 @@ public class UsersServiceImpl implements UsersService {
     public void deleteUser(Long id) {
         Users user = usersRepository.findByIdWithRelations(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Clear managed teams
         if (user.getEquipesGerees() != null && !user.getEquipesGerees().isEmpty()) {
             user.getEquipesGerees().forEach(equipe -> equipe.setManager(null));
             user.getEquipesGerees().clear();
         }
+
+        // Handle Dmd_Conges with null userConges
+        if (user.getDemandes() != null) {
+            List<Demande> demandesToRemove = new ArrayList<>();
+            for (Demande demande : user.getDemandes()) {
+                if (demande instanceof Dmd_Conges conges && conges.getUserConges() == null) {
+                    demandesToRemove.add(demande);
+                }
+            }
+            user.getDemandes().removeAll(demandesToRemove);
+            demandesToRemove.forEach(demande -> demandeRepository.delete(demande));
+        }
+
+        // Delete associated PointageNotification records
+        pointageNotificationRepository.deleteByUser(user);
+
+        // Delete associated Notification records
+        notificationRepository.deleteByUser(user); // Delete where user is the recipient
+        notificationRepository.deleteByTriggeredByUser(user); // Delete where user is the triggerer
+
+        // Clear other collections
         if (user.getComments() != null) user.getComments().clear();
         if (user.getReactions() != null) user.getReactions().clear();
         if (user.getRatings() != null) user.getRatings().clear();
@@ -438,6 +470,8 @@ public class UsersServiceImpl implements UsersService {
         if (user.getUserTeletravail() != null) user.getUserTeletravail().clear();
         if (user.getEquipe() != null) user.setEquipe(null);
         if (user.getDossier() != null) user.setDossier(null);
+
+        // Delete the user
         usersRepository.delete(user);
     }
 

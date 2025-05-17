@@ -90,6 +90,11 @@ public class DemandeServiceImpl implements DemandeService {
             case CONGES:
                 UserConges userConges = userCongesRepository.findById(demandeRequest.getUserCongesId())
                         .orElseThrow(() -> new RuntimeException("UserConges non trouvé"));
+                // Validate that UserConges belongs to the user
+                if (!userConges.getUser().getId().equals(user.getId())) {
+                    logger.error("UserConges id {} does not belong to user id {}", demandeRequest.getUserCongesId(), user.getId());
+                    throw new RuntimeException("UserConges does not belong to the specified user");
+                }
                 logger.info("Création d'une demande de congé pour userCongesId={}", demandeRequest.getUserCongesId());
                 logger.info("Solde actuel (soldeActuel)={}", userConges.getSoldeActuel());
                 logger.info("Durée demandée (duree)={}", demandeRequest.getDuree());

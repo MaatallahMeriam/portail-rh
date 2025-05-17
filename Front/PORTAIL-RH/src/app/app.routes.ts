@@ -44,6 +44,7 @@ import { ListMemberCollabComponent } from './pages/collab-space/components/list-
 import { ListMemberRhComponent } from './pages/rh-space/components/list-member-rh/list-member-rh.component';
 import { EspaceDocCollabComponent } from './pages/collab-space/components/espace-doc-collab/espace-doc-collab.component';
 import { IdeeCollabComponent } from './pages/collab-space/components/idee-collab/idee-collab.component';
+import { EquipeAdminComponent } from './pages/admin-space/component/equipe-admin/equipe-admin.component';
 
 import { EspaceDocManagerComponent } from './pages/manager-space/components/espace-doc-manager/espace-doc-manager.component';
 import { IdeeManagerComponent } from './pages/manager-space/components/idee-manager/idee-manager.component';
@@ -135,6 +136,7 @@ export const routes: Routes = [
     {path :'gestion-doss' , component: GestionDossierComponent},
     {path : 'kpi-rh', component: KPIComponent},
     { path: 'details-idee-rh/:id', component: DetailsIdeeComponentRH },
+      {path:'eq-admin',component:EquipeAdminComponent},
 
     
 

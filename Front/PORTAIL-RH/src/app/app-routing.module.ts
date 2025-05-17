@@ -64,10 +64,10 @@ import { WishListComponent } from './pages/collab-space/components/wish-list/wis
 import { QrPointageComponent } from './shared/components/qr-pointage/qr-pointage.component';
 import { PointageCollabComponent } from './pages/collab-space/components/pointage-collab/pointage-collab.component';
 import { PointageManagerComponent } from './pages/manager-space/components/pointage-manager/pointage-manager.component';
-
+import { EquipeAdminComponent } from './pages/admin-space/component/equipe-admin/equipe-admin.component';
 const routes: Routes = [
   {path:'pointage-manager',component: PointageManagerComponent},
-
+  {path:'eq-admin',component:EquipeAdminComponent},
   {path:'pointage-collab',component: PointageCollabComponent},
   { path: 'details-idee-rh/:id', component: DetailsIdeeComponentRH },
   { path: 'details-idee-manager/:id', component: DetailsIdeeManagerComponent },
