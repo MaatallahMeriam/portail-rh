@@ -47,7 +47,7 @@ export class PlanningManagerComponent implements OnInit {
     private teletravailService: TeletravailService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
-    private router: Router 
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -58,9 +58,11 @@ export class PlanningManagerComponent implements OnInit {
     this.isSidebarCollapsed = isCollapsed;
     this.cdr.markForCheck();
   }
-navigateToPointage(): void {
+
+  navigateToPointage(): void {
     this.router.navigate(['/pointage-collab']);
   }
+
   loadUserPlanning(): void {
     const userId = this.authService.getUserIdFromToken();
     if (!userId) {
@@ -208,6 +210,16 @@ navigateToPointage(): void {
       .getDate()
       .toString()
       .padStart(2, '0')}`;
+  }
+
+  previousMonth(): void {
+    this.currentMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() - 1, 1);
+    this.loadUserPlanning();
+  }
+
+  nextMonth(): void {
+    this.currentMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + 1, 1);
+    this.loadUserPlanning();
   }
 
   validateSelection(): void {

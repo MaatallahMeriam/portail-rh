@@ -5,23 +5,36 @@
     <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
         
     <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
-        <main class="content">
-        <h2>Planning Télétravail :</h2>
-
-        <!-- Badge for Current Month -->
-        <div class="month-badge">
-          <div class="badge-content">
-            <span class="month-text">{{ currentMonth | date: 'MMMM' }}</span>
-            <span class="year-text">{{ currentMonth | date: 'yyyy' }}</span>
+      <main class="content">
+        <div class="page-header">
+          <div class="header-title">
+            <h2>Planning Télétravail</h2>
+            <p class="section-description">Gérez les plannings Télétravail des collaborateurs</p>
+          </div>
+          <!-- Badge for Current Month -->
+          <div class="month-badge">
+            <div class="badge-content">
+              <span class="month-text">{{ currentMonth | date: 'MMMM' }}</span>
+              <span class="year-text">{{ currentMonth | date: 'yyyy' }}</span>
+            </div>
           </div>
         </div>
 
         <!-- Message si un planning existe -->
-        <div class="planning-exists" *ngIf="existingPlanning">
-          <h3>Un planning TT est déjà créé pour ce mois !</h3>
-          <div class="calendar-card">
+        <div class="planning-container" *ngIf="existingPlanning">
+          <div class="planning-header">
+            <div class="planning-title">
+              <div class="status-badge">Actif</div>
+              <h3>Un planning TT est déjà créé pour ce mois</h3>
+            </div>
+          </div>
+          
+          <div class="calendar-card existing-planning">
             <div class="calendar-header">
-              <span class="month-year">Planning " {{ existingPlanning.politique }} " est créé</span>
+              <div class="policy-badge">
+                <div class="policy-icon"></div>
+                <span class="policy-name">{{ existingPlanning.politique | formatPolicy }}</span>
+              </div>
               <span class="max-days-badge" *ngIf="existingPlanning.nombreJoursMax">
                 <mat-icon>event</mat-icon> Max {{ existingPlanning.nombreJoursMax }} jours
               </span>
@@ -34,86 +47,145 @@
                 [ngClass]="{
                   'filler': !day.isCurrentMonth,
                   'today': day.isToday,
-                  'selected': isSelectedDay(day.date)
+                  'selected': isSelectedDay(day.date),
+                  'weekend': day.date.getDay() === 0 || day.date.getDay() === 6
                 }"
               >
-                {{ day.date.getDate() }}
+                <span class="day-number">{{ day.date.getDate() }}</span>
+                <span class="day-indicator" *ngIf="isSelectedDay(day.date)"></span>
               </div>
             </div>
             <!-- Lien de navigation vers list-plannings -->
             <div class="nav-link-container">
-              <a class="nav-link" [routerLink]="['/list-plannings']">Voir tous les plannings</a>
+              <a class="nav-link" [routerLink]="['/list-plannings']">
+                <span class="link-text">Voir tous les plannings</span>
+                <mat-icon class="link-icon">arrow_forward</mat-icon>
+              </a>
             </div>
           </div>
         </div>
 
         <!-- Formulaire de création si aucun planning n'existe -->
-        <div class="planning-form" *ngIf="!existingPlanning">
-          <!-- Radio buttons pour la politique -->
-          <div class="policy-selection">
-            <label class="policy-option">
-              <input type="radio" name="politique" value="CHOIX_LIBRE" [(ngModel)]="planning.politique" (change)="onPolitiqueChange()">
-              Choix Libre
-            </label>
-            <label class="policy-option">
-              <input type="radio" name="politique" value="SEUIL_LIBRE" [(ngModel)]="planning.politique" (change)="onPolitiqueChange()">
-              Avec Seuil 
-            </label>
-            <label class="policy-option">
-              <input type="radio" name="politique" value="PLANNING_FIXE" [(ngModel)]="planning.politique" (change)="onPolitiqueChange()">
-              Planning Fixe (avec Max Jrs)
-            </label>
-            <label class="policy-option">
-              <input type="radio" name="politique" value="PLANNING_FIXE_JOURS_LIBRES" [(ngModel)]="planning.politique" (change)="onPolitiqueChange()">
-              Planning Fixe (Jours Libres)
-            </label>
+        <div class="planning-container" *ngIf="!existingPlanning">
+          <div class="planning-header">
+            <h3>Créer un nouveau planning</h3>
           </div>
-
-          <!-- Champ pour SEUIL_LIBRE et PLANNING_FIXE -->
-          <div class="form-field" *ngIf="planning.politique === 'SEUIL_LIBRE' || planning.politique === 'PLANNING_FIXE'">
-            <label for="nombreJoursMax">Nombre de jours max :</label>
-            <input class="jours"
-              type="number"
-              id="nombreJoursMax"
-              [(ngModel)]="planning.nombreJoursMax"
-              min="1"
-              placeholder="Nombre de jours max"
-            />
-          </div>
-
-          <!-- Calendrier personnalisé pour PLANNING_FIXE et PLANNING_FIXE_JOURS_LIBRES -->
-          <div class="calendar-card" *ngIf="planning.politique === 'PLANNING_FIXE' || planning.politique === 'PLANNING_FIXE_JOURS_LIBRES'">
-            <div class="calendar-header">
-              <button class="nav-button" (click)="previousMonth()"><</button>
-              <span class="month-year">{{ currentMonth | date: 'MMMM yyyy' }}</span>
-              <button class="nav-button" (click)="nextMonth()">></button>
-            </div>
-            <div class="calendar-grid">
-              <div class="day-label" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">{{ day }}</div>
-              <div
-                class="calendar-day"
-                *ngFor="let day of calendarDays"
-                [ngClass]="{
-                  'filler': !day.isCurrentMonth,
-                  'today': day.isToday,
-                  'selected': isSelectedDay(day.date),
-                  'disabled': !isDaySelectable(day.date) && !isSelectedDay(day.date)
-                }"
-                (click)="toggleDay(day.date)"
-              >
-                {{ day.date.getDate() }}
+          
+          <div class="planning-form">
+            <!-- Radio buttons pour la politique -->
+            <div class="form-section">
+              <div class="section-title">Politique de télétravail</div>
+              <div class="policy-selection">
+                <label class="policy-option">
+                  <input type="radio" name="politique" value="CHOIX_LIBRE" [(ngModel)]="planning.politique" (change)="onPolitiqueChange()">
+                  <span class="radio-custom"></span>
+                  <div class="policy-content">
+                    <div class="policy-name">Choix Libre</div>
+                    <div class="policy-desc">Les collaborateurs choisissent librement leurs jours</div>
+                  </div>
+                </label>
+                
+                <label class="policy-option">
+                  <input type="radio" name="politique" value="SEUIL_LIBRE" [(ngModel)]="planning.politique" (change)="onPolitiqueChange()">
+                  <span class="radio-custom"></span>
+                  <div class="policy-content">
+                    <div class="policy-name">Avec Seuil</div>
+                    <div class="policy-desc">Nombre maximum de jours défini</div>
+                  </div>
+                </label>
+                
+                <label class="policy-option">
+                  <input type="radio" name="politique" value="PLANNING_FIXE" [(ngModel)]="planning.politique" (change)="onPolitiqueChange()">
+                  <span class="radio-custom"></span>
+                  <div class="policy-content">
+                    <div class="policy-name">Planning Fixe</div>
+                    <div class="policy-desc">Avec maximum de jours</div>
+                  </div>
+                </label>
+                
+                <label class="policy-option">
+                  <input type="radio" name="politique" value="PLANNING_FIXE_JOURS_LIBRES" [(ngModel)]="planning.politique" (change)="onPolitiqueChange()">
+                  <span class="radio-custom"></span>
+                  <div class="policy-content">
+                    <div class="policy-name">Planning Fixe</div>
+                    <div class="policy-desc">Jours libres</div>
+                  </div>
+                </label>
               </div>
             </div>
-          </div>
 
-          <!-- Bouton Enregistrer -->
-          <button
-            class="add-button save-button"
-            (click)="createPlanning()"
-            [disabled]="!isFormValid()"
-          >
-            Enregistrer
-          </button>
+            <!-- Champ pour SEUIL_LIBRE et PLANNING_FIXE -->
+            <div class="form-section" *ngIf="planning.politique === 'SEUIL_LIBRE' || planning.politique === 'PLANNING_FIXE'">
+              <div class="section-title">Configuration</div>
+              <div class="form-field">
+                <label for="nombreJoursMax">Nombre de jours maximum</label>
+                <div class="input-wrapper">
+                  <input 
+                    class="custom-input"
+                    type="number"
+                    id="nombreJoursMax"
+                    [(ngModel)]="planning.nombreJoursMax"
+                    min="1"
+                    placeholder="Nombre de jours"
+                  />
+                  <div class="input-suffix">jours</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Calendrier personnalisé pour PLANNING_FIXE et PLANNING_FIXE_JOURS_LIBRES -->
+            <div class="form-section" *ngIf="planning.politique === 'PLANNING_FIXE' || planning.politique === 'PLANNING_FIXE_JOURS_LIBRES'">
+              <div class="section-title">Sélection des jours</div>
+              <div class="calendar-card">
+                <div class="calendar-header">
+                  <button class="nav-button" (click)="previousMonth()">
+                    <mat-icon>chevron_left</mat-icon>
+                  </button>
+                  <span class="month-year">{{ currentMonth | date: 'MMMM yyyy' }}</span>
+                  <button class="nav-button" (click)="nextMonth()">
+                    <mat-icon>chevron_right</mat-icon>
+                  </button>
+                </div>
+                <div class="calendar-grid">
+                  <div class="day-label" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">{{ day }}</div>
+                  <div
+                    class="calendar-day"
+                    *ngFor="let day of calendarDays"
+                    [ngClass]="{
+                      'filler': !day.isCurrentMonth,
+                      'today': day.isToday,
+                      'selected': isSelectedDay(day.date),
+                      'disabled': !isDaySelectable(day.date) && !isSelectedDay(day.date),
+                      'weekend': day.date.getDay() === 0 || day.date.getDay() === 6
+                    }"
+                    (click)="toggleDay(day.date)"
+                  >
+                    <span class="day-number">{{ day.date.getDate() }}</span>
+                    <span class="day-indicator" *ngIf="isSelectedDay(day.date)"></span>
+                  </div>
+                </div>
+                
+                <div class="calendar-legend" *ngIf="planning.politique === 'PLANNING_FIXE' && planning.nombreJoursMax">
+                  <div class="legend-item">
+                    <div class="legend-color selected"></div>
+                    <div class="legend-text">Jours sélectionnés: {{ selectedDays.length }} / {{ planning.nombreJoursMax }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bouton Enregistrer -->
+            <div class="form-actions">
+              <button
+                class="save-button"
+                (click)="createPlanning()"
+                [disabled]="!isFormValid()"
+              >
+                <mat-icon>save</mat-icon>
+                Enregistrer
+              </button>
+            </div>
+          </div>
         </div>
       </main>
     </div>

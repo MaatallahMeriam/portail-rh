@@ -15,11 +15,12 @@ import { AuthService } from '../../../../shared/services/auth.service';
 import { TeletravailService, TeletravailPlanningDTO, UserTeletravailDTO } from '../../../../services/teletravail.service';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import Swal from 'sweetalert2';
+import { PolicyFormatPipe } from '../../../../pipes/policy-format.pipe';
 
 @Component({
   selector: 'app-planning-tt',
   standalone: true,
-  imports: [
+  imports: [PolicyFormatPipe,
     NgxDatatableModule,
     HeaderComponent,
     SidebarComponent,

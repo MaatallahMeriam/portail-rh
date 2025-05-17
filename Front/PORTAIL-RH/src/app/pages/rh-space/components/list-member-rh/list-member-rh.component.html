@@ -2,41 +2,113 @@
   <app-header></app-header>
 
   <div class="main-content">
-      <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+    <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
 
-      <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
-          <h2 class="section-title">Equipe {{ equipe?.nom || 'Chargement...' }}</h2>
-
-          <!-- Manager Card -->
-          <div class="manager-section" *ngIf="manager">
-              <h3 class="manager-title">Manager</h3>
-              <div class="member-card manager-card" >
-                  <div class="member-photo" [style.backgroundImage]="getBackgroundImage(manager)"></div>
-                  <div class="member-info">
-                      <h3>{{ manager.prenom }} {{ manager.nom }}</h3>
-                      <p class="poste">{{ manager.poste }}</p>
-                      <p class="mail">{{ manager.mail }}</p>
-                      <p class="phone">{{ manager.numero || 'Non spécifié' }}</p>
-                  </div>
-              </div>
-          </div>
-
-          <!-- Team Members -->
-          <div class="members-section">
-              <h3 class="members-title">Membres de l'équipe</h3>
-              <div class="members-container">
-                  <div class="member-card" *ngFor="let member of teamMembers" >
-                      <div class="member-photo" [style.backgroundImage]="getBackgroundImage(member)"></div>
-                      <div class="member-info">
-                          <h3>{{ member.prenom }} {{ member.nom }}</h3>
-                          <p class="poste">{{ member.poste }}</p>
-                          <p class="mail">{{ member.mail }}</p>
-                          <p class="phone">{{ member.numero || 'Non spécifié' }}</p>
-                      </div>
-                  </div>
-                  <p *ngIf="teamMembers.length === 0 && manager" class="no-members">Aucun membre dans l'équipe.</p>
-              </div>
-          </div>
+   <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <!-- Loading State -->
+      <div *ngIf="!equipe" class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement de l'équipe...</p>
       </div>
+
+      <!-- Content State -->
+      <div *ngIf="equipe" class="team-content" @fadeIn>
+        <!-- Team Header -->
+        <div class="team-header">
+          <div class="team-header-content">
+            <h2 class="section-title">{{ equipe.nom }}</h2>
+            <p class="team-description">Vue d'ensemble de l'équipe</p>
+          </div>
+          <div class="team-stats">
+            <div class="stat-card">
+              <div class="stat-icon members-icon"></div>
+              <div class="stat-info">
+                <span class="stat-value">{{ teamMembers.length + (manager ? 1 : 0) }}</span>
+                <span class="stat-label">Membres</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manager Section -->
+        <div class="manager-section" *ngIf="manager" @slideIn>
+          <div class="section-header">
+            <h3 class="section-subtitle">
+              <mat-icon>supervisor_account</mat-icon>
+              Manager
+            </h3>
+          </div>
+          <div class="manager-card" matRipple>
+            <div class="member-avatar" >
+              <img [src]="manager.image || 'assets/icons/user-login-icon-14.png'" 
+                   [alt]="manager.prenom + ' ' + manager.nom"
+                   (error)="onImageError($event)">
+            </div>
+            <div class="member-info">
+              <div class="member-header">
+                <h4 class="member-name">{{ manager.prenom }} {{ manager.nom }}</h4>
+                <span class="member-role">{{ manager.poste }}</span>
+              </div>
+              <div class="member-contact">
+                <a [href]="'mailto:' + manager.mail" class="contact-item">
+                  <mat-icon>email</mat-icon>
+                  <span>{{ manager.mail }}</span>
+                </a>
+                <div class="contact-item" *ngIf="manager.numero">
+                  <mat-icon>phone</mat-icon>
+                  <span>{{ manager.numero }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Members Section -->
+        <div class="members-section" @slideIn>
+          <div class="section-header">
+            <h3 class="section-subtitles">
+              <mat-icon>group</mat-icon>
+              Membres de l'équipe
+            </h3>
+          </div>
+          
+          <div class="members-grid">
+            <div class="member-card" *ngFor="let member of teamMembers" 
+                 matRipple 
+                
+                 @fadeIn>
+              <div class="member-avatar" >
+                <img [src]="member.image || 'assets/icons/user-login-icon-14.png'" 
+                     [alt]="member.prenom + ' ' + member.nom"
+                     (error)="onImageError($event)">
+              </div>
+              <div class="member-info">
+                <div class="member-header">
+                  <h4 class="member-name">{{ member.prenom }} {{ member.nom }}</h4>
+                  <span class="member-role">{{ member.poste }}</span>
+                </div>
+                <div class="member-contact">
+                  <a [href]="'mailto:' + member.mail" class="contact-item">
+                    <mat-icon>email</mat-icon>
+                    <span>{{ member.mail }}</span>
+                  </a>
+                  <div class="contact-item" *ngIf="member.numero">
+                    <mat-icon>phone</mat-icon>
+                    <span>{{ member.numero }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="teamMembers.length === 0" @fadeIn>
+            <div class="empty-icon"></div>
+            <h4>Aucun membre dans l'équipe</h4>
+            <p>L'équipe n'a pas encore de membres assignés</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

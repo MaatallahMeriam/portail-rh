@@ -1,110 +1,120 @@
+// Variables
+$primary-color: #230046;
+$accent-color: #FF6B00;
+$secondary-accent: #ff00ea;
+$text-color: #333333;
+$light-bg: #f8f9fa;
+$white: #ffffff;
+$box-shadow: 0 6px 20px rgba(35, 0, 70, 0.1);
+$transition-standard: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$spacing-unit: 8px;
+$gradient-primary: linear-gradient(135deg, $primary-color, $accent-color, $secondary-accent);
+
 .collab-home {
   overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: white;
+  background-color: $light-bg;
 }
 
 .main-content {
   display: flex;
   flex: 1;
   overflow: hidden;
-  padding: 0;
-}
-
-.app-sidebar {
-  position: fixed;
-  left: 0;
-  top: 70px;
-  bottom: 0;
-  width: 250px;
-  background: #ffffff;
-  z-index: 100;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  position: relative;
 }
 
 .feed {
   position: fixed;
-  top: 70px;
+  top: 60px;
+  left: 240px;
+  right: 0;
   bottom: 0;
-  left: 250px;
-  width: calc(100% - 250px);
   overflow-y: auto;
-  background: white;
-  transition: all 0.3s ease;
-  padding: 24px;
+  padding: $spacing-unit * 4;
+  transition: $transition-standard;
 
   &.sidebar-collapsed {
-    left: 70px;
-    width: calc(100% - 70px);
+    left: 100px;
   }
 
   &::-webkit-scrollbar {
     width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
     background: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: rgba(86, 20, 47, 0.2);
+    background: transparent;
     border-radius: 4px;
 
     &:hover {
-      background-color: rgba(86, 20, 47, 0.4);
+    background: transparent;
     }
   }
 }
 
+.dashboard-header {
+  margin-bottom: $spacing-unit * 4;
+
+  h1 {
+    margin-top: -30x;
+    color: $primary-color;
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0;
+    position: relative;
+    padding-bottom: $spacing-unit * 2;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 110px;
+      height: 6px;
+      background: $gradient-primary;
+      border-radius: 3px;
+      animation: gradientShift 6s infinite alternate;
+    }
+  }
+
+  .subtitle {
+    color: rgba($text-color, 0.7);
+    font-size: 16px;
+    margin-top: $spacing-unit;
+  }
+}
+
 .dashboard-container {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  max-width: 1600px;
-  margin: 0 auto;
-  animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-  from { 
-    opacity: 0; 
-    transform: translateY(10px); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
-  }
-}
-
-.dashboard-row, .dashboard-row2, .dashboard-row3 {
+  margin-top: -15px;
   display: grid;
-  gap: 24px;
-  width: 100%;
-  transition: all 0.3s ease;
+  gap: $spacing-unit * 4;
+  max-width: 1600px;
 }
 
 .dashboard-row {
-  grid-template-columns: 2fr 1fr; /* Age Groups (wide) + Birthday */
-}
+  display: grid;
+  gap: $spacing-unit * 3;
 
-.dashboard-row2 {
-  grid-template-columns: 1fr 1fr; /* Productivity + Top 3 Reviews */
-  margin-bottom: 24px;
-}
+  &:first-child {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-.dashboard-row3 {
-  grid-template-columns: repeat(3, 1fr); /* Absence Rate + Onsite Work + Turnover Rate */
-  margin-bottom: 24px;
+  &:not(:first-child) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  &.metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .dashboard-widget {
-  background: #ffffff;
+  background: $white;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: $box-shadow;
+  transition: $transition-standard;
   overflow: hidden;
   position: relative;
 
@@ -114,15 +124,15 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #E91E63, #FF6B00);
+    height: 4px;
+    background: $gradient-primary;
     opacity: 0;
     transition: opacity 0.3s ease;
   }
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(35, 0, 70, 0.15);
 
     &::before {
       opacity: 1;
@@ -130,73 +140,69 @@
   }
 
   &.wide {
-    grid-column: span 2;
+    grid-column: auto; // Override the wide class to allow two columns
+  }
+
+  &.metric-card {
+    padding: $spacing-unit * 3;
+    display: flex;
+    flex-direction: column;
   }
 }
 
-// Responsive breakpoints
-@media (max-width: 1473px) {
-  .app-sidebar {
-    width: 220px;
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+// Responsive Styles
+@media screen and (max-width: 1400px) {
+  .dashboard-row.metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .feed {
+    left: 200px;
+    padding: $spacing-unit * 3;
   }
 
-  .feed {
-    left: 220px;
-    width: calc(100% - 220px);
-    padding: 20px;
+  .dashboard-row {
+    grid-template-columns: 1fr;
 
-    &.sidebar-collapsed {
-      left: 70px;
-      width: calc(100% - 70px);
+    &:first-child {
+      grid-template-columns: 1fr;
     }
   }
 
-  .dashboard-row2 {
-    grid-template-columns: 1fr 1fr; /* Keep 2 columns for Productivity + Top 3 Reviews */
-  }
-
-  .dashboard-row3 {
-    grid-template-columns: repeat(2, 1fr); /* Reduce to 2 columns for Absence Rate + Onsite Work + Turnover */
-  }
-}
-
-@media (max-width: 1200px) {
-  .dashboard-row {
-    grid-template-columns: 1fr 1fr; /* Age Groups + Birthday */
-  }
-
   .dashboard-widget.wide {
-    grid-column: span 2;
+    grid-column: auto;
   }
 }
 
-@media (max-width: 768px) {
-  .app-sidebar {
-    display: none;
-  }
-
+@media screen and (max-width: 768px) {
   .feed {
     left: 0;
-    width: 100%;
-    padding: 16px;
+    padding: $spacing-unit * 2;
   }
 
-  .dashboard-row, .dashboard-row2, .dashboard-row3 {
+  .dashboard-header h1 {
+    font-size: 28px;
+  }
+
+  .dashboard-row.metrics {
     grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .dashboard-widget.wide {
-    grid-column: span 1;
   }
 }
 
-@media (max-width: 480px) {
+@media screen and (max-width: 480px) {
   .feed {
-    padding: 12px;
+    padding: $spacing-unit;
   }
 
-  .dashboard-container {
-    gap: 16px;
+  .dashboard-header h1 {
+    font-size: 24px;
   }
 }

@@ -3,20 +3,39 @@ import { AuthService } from '../../../../shared/services/auth.service';
 import { EquipeService, TeamMemberDTO, EquipeDTO } from '../../../../services/equipe.service';
 import { UserService, UserDTO } from '../../../../services/users.service';
 import { Router } from '@angular/router';
+import { trigger, transition, style, animate } from '@angular/animations';
+
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
 import { SidebarComponent } from '../sidebar-RH/sidebar.component';
 import Swal from 'sweetalert2';
 import { forkJoin } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
+import { MatRippleModule } from '@angular/material/core';
+
 @Component({
   selector: 'app-list-member-rh',
   standalone: true,
-  imports: [HeaderComponent,
+  imports: [HeaderComponent,MatIconModule,MatRippleModule,
     SidebarComponent,
       CommonModule],
   templateUrl: './list-member-rh.component.html',
-  styleUrl: './list-member-rh.component.scss'
-})
+  styleUrl: './list-member-rh.component.scss',
+   animations: [
+      trigger('fadeIn', [
+        transition(':enter', [
+          style({ opacity: 0, transform: 'translateY(10px)' }),
+          animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+        ])
+      ]),
+      trigger('slideIn', [
+        transition(':enter', [
+          style({ opacity: 0, transform: 'translateX(-20px)' }),
+          animate('400ms ease-out', style({ opacity: 1, transform: 'translateX(0)' }))
+        ])
+      ])
+    ]
+  })
 export class ListMemberRhComponent implements OnInit {
   equipe: EquipeDTO | null = null;
   manager: UserDTO | null = null;
@@ -33,31 +52,23 @@ export class ListMemberRhComponent implements OnInit {
   ngOnInit(): void {
     const userId = this.authService.getUserIdFromToken();
     if (!userId) {
-      console.error('No user ID found, redirecting to login');
-      Swal.fire({
-        icon: 'error',
-        title: 'Erreur',
-        text: 'Utilisateur non authentifié. Veuillez vous connecter.',
-      }).then(() => {
-        this.authService.logout();
-        this.router.navigate(['/login']);
-      });
+      this.showError('Non authentifié', 'Veuillez vous connecter pour accéder à cette page.');
+      this.authService.logout();
+      this.router.navigate(['/login']);
       return;
     }
 
-    // Fetch user details to get their equipeId
+    this.loadTeamData(userId);
+  }
+
+  private loadTeamData(userId: number): void {
     this.userService.getUserById(userId).subscribe({
       next: (user) => {
         if (!user.equipeId) {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Aucune équipe',
-            text: 'Vous n\'êtes assigné à aucune équipe.',
-          });
+          this.showInfo('Aucune équipe', 'Vous n\'êtes assigné à aucune équipe pour le moment.');
           return;
         }
 
-        // Fetch equipe details, manager, and team members
         forkJoin({
           equipe: this.equipeService.getEquipeById(user.equipeId),
           manager: this.equipeService.getManagerByEquipeId(user.equipeId),
@@ -66,48 +77,54 @@ export class ListMemberRhComponent implements OnInit {
           next: ({ equipe, manager, members }) => {
             this.equipe = equipe;
             this.manager = manager;
-            this.teamMembers = members.map(member => ({
-              id: member.id,
-              nom: member.nom,
-              prenom: member.prenom,
-              poste: member.poste,
-              departement: member.departement,
-              image: member.image,
-              mail: member.mail,
-              numero: member.numero // Include phone number
-            }));
+            this.teamMembers = this.sortTeamMembers(members);
           },
           error: (error) => {
-            console.error('Error fetching equipe details:', error);
-            Swal.fire({
-              icon: 'error',
-              title: 'Erreur',
-              text: 'Erreur lors du chargement des détails de l\'équipe.',
-            });
+            console.error('Error loading team data:', error);
+            this.showError('Erreur', 'Impossible de charger les données de l\'équipe.');
           }
         });
       },
       error: (error) => {
-        console.error('Error fetching user details:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
-          text: 'Erreur lors du chargement des informations utilisateur.',
-        });
+        console.error('Error loading user data:', error);
+        this.showError('Erreur', 'Impossible de charger vos informations.');
       }
     });
   }
 
-  getBackgroundImage(member: TeamMemberDTO | UserDTO): string {
-    const imagePath = member.image ? member.image.replace(/\\/g, '/') : 'assets/icons/user-login-icon-14.png';
-    return `url(${imagePath})`;
+  private sortTeamMembers(members: TeamMemberDTO[]): TeamMemberDTO[] {
+    return members.sort((a, b) => {
+      
+      // Then by name
+      return `${a.nom} ${a.prenom}`.localeCompare(`${b.nom} ${b.prenom}`);
+    });
   }
 
-  navigateToMemberDetails(memberId: number): void {
-    this.router.navigate(['/membre-equipe'], { queryParams: { memberId } });
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/icons/user-login-icon-14.png';
   }
 
   onSidebarStateChange(isCollapsed: boolean): void {
     this.isSidebarCollapsed = isCollapsed;
+  }
+
+
+  private showError(title: string, text: string): void {
+    Swal.fire({
+      icon: 'error',
+      title,
+      text,
+      confirmButtonColor: '#5b2e91'
+    });
+  }
+
+  private showInfo(title: string, text: string): void {
+    Swal.fire({
+      icon: 'info',
+      title,
+      text,
+      confirmButtonColor: '#5b2e91'
+    });
   }
 }

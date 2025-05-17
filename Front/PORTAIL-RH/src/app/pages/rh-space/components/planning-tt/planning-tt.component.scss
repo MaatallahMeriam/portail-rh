@@ -1,115 +1,383 @@
+// Variables de couleurs
 $primary-color: #230046;
-$pink-background: #35004F;
-$blue-background: #65538B;
-$gray-background: #5A0C35;
+$secondary-color: #c1006a;
 $background-color: #F8F9FA;
+$card-background: #ffffff;
 $border-radius: 12px;
 $transition: all 0.3s ease;
 $success-color: #2E7D32;
 $warning-color: #ED6C02;
 $error-color: #D32F2F;
 
-.content {
-  flex-grow: 1;
-  padding: 20px;
+// Mixins
+@mixin card {
+  background-color: $card-background;
+  border-radius: $border-radius;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  transition: $transition;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin button {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: $transition;
+  @include flex-center;
+  gap: 8px;
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.section-description {
+  color: rgba($primary-color, 0.7);
+  font-size: 14px;
+  margin-top: 8px; // Ajustement pour un espacement naturel sous le h2
+}
+
+// Structure de base
+.collab-home {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.feed {
+  position: fixed;
+  top: 70px;
+  bottom: 0;
+  left: 250px;
+  width: calc(100% - 250px);
   overflow-y: auto;
-  background-color: white;
-  position: relative; // Add position relative to allow absolute positioning of the badge
+  background-color: $background-color;
+  transition: all 0.3s ease-in-out;
+  
+  &.sidebar-collapsed {
+    left: 200px;
+    width: 1550px;
+  }
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 3px;
+    
+    &:hover {
+      background: transparent;
+    }
+  }
+}
+
+.content {
+  padding: 32px;
+  max-width: 1200px;
+  margin-top: -30px;
+}
+
+// Page header
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; // Alignement en haut pour laisser la description sous le titre
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.header-title {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column; // Empile le h2 et la description verticalement
 }
 
 h2 {
-  margin-left: 30px;
-  color: #230046;
-  font-size: 29px;
-  font-weight: 600;
-  margin-bottom: 30px;
+  color: $primary-color;
+  font-size: 28px;
+  font-weight: bold;
   position: relative;
-  padding-bottom: 15px;
-}
-
-h2::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, #230046, #c1006a);
-  border-radius: 2px;
+  padding-bottom: 16px;
+  margin: 0;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, $primary-color, $secondary-color, #F5AF06);
+    border-radius: 2px;
+  }
 }
 
 h3 {
-  color: #230046;
-  margin-left: 30px;
+  color: $primary-color;
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0;
 }
 
-.planning-exists {
-  max-width: 800px;
-  margin-left: 200px;
-  padding: 20px;
-  background: white;
-  border-radius: $border-radius;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+// Month Badge
+.month-badge {
+  margin-top: 10px;
+  width: 90px;
+  height: 90px;
+  z-index: 10;
+  
+  .badge-content {
+    width: 100%;
+    height: 100%;
+    background: $secondary-color;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba($secondary-color, 0.3);
+    animation: pulse 3s infinite ease-in-out;
+    transition: $transition;
+    transform: rotate(-3deg);
+    
+    &:hover {
+      transform: scale(1.05) rotate(0deg);
+      box-shadow: 0 10px 20px rgba($secondary-color, 0.4);
+    }
+    
+    .month-text {
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    
+    .year-text {
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
 }
 
+@keyframes pulse {
+  0% {
+    transform: rotate(-3deg) scale(1);
+    box-shadow: 0 8px 16px rgba($secondary-color, 0.3);
+  }
+  50% {
+    transform: rotate(-3deg) scale(1.03);
+    box-shadow: 0 12px 20px rgba($secondary-color, 0.4);
+  }
+  100% {
+    transform: rotate(-3deg) scale(1);
+    box-shadow: 0 8px 16px rgba($secondary-color, 0.3);
+  }
+}
+
+// Planning Container
+.planning-container {
+  @include card;
+  margin-top: -15px;
+  margin-bottom: 32px;
+}
+
+.planning-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  
+  .planning-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .status-badge {
+    background-color: $success-color;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 16px;
+  }
+}
+
+// Form Styles
 .planning-form {
-  max-width: 800px;
-  margin-left: 150px;
-  padding: 20px;
-  background: white;
-  border-radius: $border-radius;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 100%;
+}
+
+.form-section {
+  margin-bottom: 24px;
+  
+  .section-title {
+    font-weight: 500;
+    color: $primary-color;
+    margin-bottom: 16px;
+    font-size: 18px;
+  }
 }
 
 .policy-selection {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
-  margin-left: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
 }
 
 .policy-option {
   display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 16px;
-  color: $primary-color;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid rgba($primary-color, 0.1);
+  transition: $transition;
   cursor: pointer;
-
+  
+  &:hover {
+    background-color: rgba($primary-color, 0.02);
+    border-color: rgba($primary-color, 0.2);
+  }
+  
   input[type="radio"] {
-    accent-color: $primary-color;
+    display: none;
+  }
+  
+  .radio-custom {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba($primary-color, 0.5);
+    position: relative;
+    margin-top: 2px;
+    
+    &::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: $primary-color;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.2s ease;
+    }
+  }
+  
+  input[type="radio"]:checked + .radio-custom {
+    border-color: $primary-color;
+    
+    &::after {
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  
+  input[type="radio"]:checked ~ .policy-content {
+    .policy-name {
+      color: $primary-color;
+    }
+  }
+  
+  .policy-content {
+    flex: 1;
+    
+    .policy-name {
+      font-weight: 500;
+      margin-bottom: 4px;
+      transition: $transition;
+    }
+    
+    .policy-desc {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.6);
+    }
   }
 }
 
 .form-field {
   margin-bottom: 20px;
-  margin-left: 30px;
-
+  
   label {
     display: block;
     font-size: 16px;
-    color: $primary-color;
-    margin-bottom: 5px;
+    color: rgba(0, 0, 0, 0.8);
+    margin-bottom: 8px;
   }
-
-  input {
-    width: 100%;
+  
+  .input-wrapper {
+    position: relative;
     max-width: 200px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
+  }
+  
+  .custom-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    font-size: 15px;
+    transition: $transition;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+    
+    &::placeholder {
+      color: rgba(0, 0, 0, 0.4);
+    }
+  }
+  
+  .input-suffix {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 10px;
   }
 }
 
+// Calendar Styles
 .calendar-card {
   max-width: 800px;
-  margin-left: 30px;
   padding: 20px;
+  margin-left: 130px;
   border-radius: $border-radius;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background: #fdfcfc;
   margin-bottom: 20px;
+  
+  &.existing-planning {
+    background: #fdfcfc;
+  }
 }
 
 .calendar-header {
@@ -117,14 +385,25 @@ h3 {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 15px;
-
+  
   .month-year {
     font-size: 18px;
     font-weight: 500;
     color: $primary-color;
     text-transform: uppercase;
   }
-
+  
+  .policy-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    .policy-name {
+      font-weight: 500;
+      color: $primary-color;
+    }
+  }
+  
   .max-days-badge {
     display: inline-flex;
     align-items: center;
@@ -135,8 +414,15 @@ h3 {
     border-radius: 12px;
     font-size: 14px;
     font-weight: 500;
+    
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+      line-height: 18px;
+    }
   }
-
+  
   .nav-button {
     background: none;
     border: none;
@@ -144,9 +430,16 @@ h3 {
     color: $primary-color;
     cursor: pointer;
     transition: $transition;
-
+    
     &:hover {
       color: darken($primary-color, 10%);
+    }
+    
+    mat-icon {
+      font-size: 20px;
+      height: 20px;
+      width: 20px;
+      line-height: 20px;
     }
   }
 }
@@ -177,328 +470,239 @@ h3 {
   transition: $transition;
   margin: 0 auto;
   cursor: pointer;
-
+  
   &.filler {
     color: #ccc;
     cursor: default;
   }
-
+  
   &.today {
     background-color: #a2cfff;
     color: #fff;
   }
-
+  
   &.selected {
     background: linear-gradient(135deg, $primary-color, #3a0073);
     color: #fff;
   }
-
-  &:hover:not(.filler):not(.selected) {
+  
+  &.weekend {
+    color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+  
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  &:not(.filler):not(.disabled):not(.selected):hover {
     background: rgba($primary-color, 0.1);
   }
 }
 
+.calendar-legend {
+  display: flex;
+  gap: 16px;
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      
+      &.selected {
+        background: linear-gradient(135deg, $primary-color, rgba($primary-color, 0.9));
+      }
+    }
+  }
+}
+
 .nav-link-container {
-  margin-top: 20px;
   text-align: right;
 }
 
 .nav-link {
-  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: $primary-color;
-  text-decoration: underline;
-  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 8px 4px;
   transition: $transition;
-
+  border-bottom: 1px solid transparent;
+  
   &:hover {
     color: darken($primary-color, 10%);
-    text-decoration: underline;
-    transform: scale(1.05);
+    border-bottom-color: currentColor;
+    transform: translateX(4px);
   }
+  
+  .link-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    line-height: 16px;
+    transition: $transition;
+  }
+  
+  &:hover .link-icon {
+    transform: translateX(2px);
+  }
+}
+
+// Button Styles
+.form-actions {
+  margin-top: 32px;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .save-button {
-  width: auto;
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 8px;
-  background: linear-gradient(45deg, $primary-color, #3a0073);
+  @include button;
+  background: linear-gradient(45deg, $primary-color, darken($primary-color, 10%));
   color: white;
-  border: none;
-  cursor: pointer;
-  transition: $transition;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 25px;
-  margin-left: 30px;
-
-  &:hover {
-    transform: scale(1.05);
-    background: linear-gradient(45deg, darken($primary-color, 5%), darken(#3a0073, 5%));
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba($primary-color, 0.4);
   }
-
-  &:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba($primary-color, 0.3);
   }
-}
-
-.collab-home {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
-.main-content {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  padding: 0;
-}
-
-.app-sidebar {
-  position: fixed;
-  left: 0;
-  top: 70px;
-  bottom: 0;
-  width: 250px;
-  background: #f4f4f4;
-  z-index: 100;
-}
-
-.feed {
-  position: fixed;
-  top: 70px;
-  bottom: 0;
-  left: 250px;
-  width: calc(100% - 250px);
-  overflow-y: auto;
-  background: #fff;
-  transition: all 0.3s ease-in-out; 
-}
-.feed.sidebar-collapsed {
-  left: 100px;
-  width: calc(100% - 50px);
-}
-.feed::-webkit-scrollbar {
-  display: none;
-}
-
-// Styles for the animated month badge
-.month-badge {
-  position: absolute;
-  top: 20px;
-  right:45px;
-  width: 120px;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-
-  .badge-content {
-    width: 100%;
-    height: 100%;
-    background: #c1006a;
-    border-radius: 20%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    animation: pulse 2s infinite ease-in-out;
-    transition: $transition;
-
-    &:hover {
-      transform: scale(1.1) rotate(5deg);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-    }
-
-    .month-text {
-      font-size: 20px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .year-text {
-      font-size: 16px;
-      font-weight: 500;
-    }
+  
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    line-height: 18px;
   }
 }
 
-// Keyframes for the pulsing animation
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
-}
-
-/* Ajustements responsifs */
+// Responsive Styles
 @media (max-width: 1200px) {
-  .feed {
-    left: 250px;
-    width: calc(100% - 250px);
-    max-width: none;
+  .content {
+    padding: 24px;
   }
-
-  .feed.sidebar-collapsed {
-    left: 100px;
-    width: calc(100% - 100px);
+  
+  .policy-selection {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
-
+  
   .month-badge {
     width: 100px;
     height: 100px;
-
+    
     .badge-content {
       .month-text {
         font-size: 18px;
       }
-
+      
       .year-text {
         font-size: 14px;
       }
     }
+  }
+}
+
+@media (max-width: 992px) {
+  .policy-selection {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
- 
-.planning-exists {
-  left: 0 px;
-  max-width: 100%;
-  margin-left: -50px;
+  .content {
+    padding: 20px;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  
+  .header-title {
+    width: 100%; // Assure que le titre et la description occupent toute la largeur
+  }
+  
+  .month-badge {
+    position: static;
+    align-self: flex-end;
+    width: 90px;
+    height: 90px;
+  }
+  
+  .policy-selection {
+    grid-template-columns: 1fr;
+  }
+  
+  .calendar-grid {
+    gap: 4px;
+  }
+  
+  .calendar-day {
+    font-size: 14px;
+  }
 }
+
+@media (max-width: 480px) {
   .feed {
     left: 0;
-    right: 0;
     width: 100%;
+    
+    &.sidebar-collapsed {
+      left: 0;
+      width: 100%;
+    }
   }
-
-  .feed.sidebar-collapsed {
-    left: 0;
-    width: 100%;
+  
+  .content {
+    padding: 16px;
   }
-
+  
+  h2 {
+    font-size: 24px;
+  }
+  
   .month-badge {
-    width: 60px;
-    height: 60px;
-    top: 5px;
-    right: 5px;
-
+    width: 70px;
+    height: 70px;
+    
     .badge-content {
       .month-text {
-        font-size: 14px;
+        font-size: 16px;
       }
-
+      
       .year-text {
-        font-size: 10px;
+        font-size: 12px;
       }
     }
   }
-
-  .no-planning,
-  .calendar-card {
-    margin-left: -10 px;
+  
+  .calendar-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
   }
-
-  .planning-form {
-    margin-left: 20px;
+  
+  .day-label {
+    font-size: 12px;
   }
-}
-
-@media screen and (max-width: 1473px) {
-  .app-sidebar {
-    width: 220px;
-  }
-
-  .feed {
-    left: 240px;
-    width: calc(100% - 220px);
-  }
-
-  .feed.sidebar-collapsed {
-    left: 100px;
-    width: calc(100% - 100px);
-  }
-}
-
-@media screen and (max-width: 1024px) {
-  .app-sidebar {
-    width: 200px;
-  }
-
-  .feed {
-    left: 200px;
-    width: calc(100% - 200px);
-  }
-
-  .feed.sidebar-collapsed {
-    left: 100px;
-    width: calc(100% - 100px);
-  }
-}
-
-
-@media screen and (max-width: 480px) {
-  .app-right-sidebar {
-    display: none;
-  }
-
-  .feed {
-    left: 0;
-    right: 0;
-    width: 100%;
-  }
-  .planning-exists {
-    left: 0 px;
-    max-width: 100%;
-    margin-left: -50px;
-  }
-  .feed.sidebar-collapsed {
-    left: 0;
-    width: 100%;
-  }
-
-  .month-badge {
-    width: 60px;
-    height: 60px;
-    top: 5px;
-    right: 5px;
-
-    .badge-content {
-      .month-text {
-        font-size: 14px;
-      }
-
-      .year-text {
-        font-size: 10px;
-      }
+  
+  .calendar-day {
+    .day-number {
+      font-size: 13px;
     }
-  }
-
-  .no-planning,
-  .calendar-card {
-    margin-left: 10px;
-  }
-
-  .planning-form {
-    margin-left: 10px;
   }
 }

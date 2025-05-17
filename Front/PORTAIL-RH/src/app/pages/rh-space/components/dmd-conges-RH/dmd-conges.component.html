@@ -3,6 +3,7 @@
   
     <div class="main-content">
         <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+        
         <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
             <main class="content">
                 <div class="leave-balance">
@@ -15,6 +16,7 @@
                             <ng-container *ngFor="let leave of leaveBalances">
                                 <ng-template carouselSlide>
                                     <mat-card class="leave-card" [ngClass]="leave.color">
+                                        
                                         <mat-card-content class="content-card">
                                             <p><strong>Nom :</strong> {{ leave.type }}</p>
                                             <p><strong>Solde :</strong> {{ leave.balance }}</p>
@@ -118,6 +120,7 @@
                                     </ng-template>
                                 </ngx-datatable-column>
 
+                                <!-- Custom Footer -->
                                 <ngx-datatable-footer>
                                     <ng-template
                                         ngx-datatable-footer-template

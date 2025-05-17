@@ -1,74 +1,217 @@
+// Variables de couleurs
 $primary-color: #230046;
-$pink-background: #35004F;
-$blue-background: #65538B;
-$gray-background: #5A0C35;
+$secondary-color: #c1006a;
 $background-color: #F8F9FA;
+$card-background: #ffffff;
 $border-radius: 12px;
 $transition: all 0.3s ease;
 $success-color: #2E7D32;
 $warning-color: #ED6C02;
 $error-color: #D32F2F;
 
-.content {
-  flex-grow: 1;
-  padding: 20px;
-  overflow-y: auto;
-  background-color: white;
-  position: relative;
+// Mixins
+@mixin card {
+  background-color: $card-background;
+  border-radius: $border-radius;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  transition: $transition;
 }
 
-.planning-exists {
-  max-width: 800px;
-  margin-top: 50px;
-  margin-left: 180px;
-  padding: 20px;
-  background: #ebeaed;
-  border-radius: $border-radius;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin button {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: $transition;
+  @include flex-center;
+  gap: 8px;
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Structure de base
+.collab-home {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.feed {
+  position: fixed;
+  top: 60px;
+  bottom: 0;
+  left: 250px;
+  width: calc(100% - 250px);
+  overflow-y: auto;
+  background-color: $background-color;
+  transition: all 0.3s ease-in-out;
+ &.sidebar-collapsed {
+    left: 200px;
+    width: 1550px;
+  }
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 3px;
+    
+    &:hover {
+      background: transparent;
+    }
+  }
+}
+
+.content {
+  padding: 32px;
+  max-width: 1200px;
+margin-top: -35px;}
+
+
+// Page header
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  position: relative;
 }
 
 h2 {
-  margin-left: 30px;
-  color: #230046;
-  font-size: 29px;
-  font-weight: bold;
-  margin-bottom: 30px;
+  color: $primary-color;
+  font-size: 28px;
+  font-weight: 600;
   position: relative;
-  padding-bottom: 15px;
-}
-
-h2::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, #230046, #c1006a,#ED6C02);
-  border-radius: 2px;
+  padding-bottom: 16px;
+  margin: 0;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, $primary-color, $secondary-color, #F5AF06);
+    border-radius: 2px;
+  }
 }
 
 h3 {
+  color: $primary-color;
   font-size: 20px;
-  color: #230046;
-  margin-left: 20px;
-    margin-bottom: 20px;
-    margin-top: 10px;
-
+  font-weight: 500;
+  margin: 0;
 }
 
-.no-planning {
-  max-width: 800px;
-  margin-left: 200px;
-  padding: 20px;
-  background: white;
-  border-radius: $border-radius;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+// Month Badge
+.month-badge {
+    margin-top: 23px;
+  width: 90px;
+  height: 90px;
+  z-index: 10;
+  
+  .badge-content {
+    width: 100%;
+    height: 100%;
+    background: $secondary-color;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba($secondary-color, 0.3);
+    animation: pulse 3s infinite ease-in-out;
+    transition: $transition;
+    transform: rotate(-3deg);
+    
+    &:hover {
+      transform: scale(1.05) rotate(0deg);
+      box-shadow: 0 10px 20px rgba($secondary-color, 0.4);
+    }
+    
+    .month-text {
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    
+    .year-text {
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
 }
 
+@keyframes pulse {
+  0% {
+    transform: rotate(-3deg) scale(1);
+    box-shadow: 0 8px 16px rgba($secondary-color, 0.3);
+  }
+  50% {
+    transform: rotate(-3deg) scale(1.03);
+    box-shadow: 0 12px 20px rgba($secondary-color, 0.4);
+  }
+  100% {
+    transform: rotate(-3deg) scale(1);
+    box-shadow: 0 8px 16px rgba($secondary-color, 0.3);
+  }
+}
+
+// Planning Container
+.planning-container {
+ @include card;
+  margin-top: -15px;
+  margin-bottom: 32px;
+}
+
+.planning-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  
+  .planning-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+}
+
+// Calendar Styles
 .calendar-card {
   max-width: 800px;
   padding: 20px;
+    margin-left: 130px;
+
   border-radius: $border-radius;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background: #fdfcfc;
@@ -80,14 +223,14 @@ h3 {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 15px;
-
+  
   .month-year {
     font-size: 18px;
     font-weight: 500;
     color: $primary-color;
     text-transform: uppercase;
   }
-
+  
   .max-days-badge {
     display: inline-flex;
     align-items: center;
@@ -98,6 +241,33 @@ h3 {
     border-radius: 12px;
     font-size: 14px;
     font-weight: 500;
+    
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+      line-height: 18px;
+    }
+  }
+  
+  .nav-button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: $primary-color;
+    cursor: pointer;
+    transition: $transition;
+    
+    &:hover {
+      color: darken($primary-color, 10%);
+    }
+    
+    mat-icon {
+      font-size: 20px;
+      height: 20px;
+      width: 20px;
+      line-height: 20px;
+    }
   }
 }
 
@@ -127,222 +297,113 @@ h3 {
   transition: $transition;
   margin: 0 auto;
   cursor: pointer;
-
+  
   &.filler {
     color: #ccc;
     cursor: default;
   }
-
+  
   &.today {
     background-color: #a2cfff;
     color: #fff;
   }
-
+  
   &.selected {
     background: linear-gradient(135deg, $primary-color, #3a0073);
     color: #fff;
-    opacity: 1 !important;
   }
-
+  
   &.disabled {
-    color: #000000;
-    cursor: not-allowed;
-    background: none !important;
     opacity: 0.5;
+    cursor: not-allowed;
   }
-
-  &:hover:not(.filler):not(.selected):not(.disabled) {
+  
+  &:not(.filler):not(.disabled):not(.selected):hover {
     background: rgba($primary-color, 0.1);
   }
 }
 
+.form-actions {
+  margin-top: 32px;
+  display: flex;
+  justify-content: flex-start;
+}
+
 .save-button {
-  width: auto;
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 8px;
-  background: linear-gradient(45deg, $primary-color, #3a0073);
+  @include button;
+  background: linear-gradient(45deg, $primary-color, darken($primary-color, 10%));
   color: white;
-  border: none;
-  cursor: pointer;
-  transition: $transition;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba($primary-color, 0.4);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba($primary-color, 0.3);
+  }
+  
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    line-height: 18px;
+  }
+}
+
+.nav-link-container {
+  text-align: right;
+}
+
+.nav-link {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 25px;
-  margin-left: 30px;
-
-  &:hover {
-    transform: scale(1.05);
-    background: linear-gradient(45deg, darken($primary-color, 5%), darken(#3a0073, 5%));
-  }
-
-  &:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
-  }
-}
-
-.collab-home {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
-.main-content {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  padding: 0;
-}
-
-.app-sidebar {
-  position: fixed;
-  left: 0;
-  top: 70px;
-  bottom: 0;
-  width: 250px;
-  background: #f4f4f4;
-  z-index: 100;
-}
-
-.feed {
-  position: fixed;
-  top: 70px;
-  bottom: 0;
-  left: 250px;
-  width: calc(100% - 250px);
-  overflow-y: auto;
-  background: #fff;
-  transition: all 0.3s ease-in-out; 
-}
-
-.feed.sidebar-collapsed {
-  left: 135px;
-  width: calc(100% - 100px);
-}
-
-.feed::-webkit-scrollbar {
-  display: none;
-}
-
-// Styles for the animated month badge
-.month-badge {
-  position: absolute;
-  top: 20px;
-  right: 40px;
-  width: 120px;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-
-  .badge-content {
-    width: 100%;
-    height: 100%;
-    background: #c1006a;
-    border-radius: 20%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    animation: pulse 2s infinite ease-in-out;
-    transition: $transition;
-
-    &:hover {
-      transform: scale(1.1) rotate(5deg);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-    }
-
-    .month-text {
-      font-size: 20px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .year-text {
-      font-size: 16px;
-      font-weight: 500;
-    }
-  }
-}
-
-// Keyframes for the pulsing animation
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
-}
-/* Dans planning-user.component.scss */
-
-/* Style pour le lien de pointage */
-.pointage-link {
-  text-align: right;
-  margin: 15px 30px 0 0;
+  gap: 8px;
   color: $primary-color;
-  font-size: 16px;
-  font-weight: 500;
   cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 8px 4px;
   transition: $transition;
-
+  border-bottom: 1px solid transparent;
+  
   &:hover {
-    color: #c1006a;
-    text-decoration: underline;
+    color: darken($primary-color, 10%);
+    border-bottom-color: currentColor;
+    transform: translateX(4px);
+  }
+  
+  .link-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    line-height: 16px;
+    transition: $transition;
+  }
+  
+  &:hover .link-icon {
+    transform: translateX(2px);
   }
 }
 
-/* Ajustements responsifs */
-@media (max-width: 768px) {
-  .pointage-link {
-    margin: 15px 10px 0 0;
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  .pointage-link {
-    margin: 10px 10px 0 0;
-    font-size: 13px;
-  }
-}
-/* Ajustements responsifs */
+// Responsive Styles
 @media (max-width: 1200px) {
-  .feed {
-    left: 250px;
-    width: calc(100% - 250px);
-    max-width: none;
+  .content {
+    padding: 24px;
   }
-
-  .feed.sidebar-collapsed {
-    left: 100px;
-    width: calc(100% - 100px);
-  }
-
+  
   .month-badge {
     width: 100px;
     height: 100px;
-
+    
     .badge-content {
       .month-text {
         font-size: 18px;
       }
-
+      
       .year-text {
         font-size: 14px;
       }
@@ -351,118 +412,75 @@ h3 {
 }
 
 @media (max-width: 768px) {
- 
-.planning-exists {
-  left: 0 px;
-  max-width: 100%;
-  margin-left: -50px;
+  .content {
+    padding: 20px;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  
+  .month-badge {
+    position: static;
+    align-self: flex-end;
+    width: 90px;
+    height: 90px;
+  }
+  
+  .calendar-grid {
+    gap: 4px;
+  }
 }
+
+@media (max-width: 480px) {
   .feed {
     left: 0;
-    right: 0;
     width: 100%;
+    
+    &.sidebar-collapsed {
+      left: 0;
+      width: 100%;
+    }
   }
-
-  .feed.sidebar-collapsed {
-    left: 0;
-    width: 100%;
+  
+  .content {
+    padding: 16px;
   }
-
+  
+  h2 {
+    font-size: 24px;
+  }
+  
   .month-badge {
-    width: 60px;
-    height: 60px;
-    top: 5px;
-    right: 5px;
-
+    width: 70px;
+    height: 70px;
+    
     .badge-content {
       .month-text {
-        font-size: 14px;
+        font-size: 16px;
       }
-
+      
       .year-text {
-        font-size: 10px;
+        font-size: 12px;
       }
     }
   }
-
-  .no-planning,
-  .calendar-card {
-    margin-left: -10 px;
+  
+  .calendar-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
   }
-}
-
-@media screen and (max-width: 1473px) {
-  .app-sidebar {
-    width: 220px;
+  
+  .day-label {
+    font-size: 12px;
   }
-
-  .feed {
-    left: 240px;
-    width: calc(100% - 220px);
-  }
-
-  .feed.sidebar-collapsed {
-    left: 100px;
-    width: calc(100% - 100px);
-  }
-}
-
-@media screen and (max-width: 1024px) {
-  .app-sidebar {
-    width: 200px;
-  }
-
-  .feed {
-    left: 200px;
-    width: calc(100% - 200px);
-  }
-
-  .feed.sidebar-collapsed {
-    left: 100px;
-    width: calc(100% - 100px);
-  }
-}
-
-
-@media screen and (max-width: 480px) {
-  .app-right-sidebar {
-    display: none;
-  }
-
-  .feed {
-    left: 0;
-    right: 0;
-    width: 100%;
-  }
-  .planning-exists {
-    left: 0 px;
-    max-width: 100%;
-    margin-left: -50px;
-  }
-  .feed.sidebar-collapsed {
-    left: 0;
-    width: 100%;
-  }
-
-  .month-badge {
-    width: 60px;
-    height: 60px;
-    top: 5px;
-    right: 5px;
-
-    .badge-content {
-      .month-text {
-        font-size: 14px;
-      }
-
-      .year-text {
-        font-size: 10px;
-      }
+  
+  .calendar-day {
+    .day-number {
+      font-size: 13px;
     }
-  }
-
-  .no-planning,
-  .calendar-card {
-    margin-left: 10px;
   }
 }

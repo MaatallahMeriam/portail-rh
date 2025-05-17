@@ -1,68 +1,90 @@
 <div class="collab-home">
-    <app-header></app-header>
-  
-    <div class="main-content">
-        <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
-        
-        <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
-            <main class="content">
-                <h2>Planning Télétravail :</h2>
+  <app-header></app-header>
 
-                <!-- Badge for Current Month -->
-                <div class="month-badge">
-                    <div class="badge-content">
-                        <span class="month-text">{{ currentMonth | date: 'MMMM' }}</span>
-                        <span class="year-text">{{ currentMonth | date: 'yyyy' }}</span>
-                    </div>
-                </div>
-
-                <!-- Message si aucun planning n'existe -->
-                <div class="no-planning" *ngIf="!userPlanning">
-                    <h3>Aucun planning de télétravail n'est disponible pour ce mois.</h3>
-                </div>
-                <div class="planning-exists">
-                          <h3>Votre PLANNING TT pour ce mois :</h3>
-
-    <!-- Calendrier pour sélectionner ou afficher les jours -->
-    <div class="calendar-card" *ngIf="userPlanning">
-        <div class="calendar-header">
-            <span class="max-days-badge" *ngIf="userPlanning.planning?.nombreJoursMax && userPlanning.planning?.politique !== 'PLANNING_FIXE_JOURS_LIBRES'">
-                <mat-icon>event</mat-icon> Max {{ userPlanning.planning?.nombreJoursMax }} jours
-            </span>
+  <div class="main-content">
+    <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+    
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <main class="content">
+        <div class="page-header">
+          <h2>Planning Télétravail</h2>
+          
+          <!-- Badge for Current Month -->
+          <div class="month-badge">
+            <div class="badge-content">
+              <span class="month-text">{{ currentMonth | date: 'MMMM' }}</span>
+              <span class="year-text">{{ currentMonth | date: 'yyyy' }}</span>
+            </div>
+          </div>
         </div>
-        <div class="calendar-grid">
-            <div class="day-label" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">{{ day }}</div>
-            <div
+
+        <!-- Message si aucun planning n'existe -->
+        <div class="planning-container" *ngIf="!userPlanning">
+          <div class="planning-header">
+            <h3>Aucun planning de télétravail n'est disponible pour ce mois.</h3>
+          </div>
+        </div>
+
+        <!-- Affichage du planning existant -->
+        <div class="planning-container" *ngIf="userPlanning">
+          <div class="planning-header">
+            <div class="planning-title">
+              <h3>Votre PLANNING TT pour ce mois</h3>
+            </div>
+          </div>
+          
+          <div class="calendar-card">
+            <div class="calendar-header">
+              <button class="nav-button" (click)="previousMonth()">
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <span class="month-year">{{ currentMonth | date: 'MMMM yyyy' }}</span>
+              <button class="nav-button" (click)="nextMonth()">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+              <span class="max-days-badge" *ngIf="userPlanning.planning?.nombreJoursMax && userPlanning.planning?.politique !== 'PLANNING_FIXE_JOURS_LIBRES'">
+                <mat-icon>event</mat-icon> Max {{ userPlanning.planning?.nombreJoursMax }} jours
+              </span>
+            </div>
+            <div class="calendar-grid">
+              <div class="day-label" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">{{ day }}</div>
+              <div
                 class="calendar-day"
                 *ngFor="let day of calendarDays"
                 [ngClass]="{
-                    'filler': !day.isCurrentMonth,
-                    'today': day.isToday && !isSelectedDay(day.date),
-                    'selected': isSelectedDay(day.date),
-                    'disabled': (!isDaySelectable(day.date) && !isSelectedDay(day.date)) || (isValidated && !isSelectedDay(day.date))
+                  'filler': !day.isCurrentMonth,
+                  'today': day.isToday && !isSelectedDay(day.date),
+                  'selected': isSelectedDay(day.date),
+                  'disabled': (!isDaySelectable(day.date) && !isSelectedDay(day.date)) || (isValidated && !isSelectedDay(day.date))
                 }"
                 (click)="toggleDay(day.date)"
-            >
-                {{ day.date.getDate() }}
+              >
+                <span class="day-number">{{ day.date.getDate() }}</span>
+              </div>
             </div>
-        </div>
-
-        <!-- Bouton Valider -->
-        <div *ngIf="!isValidated">
-            <button
-                class="add-button save-button"
+            
+            <!-- Bouton Valider si non validé -->
+            <div class="form-actions" *ngIf="!isValidated">
+              <button
+                class="save-button"
                 (click)="validateSelection()"
                 [disabled]="selectedDays.length === 0"
-            >
+              >
+                <mat-icon>check</mat-icon>
                 Valider
-            </button>
-        </div>
-    </div>
+              </button>
+            </div>
+          </div>
 
-    <!-- Lien vers pointage-collab -->
-    <p class="pointage-link" (click)="navigateToPointage()">Consulter mon pointage</p>
-</div>
-            </main>
+          <!-- Lien vers pointage-collab -->
+          <div class="nav-link-container">
+            <a class="nav-link" (click)="navigateToPointage()">
+              <span class="link-text">Consulter mon pointage</span>
+              <mat-icon class="link-icon">arrow_forward</mat-icon>
+            </a>
+          </div>
         </div>
+      </main>
     </div>
+  </div>
 </div>

@@ -1,0 +1,144 @@
+// Base styles for all dashboard widgets
+$primary: #3F2A82;
+$secondary: #E5007F;
+$accent: #F5AF06;
+$light-bg: #f8f9fa;
+$card-bg: #ffffff;
+$text-primary: #333333;
+$text-secondary: #666666;
+$text-light: #999999;
+$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+$border-radius-sm: 8px;
+$border-radius-md: 12px;
+$border-radius-lg: 16px;
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$transition-fast: 0.2s ease;
+$transition-normal: 0.3s ease;
+$transition-slow: 0.5s ease;
+
+@mixin widget-container {
+  background-color: $card-bg;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-sm;
+  height: 100%;
+  transition: transform $transition-normal, box-shadow $transition-normal;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+}
+
+@mixin widget-header {
+  padding: $spacing-md $spacing-md $spacing-sm;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: $secondary;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 30px;
+      height: 3px;
+      background-color: $accent;
+      border-radius: 3px;
+    }
+  }
+}
+
+@mixin widget-content {
+  padding: $spacing-md;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin avatar($size: 40px) {
+  width: $size;
+  height: $size;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: $shadow-sm;
+}
+
+@mixin badge($bg-color: $accent) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 $spacing-sm;
+  height: 20px;
+  border-radius: 10px;
+  background-color: $bg-color;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+@mixin button($bg-color: $secondary) {
+  background-color: $bg-color;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: $spacing-sm $spacing-md;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color $transition-fast, transform $transition-fast;
+  
+  &:hover {
+    background-color: darken($bg-color, 10%);
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}

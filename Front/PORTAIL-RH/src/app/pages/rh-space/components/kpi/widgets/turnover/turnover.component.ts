@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { interval, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { KpiService, Kpi } from '../../../../../../services/kpi.service';
@@ -8,191 +9,430 @@ import { KpiService, Kpi } from '../../../../../../services/kpi.service';
 @Component({
   selector: 'app-turnover',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   template: `
     <div class="widget-container">
       <div class="widget-header">
         <h3>Turnover Rate</h3>
-        <div class="date-mesure">{{ kpi?.dateCalcul | date:'MMMM yyyy' }}</div>
-        <div class="menu-container">
-          <!-- Menu options can be added here if needed -->
+        <div class="refresh-button" (click)="loadKpi()" [class.rotating]="isRefreshing">
+          <mat-icon>refresh</mat-icon>
         </div>
       </div>
-      <div class="turnover-content">
-        <div class="turnover-rate">{{ kpi?.turnover }}%</div>
+      <div class="widget-content">
+        <div class="calculation-date">
+          <mat-icon>calendar_today</mat-icon>
+          <span>{{ kpi?.dateCalcul | date:'MMMM yyyy' }}</span>
+        </div>
+        
+        <div class="turnover-display">
+          <div class="turnover-rate" [ngClass]="getTurnoverRateClass()">
+            {{ kpi?.turnover }}%
+          </div>
+          <div class="turnover-gauge">
+            <div class="gauge-fill" [style.width.%]="getGaugeWidth()"></div>
+            </div>
+        </div>
+        
         <div class="turnover-details">
-          <div class="detail-item">Nombre de départs: {{ kpi?.nbreDepart }}</div>
-          <div class="detail-item">Effectif moyen: {{ kpi?.effectifMoyen }}</div>
+          <div class="detail-card">
+            <div class="detail-icon">
+              <mat-icon>people_alt</mat-icon>
+            </div>
+            <div class="detail-content">
+              <div class="detail-label">Effectif moyen</div>
+              <div class="detail-value">{{ kpi?.effectifMoyen }}</div>
+            </div>
+          </div>
+          
+          <div class="detail-card">
+            <div class="detail-icon departure">
+              <mat-icon>exit_to_app</mat-icon>
+            </div>
+            <div class="detail-content">
+              <div class="detail-label">Départs</div>
+              <div class="detail-value">{{ kpi?.nbreDepart }}</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   `,
-  styles: [
-    `
-      .menu-button {
-        background: none;
-        border: none;
-        font-size: 20px;
-        cursor: pointer;
-        color: #E91E63;
-      }
+  styles: [`
+    // Base styles for all dashboard widgets
+    $primary: #3F2A82;
+    $secondary: #E5007F;
+    $accent: #F5AF06;
+    $light-bg: #f8f9fa;
+    $card-bg: #ffffff;
+    $text-primary: #333333;
+    $text-secondary: #666666;
+    $text-light: #999999;
+    $shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    $shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    $shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    $border-radius-sm: 8px;
+    $border-radius-md: 12px;
+    $border-radius-lg: 16px;
+    $spacing-xs: 4px;
+    $spacing-sm: 8px;
+    $spacing-md: 16px;
+    $spacing-lg: 24px;
+    $spacing-xl: 32px;
+    $transition-fast: 0.2s ease;
+    $transition-normal: 0.3s ease;
+    $transition-slow: 0.5s ease;
 
-      .menu-container {
-        position: relative;
+    @mixin widget-container {
+      background-color: $card-bg;
+      border-radius: $border-radius-md;
+      box-shadow: $shadow-sm;
+      height: 100%;
+      transition: transform $transition-normal, box-shadow $transition-normal;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
       }
+    }
 
-      .dropdown-menu {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        padding: 15px;
-        z-index: 1000;
-        min-width: 250px;
-      }
-
-      .turnover-form {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-
-      .form-group label {
-        font-size: 14px;
-        color: #E5007F;
-        font-weight: 500;
-      }
-
-      .form-group input {
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-      }
-
-      .calculate-button {
-        background-color: #e91e63;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: 500;
-        margin-top: 8px;
-        transition: background-color 0.2s;
-      }
-
-      .calculate-button:hover {
-        background-color: #3e0f23;
-      }
-
-      .widget-container {
-        background-color: #f5f5f5;
-        border-radius: 15px;
-        padding: 15px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .widget-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-      }
-
-      .widget-header h3 {
+    @mixin widget-header {
+      padding: $spacing-md $spacing-md $spacing-sm;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      h3 {
         margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: $secondary;
+        position: relative;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -8px;
+          left: 0;
+          width: 30px;
+          height: 3px;
+          background-color: $accent;
+          border-radius: 3px;
+        }
+      }
+    }
+
+    @mixin widget-content {
+      padding: $spacing-md;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @mixin avatar($size: 40px) {
+      width: $size;
+      height: $size;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+      box-shadow: $shadow-sm;
+    }
+
+    @mixin badge($bg-color: $accent) {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 $spacing-sm;
+      height: 20px;
+      border-radius: 10px;
+      background-color: $bg-color;
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    @mixin button($bg-color: $secondary) {
+      background-color: $bg-color;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: $spacing-sm $spacing-md;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color $transition-fast, transform $transition-fast;
+      
+      &:hover {
+        background-color: darken($bg-color, 10%);
+        transform: translateY(-1px);
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    // Animations
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideInUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    // Component-specific styles
+    .widget-container {
+      @include widget-container();
+    }
+    
+    .widget-header {
+      @include widget-header();
+    }
+    
+    .refresh-button {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: all $transition-normal;
+      
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+      
+      &.rotating mat-icon {
+        animation: rotate 1s linear infinite;
+      }
+      
+      mat-icon {
+        color: $secondary;
         font-size: 20px;
-        font-weight: bold;
-        color: #E5007F;
+        height: 20px;
+        width: 20px;
       }
-
-      .date-mesure {
-        font-size: 14px;
-        color: #56142f;
-        font-weight: 500;
+    }
+    
+    .widget-content {
+      @include widget-content();
+      gap: $spacing-lg;
+    }
+    
+    .calculation-date {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      color: $text-secondary;
+      font-size: 14px;
+      
+      mat-icon {
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
       }
-
-      .turnover-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        flex-grow: 1;
-        gap: 20px;
+    }
+    
+    .turnover-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: $spacing-md;
+      padding: $spacing-md 0;
+    }
+    
+    .turnover-rate {
+      font-size: 48px;
+      font-weight: 700;
+      transition: color $transition-normal;
+      
+      &.low {
+        color: #4CAF50; // Green for good (low turnover)
       }
-
-      .turnover-rate {
-        font-size: 48px;
-        font-weight: bold;
-        color: #1a237e;
+      
+      &.medium {
+        color: #FF9800; // Orange for caution
       }
-
-      .turnover-details {
-        background-color: #ffc107;
-        border-radius: 25px;
-        padding: 15px;
-        text-align: center;
-        width: 100%;
-        max-width: 250px;
+      
+      &.high {
+        color: #F44336; // Red for warning (high turnover)
       }
-
-      .detail-item {
-        color: white;
-        font-weight: 500;
-        margin-bottom: 5px;
+    }
+    
+    .turnover-gauge {
+      margin-top : 125px;
+      width: 100%;
+      height: 8px;
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .gauge-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: linear-gradient(to right, #4CAF50, #FF9800, #F44336);
+      border-radius: 4px;
+      transition: width 1s ease-in-out;
+    }
+    
+    .turnover-details {
+      display: flex;
+      gap: $spacing-md;
+      width: 100%;
+    }
+    
+    .detail-card {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      padding: $spacing-md;
+      background-color: rgba(0, 0, 0, 0.02);
+      border-radius: $border-radius-sm;
+      transition: all $transition-normal;
+      
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        transform: translateY(-2px);
       }
-    `,
-  ],
+    }
+    
+    .detail-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(63, 42, 130, 0.1);
+      border-radius: 50%;
+      
+      &.departure {
+        background-color: rgba(229, 0, 127, 0.1);
+      }
+      
+      mat-icon {
+        color: $primary;
+        font-size: 20px;
+        height: 20px;
+        width: 20px;
+      }
+      
+      &.departure mat-icon {
+        color: $secondary;
+      }
+    }
+    
+    .detail-content {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .detail-label {
+      font-size: 12px;
+      color: $text-secondary;
+    }
+    
+    .detail-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: $text-primary;
+    }
+    
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  `],
 })
 export class TurnoverComponent implements OnInit, OnDestroy {
   kpi: Kpi | null = null;
   private subscription: Subscription | null = null;
+  isRefreshing = false;
 
   constructor(private kpiService: KpiService) {}
 
   ngOnInit(): void {
-    // Récupérer les données initiales
+    // Load initial data
     this.loadKpi();
 
-    // Configurer le polling pour mettre à jour toutes les heures
-    this.subscription = interval(3600000) // 1 heure = 3600000ms
+    // Set up polling to update hourly
+    this.subscription = interval(3600000) // 1 hour = 3600000ms
       .pipe(switchMap(() => this.kpiService.getLatestKpi()))
       .subscribe({
         next: (kpi) => {
           this.kpi = kpi;
         },
         error: (err) => {
-          console.error('Erreur lors de la récupération du KPI:', err);
+          console.error('Error retrieving KPI:', err);
         },
       });
   }
 
   ngOnDestroy(): void {
-    // Nettoyer l'abonnement pour éviter les fuites de mémoire
+    // Clean up subscription to prevent memory leaks
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
 
-  private loadKpi(): void {
+  loadKpi(): void {
+    this.isRefreshing = true;
     this.kpiService.getLatestKpi().subscribe({
       next: (kpi) => {
         this.kpi = kpi;
+        setTimeout(() => {
+          this.isRefreshing = false;
+        }, 1000);
       },
       error: (err) => {
-        console.error('Erreur lors de la récupération initiale du KPI:', err);
+        console.error('Error retrieving initial KPI:', err);
+        this.isRefreshing = false;
       },
     });
+  }
+  
+  getTurnoverRateClass(): string {
+    if (!this.kpi) return '';
+    
+    const rate = this.kpi.turnover;
+    if (rate <= 10) return 'low';
+    if (rate <= 20) return 'medium';
+    return 'high';
+  }
+  
+  getGaugeWidth(): number {
+    if (!this.kpi) return 0;
+    
+    // Limit the gauge to a max of 100%
+    // Assuming 30% turnover is the "max" we want to show visually
+    return Math.min(100, (this.kpi.turnover / 30) * 100);
   }
 }

@@ -51,8 +51,8 @@
                                     <mat-icon>attach_file</mat-icon> Changer l'image
                                 </label>
                                 <input id="edit-idea-image-upload" type="file" (change)="onEditFileSelected($event)" accept="image/*" style="display: none;" />
-                                <button mat-flat-button color="primary" (click)="saveEdit()">Enregistrer</button>
-                                <button mat-flat-button (click)="cancelEdit()">Annuler</button>
+                                <button  class="button" (click)="saveEdit()">Enregistrer</button>
+                                <button  class="button" (click)="cancelEdit()">Annuler</button>
                             </div>
                         </ng-container>
                         <ng-template #showIdea>
