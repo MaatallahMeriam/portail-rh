@@ -59,7 +59,7 @@ h3 {
   /* Déplace le "+" vers le haut */
   &::before {
     content: '+';
-    transform: translateY(-10%); /* Ajustez la valeur (-10%, -5px, etc.) selon le besoin */
+    transform: translateY(-5%); /* Ajustez la valeur (-10%, -5px, etc.) selon le besoin */
   }
 
   &:hover {

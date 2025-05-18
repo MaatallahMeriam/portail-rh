@@ -140,13 +140,14 @@
   <div class="modal-content">
     <h3>Modifier {{ fieldDisplayName(editingField) }}</h3>
     
-    <ng-template #textInput>
+    <div class="text-input-container">
       <input
         [type]="editingField === 'dateNaissance' ? 'date' : 'text'"
         [(ngModel)]="editingValue"
         [placeholder]="'Nouveau ' + fieldDisplayName(editingField)"
       >
-    </ng-template>
+    </div>
+    
     <div class="modal-actions">
       <button class="save-button" (click)="saveEdit()">Enregistrer</button>
       <button class="cancel-button" (click)="cancelEdit()">Annuler</button>

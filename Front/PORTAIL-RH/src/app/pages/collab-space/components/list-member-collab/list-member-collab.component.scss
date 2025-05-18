@@ -25,7 +25,61 @@ $transition: all 0.3s ease;
   margin-top: -10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);;
 }
+.modal-content {
+  /* Existing styles */
+  background: #FFFF;
+  padding: 30px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
 
+  /* Ensure inputs within the modal are styled consistently */
+  .text-input-container {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  input[type="text"],
+  input[type="date"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #230046;
+    background: #f8f9fa;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    /* Placeholder styling */
+    &::placeholder {
+      color: #999;
+      font-size: 14px;
+    }
+
+    /* Focus state */
+    &:focus {
+      border-color: #230046;
+      box-shadow: 0 0 5px rgba(35, 0, 70, 0.2);
+      outline: none;
+    }
+
+    /* Date input specific styling */
+    &[type="date"] {
+      /* Ensure date picker looks consistent */
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background: #f8f9fa url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path fill="%23666" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 15px center;
+      padding-right: 35px; /* Space for custom arrow */
+    }
+  }
+
+  /* Error state (optional, if you add validation) */
+  input.invalid {
+    border-color: #e5007f;
+    background: #fff5f8;
+  }
+}
 
 .main-content {
   display: flex;

@@ -65,7 +65,7 @@ public class PublicationServiceImpl implements PublicationService {
         if (publication instanceof FeedPost feed) {
             String mediaUrl = feed.getMediaUrl() != null
                     ? ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/Uploads/feed/" + feed.getMediaUrl().substring(UPLOAD_DIR_MEDIA.length()).replace("\\", "/"))
+                    .path("/Uploads/feed/" + feed.getMediaUrl().replace("\\", "/"))
                     .toUriString()
                     : null;
             dto.setMediaUrl(mediaUrl);
@@ -78,7 +78,7 @@ public class PublicationServiceImpl implements PublicationService {
         } else if (publication instanceof NewsPost news) {
             String imageUrl = news.getImageUrl() != null
                     ? ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/Uploads/news/" + news.getImageUrl().substring(UPLOAD_DIR.length()).replace("\\", "/"))
+                    .path("/Uploads/news/" + news.getImageUrl().replace("\\", "/"))
                     .toUriString()
                     : null;
             dto.setImageUrl(imageUrl);

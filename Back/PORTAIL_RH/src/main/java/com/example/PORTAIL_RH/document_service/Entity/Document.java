@@ -21,7 +21,7 @@ public class Document {
     @Column(nullable = false)
     private String type;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT") // Use TEXT instead of VARCHAR
     private String description;
 
     @Column(nullable = false, unique = true)
