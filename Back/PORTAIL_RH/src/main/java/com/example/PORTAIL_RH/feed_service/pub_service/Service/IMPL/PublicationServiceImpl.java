@@ -87,7 +87,7 @@ public class PublicationServiceImpl implements PublicationService {
         } else if (publication instanceof IdeeBoitePost idee) {
             String imageUrl = idee.getImage() != null
                     ? ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/Uploads/idee/" + idee.getImage().substring(UPLOAD_DIR_IDEE.length()).replace("\\", "/"))
+                    .path("/Uploads/idee/" + idee.getImage().replace("\\", "/"))
                     .toUriString()
                     : null;
             dto.setImage(imageUrl);

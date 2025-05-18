@@ -10,7 +10,10 @@ import lombok.*;
 @PrimaryKeyJoinColumn(name = "publication_id")
 public class FeedPost extends Publication {
 
+    @Column(name = "mediaUrl")
     private String mediaUrl;
+
+    @Column(name = "content", length = 2000) // Increased length to 2000 characters
     private String content;
 
     @Lob

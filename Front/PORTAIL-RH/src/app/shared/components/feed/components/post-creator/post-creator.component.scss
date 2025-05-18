@@ -18,7 +18,14 @@
     width: 1080px;
   }
 }
-
+.error-message {
+  color: #d33;
+  font-size: 0.85rem;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
 .post-creator-header {
   display: flex;
   gap: $spacing-md;

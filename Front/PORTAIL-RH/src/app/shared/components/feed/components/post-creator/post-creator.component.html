@@ -2,21 +2,22 @@
   <div class="post-creator-header">
     <img [src]="getDefaultUserPhoto()" alt="Profile" class="user-avatar">
     <div class="post-input-container">
-      <textarea 
-        [(ngModel)]="newPostContent" 
+      <textarea
+        [(ngModel)]="newPostContent"
         placeholder="Que souhaitez-vous partager ?"
         class="post-textarea"
-        >
-      </textarea>
+        maxlength="2000" 
+        (input)="validateContentLength()" 
+      ></textarea>
     </div>
   </div>
-  
+
   <div class="emoji-picker-container" *ngIf="showEmojiPicker">
     <div class="emoji-picker">
       <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)" class="emoji">{{ emoji }}</span>
     </div>
   </div>
-  
+
   <div class="post-creator-footer" (click)="$event.stopPropagation()">
     <div class="file-attachment">
       <!-- Media Attachment (Images/Videos) -->
@@ -25,14 +26,15 @@
           <mat-icon>image</mat-icon>
           <span></span>
         </label>
-        <input 
-          id="post-file-input" 
-          type="file" 
-          (change)="onFileSelected($event)" 
-          accept="image/*,video/*" 
-          class="hidden-input">
+        <input
+          id="post-file-input"
+          type="file"
+          (change)="onFileSelected($event)"
+          accept="image/*,video/*"
+          class="hidden-input"
+        >
       </ng-container>
-      
+
       <ng-template #selectedFileTemplate>
         <div class="selected-file">
           <span class="file-name">{{ selectedFile?.name }}</span>
@@ -48,14 +50,15 @@
           <mat-icon>description</mat-icon>
           <span></span>
         </label>
-        <input 
-          id="post-document-input" 
-          type="file" 
-          (change)="onDocumentSelected($event)" 
-          accept=".pdf,.doc,.docx" 
-          class="hidden-input">
+        <input
+          id="post-document-input"
+          type="file"
+          (change)="onDocumentSelected($event)"
+          accept=".pdf,.doc,.docx"
+          class="hidden-input"
+        >
       </ng-container>
-      
+
       <ng-template #selectedDocumentTemplate>
         <div class="selected-file">
           <span class="file-name">{{ selectedDocument?.name }}</span>
@@ -69,12 +72,13 @@
         <mat-icon>emoji_emotions</mat-icon>
       </button>
     </div>
-    
-    <button 
-      class="post-button" 
-      [disabled]="isSubmitting"
+
+    <button
+      class="post-button"
+      [disabled]="isSubmitting || contentLengthError"
       [class.loading]="isSubmitting"
-      (click)="addPost()">
+      (click)="addPost()"
+    >
       <span *ngIf="!isSubmitting">Publier</span>
       <span *ngIf="isSubmitting" class="spinner"></span>
     </button>

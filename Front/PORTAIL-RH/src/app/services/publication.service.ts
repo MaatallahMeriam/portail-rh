@@ -161,22 +161,28 @@ export class PublicationService {
     }
 
     createIdeeBoitePost(userId: string, idee: string, topic: string, image: File): Observable<PublicationDTO> {
-        if (!idee.trim() || !topic.trim()) {
-            return throwError(() => new Error('L\'idée et le sujet ne peuvent pas être vides.'));
-        }
-        if (!image || !this.validateFile(image)) {
-            return throwError(() => new Error('Image invalide. Seuls les fichiers JPEG, PNG ou GIF de moins de 5 Mo sont acceptés.'));
-        }
+  if (!idee.trim() || !topic.trim()) {
+    return throwError(() => new Error("L'idée et le sujet ne peuvent pas être vides."));
+  }
+  if (idee.length > 1000) {
+    return throwError(() => new Error("L'idée ne peut pas dépasser 1000 caractères."));
+  }
+  if (topic.length > 500) {
+    return throwError(() => new Error("Le sujet ne peut pas dépasser 500 caractères."));
+  }
+  if (!image || !this.validateFile(image)) {
+    return throwError(() => new Error("Image invalide. Seuls les fichiers JPEG, PNG ou GIF de moins de 5 Mo sont acceptés."));
+  }
 
-        const formData = new FormData();
-        formData.append('userId', userId);
-        formData.append('idee', idee);
-        formData.append('topic', topic);
-        formData.append('image', image, image.name);
-        return this.http.post<PublicationDTO>(`${this.apiUrl}/idee-boite/upload`, formData).pipe(
-            catchError(this.handleError)
-        );
-    }
+  const formData = new FormData();
+  formData.append("userId", userId);
+  formData.append("idee", idee);
+  formData.append("topic", topic);
+  formData.append("image", image, image.name);
+  return this.http
+    .post<PublicationDTO>(`${this.apiUrl}/idee-boite/upload`, formData)
+    .pipe(catchError(this.handleError));
+}
 
     getAllIdeeBoitePosts(): Observable<PublicationDTO[]> {
         return this.http.get<PublicationDTO[]>(`${this.apiUrl}/idee-boite`).pipe(

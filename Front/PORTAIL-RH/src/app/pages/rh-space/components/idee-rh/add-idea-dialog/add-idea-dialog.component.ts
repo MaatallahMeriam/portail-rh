@@ -6,7 +6,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
 @Component({
   selector: 'app-add-idea-dialog',
   standalone: true,
@@ -16,47 +15,89 @@ import { CommonModule } from '@angular/common';
     MatButtonModule,
     MatIconModule,
     MatInputModule,
-    MatFormFieldModule
+    MatFormFieldModule,
   ],
   template: `
     <div class="dialog-container">
       <div class="dialog-header">
         <h2>Exprimez votre idée !</h2>
         <button mat-icon-button class="close-btn" (click)="onClose()">
-          <mat-icon class="icon" >close</mat-icon>
+          <mat-icon class="icon">close</mat-icon>
         </button>
       </div>
       <div class="dialog-content">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Sujet de l'idée</mat-label>
-          <input  class="input" matInput [(ngModel)]="data.newTopic" placeholder="Entrez le sujet de l'idée" required>
+          <input
+            class="input"
+            matInput
+            [(ngModel)]="data.newTopic"
+            placeholder="Entrez le sujet de l'idée"
+            required
+            maxlength="500"
+            (input)="validateTopicLength()"
+          />
+          <mat-hint *ngIf="topicLengthError" class="error-message">
+            Le sujet ne peut pas dépasser 500 caractères.
+          </mat-hint>
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Description de l'idée</mat-label>
-          <textarea class="textarea" matInput [(ngModel)]="data.newIdea" placeholder="Partagez votre idée..." rows="4" required></textarea>
+          <textarea
+            class="textarea"
+            matInput
+            [(ngModel)]="data.newIdea"
+            placeholder="Partagez votre idée..."
+            rows="4"
+            required
+            maxlength="1000"
+            (input)="validateIdeaLength()"
+          ></textarea>
+          <mat-hint *ngIf="ideaLengthError" class="error-message">
+            La description ne peut pas dépasser 1000 caractères.
+          </mat-hint>
         </mat-form-field>
         <div class="file-upload">
           <label for="dialog-idea-image-upload" class="upload-btn">
             <mat-icon>attach_file</mat-icon>
             Joindre une image
           </label>
-          <input id="dialog-idea-image-upload" type="file" (change)="onFileSelected($event)" accept="image/*">
-          <span *ngIf="data.selectedFile" class="file-name">{{ data.selectedFile.name }}</span>
+          <input
+            id="dialog-idea-image-upload"
+            type="file"
+            (change)="onFileSelected($event)"
+            accept="image/*"
+          />
+          <span *ngIf="data.selectedFile" class="file-name">{{
+            data.selectedFile.name
+          }}</span>
         </div>
       </div>
       <div class="dialog-actions">
-        <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="!data.newTopic || !data.newIdea || !data.selectedFile">Soumettre</button>
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="onSubmit()"
+          [disabled]="
+            !data.newTopic ||
+            !data.newIdea ||
+            !data.selectedFile ||
+            topicLengthError ||
+            ideaLengthError
+          "
+        >
+          Soumettre
+        </button>
       </div>
     </div>
   `,
   styles: [`
-  .icon {
-    margin-bottom : 30px ;
-
-  }
-  .input {
-    border-radius : 20px;
-  }
+    .icon {
+      margin-bottom: 30px;
+    }
+    .input {
+      border-radius: 20px;
+    }
     .dialog-container {
       padding: 20px;
       max-width: 500px;
@@ -198,9 +239,17 @@ import { CommonModule } from '@angular/common';
     button[mat-flat-button]:hover:not([disabled]) {
       background-color: #d40070;
     }
-  `]
+
+    .error-message {
+      color: #d33;
+      font-size: 0.85rem;
+    }
+  `],
 })
 export class AddIdeaDialogComponent {
+  topicLengthError: boolean = false;
+  ideaLengthError: boolean = false;
+
   constructor(
     public dialogRef: MatDialogRef<AddIdeaDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { newIdea: string; newTopic: string; selectedFile?: File }
@@ -213,7 +262,18 @@ export class AddIdeaDialogComponent {
     }
   }
 
+  validateTopicLength(): void {
+    this.topicLengthError = this.data.newTopic.length > 500;
+  }
+
+  validateIdeaLength(): void {
+    this.ideaLengthError = this.data.newIdea.length > 1000;
+  }
+
   onSubmit(): void {
+    if (this.topicLengthError || this.ideaLengthError) {
+      return;
+    }
     this.dialogRef.close(this.data);
   }
 

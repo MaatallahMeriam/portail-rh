@@ -27,6 +27,7 @@ export class PostCreatorComponent {
   isSubmitting: boolean = false;
   showEmojiPicker: boolean = false;
   errorMessage: string | null = null;
+  contentLengthError: boolean = false; // New property for length validation
   emojis: string[] = ['😊', '😂', '❤️', '👍', '😍', '😢', '😡', '🎉', '🙌', '💡'];
 
   constructor(private publicationService: PublicationService) {}
@@ -68,6 +69,16 @@ export class PostCreatorComponent {
     this.newPostContent += emoji;
     this.showEmojiPicker = false;
     this.errorMessage = null;
+    this.validateContentLength(); // Validate after adding emoji
+  }
+
+  validateContentLength(): void {
+    this.contentLengthError = this.newPostContent.length > 2000;
+    if (this.contentLengthError) {
+      this.errorMessage = 'Le contenu ne peut pas dépasser 2000 caractères.';
+    } else if (this.errorMessage === 'Le contenu ne peut pas dépasser 2000 caractères.') {
+      this.errorMessage = null;
+    }
   }
 
   addPost(): void {
@@ -75,8 +86,12 @@ export class PostCreatorComponent {
     const isContentEmpty = !this.newPostContent.trim() && !isOnlyEmojis && !this.selectedFile && !this.selectedDocument;
 
     if (isContentEmpty) {
-      this.errorMessage = 'Post vide'; // Updated error message
+      this.errorMessage = 'Post vide';
       return;
+    }
+
+    if (this.contentLengthError) {
+      return; // Already handled by validation
     }
 
     if (!this.userId || this.isSubmitting) {
@@ -113,6 +128,7 @@ export class PostCreatorComponent {
     this.selectedDocument = undefined;
     this.showEmojiPicker = false;
     this.errorMessage = null;
+    this.contentLengthError = false;
     const fileInput = document.getElementById('post-file-input') as HTMLInputElement;
     const documentInput = document.getElementById('post-document-input') as HTMLInputElement;
     if (fileInput) fileInput.value = '';

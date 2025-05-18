@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-
 @Setter
 @Getter
 @Entity
@@ -13,13 +12,13 @@ import java.util.List;
 @PrimaryKeyJoinColumn(name = "publication_id")
 public class IdeeBoitePost extends Publication {
 
-    @Column(name = "idee", nullable = false)
+    @Column(name = "idee", nullable = false, length = 1000) // Increased length to 1000
     private String idee;
 
     @Column(name = "image")
     private String image;
 
-    @Column(name = "topic", nullable = false)
+    @Column(name = "topic", nullable = false, length = 500) // Increased length to 500
     private String topic;
 
     @Column(name = "average_rate", nullable = false, columnDefinition = "INTEGER DEFAULT 0")
