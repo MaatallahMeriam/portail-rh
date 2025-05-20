@@ -34,6 +34,8 @@ public interface UsersService {
 
     void deleteUser(Long id);
 
+    boolean modifierPWD(Long userId, String newPassword);
+
     DossierUser getDossierByUserId(Long userId);
 
     UsersDTO activateUser(Long id);

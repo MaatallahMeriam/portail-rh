@@ -235,7 +235,6 @@ h3 {
     color: $error-color;
   }
 }
-
 .leave-balance {
   margin: 20px 0;
   flex: 1;
@@ -264,15 +263,15 @@ h3 {
     box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
 
     &.leave-paid {
-      background: linear-gradient(135deg, #948185, #B39DA2);
+      background: #fabd80; // Light yellow to soft peach-orange
     }
 
     &.leave-authorization {
-      background: linear-gradient(135deg, #65538B, #6762A7);
+      background: #f4adc6; // Light pink to light purple
     }
 
     &.leave-other {
-      background: linear-gradient(135deg, #3E204C, #56142F);
+      background: #a19ed8; // Light purple to very light blue
     }
 
     .content-card {
@@ -319,7 +318,6 @@ h3 {
     }
   }
 }
-
 .carousel-slide {
   transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
 }
@@ -502,17 +500,17 @@ h3 {
     color: #fff;
 
     &.leave-paid {
-      background: linear-gradient(135deg, #948185, #B39DA2);
+      background: #fabd80; // Light yellow to soft peach-orange
     }
 
     &.leave-authorization {
-      background: linear-gradient(135deg, #65538B, #6762A7);
+      background: #f4adc6; // Light pink to light purple
     }
 
     &.leave-other {
-      background: linear-gradient(135deg, #3E204C, #56142F);
+      background: #a19ed8; // Light purple to very light blue
     }
-
+    
     &:hover {
       opacity: 0.8;
     }

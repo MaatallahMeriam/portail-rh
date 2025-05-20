@@ -30,7 +30,7 @@ export class InfosUserComponent implements OnInit {
   userId: number | null = null;
   dossierId: number | null = null;
   showBadgeMenu = false;
-  editingField: keyof UserUpdateFullDTO | null = null; // Updated to keyof UserUpdateFullDTO
+  editingField: keyof UserUpdateFullDTO | 'password' | null = null; // Updated to include 'password'
   editingValue: string = '';
   isSidebarCollapsed = false;
 
@@ -130,8 +130,8 @@ export class InfosUserComponent implements OnInit {
     }
   }
 
-  fieldDisplayName(field: keyof UserDTO): string {
-    const fieldNames: { [key in keyof UserDTO]?: string } = {
+  fieldDisplayName(field: keyof UserUpdateFullDTO | 'password'): string {
+    const fieldNames: { [key in keyof UserUpdateFullDTO | 'password']?: string } = {
       userName: 'Nom d\'utilisateur',
       nom: 'Nom',
       prenom: 'Prénom',
@@ -141,39 +141,62 @@ export class InfosUserComponent implements OnInit {
       role: 'Rôle',
       dateNaissance: 'Date de naissance',
       numero: 'Numéro de téléphone',
-      active: 'Statut'
+      password: 'Mot de passe',
     };
     return fieldNames[field] || field;
   }
 
-  editField(fieldName: keyof UserDTO): void {
+  editField(fieldName: keyof UserUpdateFullDTO | 'password'): void {
     const validFields: (keyof UserUpdateFullDTO)[] = ['userName', 'nom', 'prenom', 'mail', 'numero', 'dateNaissance', 'poste', 'departement', 'role'];
-    if (!validFields.includes(fieldName as keyof UserUpdateFullDTO)) {
+    if (!validFields.includes(fieldName as keyof UserUpdateFullDTO) && fieldName !== 'password') {
       Swal.fire({
         icon: 'info',
         title: 'Mise à jour non disponible',
-        text: `La modification de ${this.fieldDisplayName(fieldName)} n\'est pas prise en charge via cet écran.`,
+        text: `La modification de ${this.fieldDisplayName(fieldName)} n'est pas prise en charge via cet écran.`,
       });
       return;
     }
 
-    this.editingField = fieldName as keyof UserUpdateFullDTO;
-    if (fieldName === 'active') {
-      this.editingValue = this.user?.active ? 'true' : 'false';
-    } else if (fieldName === 'dateNaissance') {
+    this.editingField = fieldName;
+    if (fieldName === 'dateNaissance') {
       if (this.user?.dateNaissance) {
         const [day, month, year] = this.user.dateNaissance.split('/');
         this.editingValue = `${year}-${month}-${day}`;
       } else {
         this.editingValue = '';
       }
+    } else if (fieldName === 'password') {
+      this.editingValue = ''; // Password field starts empty
     } else {
-      this.editingValue = this.user?.[fieldName]?.toString() || '';
+      this.editingValue = this.user?.[fieldName as keyof UserDTO]?.toString() || '';
     }
   }
 
   saveEdit(): void {
     if (!this.user || !this.editingField || !this.userId) return;
+
+    if (this.editingField === 'password') {
+      this.userService.modifierPassword(this.userId!, this.editingValue).subscribe({
+        next: (message) => {
+          this.editingField = null;
+          this.editingValue = '';
+          Swal.fire({
+            icon: 'success',
+            title: 'Succès',
+            text: message,
+          });
+        },
+        error: (err) => {
+          console.error('Erreur lors de la modification du mot de passe:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: err.error?.message || 'Impossible de modifier le mot de passe.',
+          });
+        }
+      });
+      return;
+    }
 
     const updateData: UserUpdateFullDTO = {};
 

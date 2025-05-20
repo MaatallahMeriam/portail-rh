@@ -104,7 +104,15 @@
                 </button>
               </div>
             </div>
-
+                <div class="detail-group">
+                  <label>Mot de passe</label>
+                  <div class="detail-value">
+                    <span>********</span>
+                    <button class="edit-button" (click)="editField('password')">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  </div>
+                </div>
             <!-- Added Fields -->
             <div class="detail-group">
               <label>Date de naissance</label>
@@ -142,7 +150,7 @@
     
     <div class="text-input-container">
       <input
-        [type]="editingField === 'dateNaissance' ? 'date' : 'text'"
+        [type]="editingField === 'dateNaissance' ? 'date' : editingField === 'password' ? 'password' : 'text'"
         [(ngModel)]="editingValue"
         [placeholder]="'Nouveau ' + fieldDisplayName(editingField)"
       >

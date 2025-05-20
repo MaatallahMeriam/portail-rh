@@ -84,7 +84,7 @@ export interface BirthdayUser {
   birthdate: string;
   avatar: string;
   isTodayBirthday: boolean;
-  daysUntilBirthday?: number;
+  daysUntilBirthday: number;
 }
 
 export interface WishData {
@@ -120,6 +120,23 @@ export class UserService {
       })
     );
   }
+
+  modifierPassword(userId: number, newPassword: string): Observable<string> {
+  const url = `${this.apiUrl}/users/${userId}/modifier-password?newPassword=${encodeURIComponent(newPassword)}`;
+  return this.http.post<{ message: string }>(url, null, this.getAuthHeaders()).pipe(
+    map(response => response.message), // Extraire le champ 'message'
+    catchError((error) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: error.error?.message || 'Erreur lors de la modification du mot de passe.',
+      });
+      return throwError(error);
+    })
+  );
+}
+
+
   updatePassword(userId: number, oldPassword: string, newPassword: string): Observable<string> {
     const url = `${this.apiUrl}/users/${userId}/update-password?oldPassword=${encodeURIComponent(oldPassword)}&newPassword=${encodeURIComponent(newPassword)}`;
     return this.http.post<{ message: string }>(url, null, this.getAuthHeaders()).pipe(
@@ -394,18 +411,30 @@ exportActiveUsersToCSV(): Observable<void> {
     );
   }
 
-  getBirthdays(): Observable<BirthdayUser[]> {
-    return this.getAllActiveUsers().pipe(
-      map(users => {
-        const today = new Date();
-        const currentYear = today.getFullYear();
-        const currentMonth = today.getMonth();
-        const currentDay = today.getDate();
-        const birthdayUsers = users.map(user => {
-          const birthDate = new Date(user.dateNaissance);
+ getBirthdays(): Observable<BirthdayUser[]> {
+  return this.getAllActiveUsers().pipe(
+    map(users => {
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth(); // 0-based (mai = 4)
+      const currentDay = today.getDate();
+      const birthdayUsers = users
+        .filter(user => user.dateNaissance) // Filtrer les utilisateurs avec une date de naissance
+        .map(user => {
+          // Parser la date au format dd/MM/yyyy
+          const [day, month, year] = user.dateNaissance.split('/').map(Number);
+          const birthDate = new Date(year, month - 1, day); // month - 1 car getMonth est 0-based
+          
+          // Vérifier si la date est valide
+          if (isNaN(birthDate.getTime())) {
+            console.warn(`Date de naissance invalide pour l'utilisateur ${user.prenom} ${user.nom}: ${user.dateNaissance}`);
+            return null;
+          }
+
           const birthMonth = birthDate.getMonth();
           const birthDay = birthDate.getDate();
           const isTodayBirthday = birthMonth === currentMonth && birthDay === currentDay;
+
           let nextBirthdayYear = currentYear;
           if (birthMonth < currentMonth || (birthMonth === currentMonth && birthDay < currentDay)) {
             nextBirthdayYear++;
@@ -415,24 +444,33 @@ exportActiveUsersToCSV(): Observable<void> {
           const daysUntilBirthday = Math.round(
             (nextBirthday.getTime() - todayForComparison.getTime()) / (1000 * 60 * 60 * 24)
           );
+
           return {
             id: user.id,
             fullName: `${user.prenom} ${user.nom}`,
-            birthdate: `${birthDay.toString().padStart(2, '0')}/${(birthMonth + 1).toString().padStart(2, '0')}`,
+            birthdate: `${birthDay.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}`,
             avatar: user.image || 'assets/icons/user-login-icon-14.png',
             isTodayBirthday,
             daysUntilBirthday: daysUntilBirthday > 0 ? daysUntilBirthday : 365 + daysUntilBirthday
           };
-        });
-        const todaysBirthdays = birthdayUsers.filter(user => user.isTodayBirthday);
-        const upcoming = birthdayUsers
-          .filter(user => !user.isTodayBirthday && user.daysUntilBirthday !== undefined && user.daysUntilBirthday > 0)
-          .sort((a, b) => a.daysUntilBirthday! - b.daysUntilBirthday!)
-          .slice(0, 3);
-        return [...todaysBirthdays, ...upcoming];
-      })
-    );
-  }
+        })
+        .filter((user): user is BirthdayUser => user !== null); // Supprimer les utilisateurs avec des dates invalides
+
+      const todaysBirthdays = birthdayUsers.filter(user => user.isTodayBirthday);
+      const upcoming = birthdayUsers
+        .filter(user => !user.isTodayBirthday && user.daysUntilBirthday !== undefined && user.daysUntilBirthday > 0)
+        .sort((a, b) => a.daysUntilBirthday! - b.daysUntilBirthday!)
+        .slice(0, 3);
+
+      // Journaliser pour déboguer
+      console.log('Utilisateurs avec anniversaires:', birthdayUsers);
+      console.log('Anniversaires aujourd\'hui:', todaysBirthdays);
+      console.log('Anniversaires à venir:', upcoming);
+
+      return [...todaysBirthdays, ...upcoming];
+    })
+  );
+}
 
   getSenderDetails(): Observable<{ id: number; email: string; name: string }> {
     const senderId = this.authService.getUserIdFromToken();

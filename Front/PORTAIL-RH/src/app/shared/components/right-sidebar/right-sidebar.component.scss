@@ -1,346 +1,678 @@
+// Variables
+$primary: #230046;
+$secondary: #c1006a;
+$accent: #FF6B00;
+$background: #f8f9fa;
+$surface: #ffffff;
+$text-primary: #230046;
+$text-secondary: rgba(35, 0, 70, 0.7);
+$border-radius: 16px;
+$transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$shadow-sm: 0 2px 4px rgba(35, 0, 70, 0.05);
+$shadow-md: 0 4px 6px rgba(35, 0, 70, 0.1);
+$shadow-lg: 0 8px 16px rgba(35, 0, 70, 0.15);
+
+// Mixins
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin hover-effect {
+  transition: $transition;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+}
+
+// Base Styles
 .right-sidebar {
   position: fixed;
   right: 0;
   top: 65px;
+  
   width: 250px;
+  height: calc(100vh - 65px);
   background: #CEC2DE;
-  color: white;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  border-left: 0.2px solid rgba(0, 0, 0, 0.084);
-  transition: width 0.3s ease-in-out;
+  padding: 24px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba($primary, 0.2);
+    border-radius: 3px;
+    
+    &:hover {
+      background: rgba($primary, 0.3);
+    }
+  }
 }
 
-.calendar {
-  width: 100%;
-  background-color: white;
-  border-radius: 8px;
+// Section Styles
+.sidebar-section {
+  background: $surface;
+  border-radius: $border-radius;
+  padding: 20px;
+  max-height: 250px;
+  margin-top: -5px;
+  margin-bottom: 24px;
+  @include hover-effect;
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    
+    mat-icon {
+      color: #E5007F;
+      font-size: 18px;
+    }
+    
+    h3 {
+      color: #E5007F;
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+}
+
+.team-section {
+  background: $surface;
+  border-radius: $border-radius;
+  padding: 20px;
+  max-height: 250px;
+  margin-bottom: 24px;
+  @include hover-effect;
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    
+    mat-icon {
+      color: #E5007F;
+      margin-top: -5px;
+      font-size: 20px;
+    }
+    
+    h3 {
+      margin-top: -10px;
+      color: #E5007F;
+      font-size: 15px;
+      font-weight: 600;
+    }
+  }
 }
 
 .birthday-message {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #bab5b6;
-  color: #fff;
-  font-family: 'Amaranth', sans-serif;
-  font-size: 12px;
-  text-align: center;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  height: 85px;
-  animation: fadeInScale 0.5s ease-in-out;
-
-  p {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-    margin: 0;
-    line-height: 1.2;
-  }
-
-  &.highlight {
-    background-color: #ff6b6b;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-  }
-}
-
-.wished-confirmation {
-  color: #fff;
-  font-size: 11px;
-  line-height: 1.3;
-  padding: 5px;
-  width: 100%; /* Ensure it takes full width */
-}
-
-.view-wishes {
-  color: #230046;
-  text-decoration: underline;
-  cursor: pointer;
-  font-size: 12px;
-  margin-top: 5px;
-
-  &:hover {
-    color: #E5007F;
-  }
-}
-
-.user-name {
-  font-weight: bold;
-  color: #230046;
-}
-
-.wish-button {
-  background: linear-gradient(50deg, #230046, #817a90,);
+  background: $primary;
+  border-radius: $border-radius;
+  padding: 16px;
+  margin-bottom: 24px;
   color: white;
-  margin-top: 3px;
-  border: none;
-  border-radius: 20px;
-  padding: 4px 8px;
-  font-size: 10px;
-  font-family: 'Amaranth', sans-serif;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  @include hover-effect;
 
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(35, 0, 70, 0.3);  }
+  .birthday-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .birthday-icon {
+      margin-top: -13px;
+      font-size: 25px;
+      animation: bounce 2s infinite;
+    }
+
+    .birthday-text {
+      flex: 1;
+      
+      .user-name {
+        margin-left: -28px;
+        display: block;
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+
+      .celebration-text {
+        font-size: 12px;
+        opacity: 0.9;
+      }
+
+      .self-birthday-message {
+        display: block;
+        margin-left: -28px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #F5AF06;
+        margin-top: 12px;
+      }
+    }
+  }
+  .wish-button {
+    display: flex;
+    margin-left: -28px;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    background: rgba(white, 0.2);
+    border: none;
+    border-radius: 20px;
+    color: white;
+    padding: 4px 10px;
+    margin-top: 12px;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover {
+      background: rgba(white, 0.3);
+      transform: translateY(-2px);
+    }
+
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
+  }
+
+  .wished-confirmation {
+    display: flex;
+    gap: 8px;
+    color: #F5AF06;
+    margin-top: 13px;
+    font-size: 13px;
+    opacity: 0.9;
+
+    mat-icon {
+      color: #4CAF50;
+    }
+  }
+
+  .view-wishes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: -20px;
+    margin-top: 12px;
+    color: rgba(white, 0.9);
+    cursor: pointer;
+    font-size: 12px;
+    transition: $transition;
+
+    &:hover {
+      color: white;
+      transform: translateX(4px);
+    }
+
+    mat-icon {
+      margin-bottom: -10px;
+      margin-right: -8px;
+      font-size: 14px;
+    }
+  }
 }
 
+// Monthly Birthdays Styles
+.birthday-list {
+  .birthday-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 12px;
+    transition: $transition;
+    
+    &:hover {
+      background: rgba($primary, 0.05);
+    }
+    
+    &.today {
+      background: rgba($accent, 0.1);
+      border: 1px solid rgba($accent, 0.2);
+    }
 
-@keyframes fadeInScale {
-  0% {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
+    .user-avatar {
+      width: 25px;
+      height: 25px;
+      margin-top: -20px;
+      border-radius: 50%;
+      overflow: hidden;
+              border: 2px solid #F5AF06;
+
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .user-info {
+      flex: 1;
+      
+      .user-name {
+        display: block;
+        font-weight: 500;
+        color: $text-primary;
+        font-size: 12px;
+      }
+      
+      .birthdate {
+        font-size: 12px;
+        color: $text-secondary;
+      }
+    }
+
+    .birthday-indicator {
+      font-size: 14px;
+      color: $secondary;
+    }
   }
 }
 
-/* Wish Modal Styles */
+// Team Section Styles
+.team-section {
+  .manager-section {
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+    
+    h4 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: $text-primary;
+      font-size: 12px;
+      margin-bottom: 16px;
+      margin-top: -5px;
+      margin-left: -20px;
+      
+      mat-icon {
+        font-size: 15px;
+        margin-bottom: -6px;
+        margin-right: -14px;
+        margin-left: 8px;
+      }
+    }
+
+    .manager-info {
+      display: flex;
+      margin-top: -10px;
+      align-items: center;
+      gap: 16px;
+      padding: 5px;
+      border-radius: 12px;
+      
+      .manager-avatar {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        border: 2px solid #F5AF06;
+
+        overflow: hidden;
+        
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+      
+      .manager-name {
+        font-size: 14px;
+        font-weight: 500;
+        color: $text-primary;
+      }
+    }
+  }
+
+  .members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 12px;
+    
+    .member-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      
+      img {
+        margin-top: -5px;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        object-fit: cover;
+        transition: $transition;
+                border: 2px solid #F5AF06;
+
+        
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+      
+      .member-name {
+        font-size: 12px;
+        color: $text-secondary;
+        text-align: center;
+      }
+    }
+  }
+}
+
+// Empty State Styles
+.empty-state {
+  @include flex-center;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  color: $text-secondary;
+  
+  mat-icon {
+    font-size: 32px;
+    opacity: 0.5;
+  }
+  
+  span {
+    font-size: 14px;
+    text-align: center;
+  }
+}
+
+// Modal Styles
 .wish-modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba($primary, 0.5);
+  backdrop-filter: blur(5px);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
-}
 
-.modal-content {
-  background: #fff;
-  border-radius: 10px;
-  padding: 20px;
-  width: 90%;
-  max-width: 500px;
-  position: relative;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  animation: fadeInScale 0.3s ease-in-out;
-}
-
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 24px;
-  color: #666;
-  cursor: pointer;
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: #230046;
-  }
-}
-
-.modal-content h3 {
-  color: #5b2e91;
-  font-size: 1.2rem;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.wish-textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #5b2e91;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  background: #f9f9f9;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-  resize: vertical;
-  margin-bottom: 15px;
-
-  &:focus {
-    border-color: #230046;
-    box-shadow: 0 0 5px rgba(35, 0, 70, 0.3);
-    outline: none;
-  }
-}
-
-.icon-gallery {
-  margin-bottom: 15px;
-
-  h4 {
-    color: #5b2e91;
-    font-family: 'Amaranth', sans-serif;
-    font-size: 0.9rem;
-    margin-bottom: 10px;
-  }
-
-  .icons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  span {
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-
-    &:hover {
-      transform: scale(1.2);
+  .modal-content {
+    background: $surface;
+    border-radius: $border-radius;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    @include glass-effect;
+    
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      border-bottom: 1px solid rgba($primary, 0.1);
+      
+      h3 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0;
+        color: $text-primary;
+        font-size: 20px;
+        
+        mat-icon {
+          color: $secondary;
+        }
+      }
+      
+      .close-button {
+        background: none;
+        border: none;
+        color: $text-secondary;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: $transition;
+        
+        &:hover {
+          background: rgba($primary, 0.1);
+          color: $primary;
+        }
+      }
     }
-
-    &.selected {
-      border: 2px solid #5b2e91;
-      border-radius: 5px;
-      padding: 2px;
+    
+    .modal-body {
+      padding: 20px;
+      
+      .recipient {
+        margin-bottom: 16px;
+        color: $text-secondary;
+        
+        .recipient-name {
+          color: $text-primary;
+          font-weight: 500;
+        }
+      }
+      
+      .message-section {
+        margin-bottom: 24px;
+        
+        .wish-textarea {
+          width: 100%;
+          padding: 12px;
+          border: 1px solid rgba($primary, 0.2);
+          border-radius: 12px;
+          resize: vertical;
+          font-family: inherit;
+          
+          &:focus {
+            outline: none;
+            border-color: $primary;
+            box-shadow: 0 0 0 2px rgba($primary, 0.1);
+          }
+        }
+      }
+      
+      .icon-gallery {
+        margin-bottom: 24px;
+        
+        h4 {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: $text-primary;
+          font-size: 16px;
+          margin-bottom: 12px;
+        }
+        
+        .icons-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+          gap: 8px;
+          
+          .icon-button {
+            background: none;
+            border: 1px solid rgba($primary, 0.2);
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: $transition;
+            
+            &:hover {
+              background: rgba($primary, 0.05);
+              transform: scale(1.1);
+            }
+            
+            &.selected {
+              background: $primary;
+              border-color: $primary;
+              color: white;
+            }
+          }
+        }
+      }
+      
+      .image-upload {
+        h4 {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: $text-primary;
+          font-size: 16px;
+          margin-bottom: 12px;
+        }
+        
+        .upload-zone {
+          border: 2px dashed rgba($primary, 0.2);
+          border-radius: 12px;
+          padding: 24px;
+          text-align: center;
+          
+          .upload-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            background: rgba($primary, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: $primary;
+            cursor: pointer;
+            transition: $transition;
+            
+            &:hover {
+              background: rgba($primary, 0.2);
+            }
+          }
+        }
+        
+        .image-preview {
+          margin-top: 16px;
+          position: relative;
+          border-radius: 12px;
+          overflow: hidden;
+          
+          img {
+            width: 100%;
+            height: auto;
+          }
+          
+          .remove-image {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba($primary, 0.8);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            padding: 8px;
+            cursor: pointer;
+            transition: $transition;
+            
+            &:hover {
+              background: $primary;
+              transform: scale(1.1);
+            }
+          }
+        }
+      }
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+      padding: 20px;
+      border-top: 1px solid rgba($primary, 0.1);
+      
+      button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: $transition;
+        
+        &.cancel-button {
+          background: rgba($primary, 0.1);
+          color: $text-primary;
+          
+          &:hover {
+            background: rgba($primary, 0.2);
+          }
+        }
+        
+        &.send-button {
+          background: $primary;
+          color: white;
+          
+          &:hover {
+            background: darken($primary, 5%);
+            transform: translateY(-2px);
+          }
+        }
+      }
     }
   }
 }
 
-.image-upload {
-  margin-bottom: 15px;
-
-  h4 {
-    color: #5b2e91;
-    font-family: 'Amaranth', sans-serif;
-    font-size: 0.9rem;
-    margin-bottom: 10px;
+// Animations
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
   }
-
-  input[type="file"] {
-    display: block;
-    margin-bottom: 10px;
+  40% {
+    transform: translateY(-10px);
   }
-
-  .image-preview {
-    max-width: 150px;
-    max-height: 150px;
-    margin-top: 10px;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 5px;
-    }
+  60% {
+    transform: translateY(-5px);
   }
 }
 
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.send-button {
-  background-color: #230046;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 6px 14px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: #5b2e91;
-  }
-}
-
-.cancel-button {
-  background-color: #ccc;
-  color: #333;
-  border: none;
-  border-radius: 20px;
-  padding: 6px 14px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: #b3b3b3;
-  }
-}
-
+// Responsive Styles
 @media screen and (max-width: 1024px) {
   .right-sidebar {
-    width: 200px;
-  }
-  .logout {
-    margin-left: 20px;
+    width: 280px;
   }
 }
 
 @media screen and (max-width: 768px) {
   .right-sidebar {
-    width: 180px;
-  }
-  .logout {
-    justify-content: flex-start;
-    margin-left: 10px;
-    margin-top: 100px;
-  }
-
-  .logout button {
-    font-size: 14px;
-    padding: 6px 10px;
-  }
-
-  .birthday-message {
-    font-size: 11px;
-    height: auto;
-    min-height: 50px;
-    padding: 8px;
-
-    .wish-button {
-      font-size: 9px;
-      padding: 3px 6px;
-    }
-  }
-
-  .modal-content {
-    width: 95%;
-    max-width: 400px;
+    width: 260px;
   }
 }
 
 @media screen and (max-width: 480px) {
   .right-sidebar {
-    width: 50px;
-    position: relative;
-    height: auto;
-  }
-  .logout {
-    justify-content: center;
-    margin-left: 0;
-    margin-top: 50px;
     width: 100%;
-  }
-
-  .logout button {
-    font-size: 14px;
-    padding: 6px 8px;
-    width: 90%;
-    text-align: center;
-  }
-
-  .birthday-message {
-    font-size: 10px;
+    position: static;
     height: auto;
-    min-height: 40px;
-    padding: 6px;
-
-    .wish-button {
-      font-size: 8px;
-      padding: 2px 4px;
-    }
+    padding: 16px;
   }
-
-  .modal-content {
-    width: 90%;
-    max-width: 300px;
+  
+  .wish-modal .modal-content {
+    width: 95%;
+    margin: 16px;
   }
 }

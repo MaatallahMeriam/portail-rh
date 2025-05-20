@@ -3,28 +3,33 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { AuthService } from '../../services/auth.service';
-import { UserService, BirthdayUser } from '../../../services/users.service';
+import { UserService, BirthdayUser ,UserDTO} from '../../../services/users.service';
+import { EquipeService,  } from '../../../services/equipe.service'; // Ajout du service EquipeService
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { MatIconModule } from "@angular/material/icon";
 @Component({
   selector: 'app-right-sidebar',
   templateUrl: './right-sidebar.component.html',
   styleUrls: ['./right-sidebar.component.scss'],
   standalone: true,
-  imports: [MatCardModule, MatDatepickerModule, CommonModule, FormsModule],
+  imports: [MatCardModule, MatDatepickerModule, CommonModule, FormsModule,MatIconModule],
   providers: [provideNativeDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RightSidebarComponent implements OnInit {
   selected: Date = new Date();
   birthdayUsers$: Observable<BirthdayUser[]> = of([]);
+  monthlyBirthdays$: Observable<BirthdayUser[]> = of([]); // Pour les anniversaires du mois
   authenticatedUserId: number | null = null;
-  wishedUsers: Set<number> = new Set(); // Track users who have been wished
+  wishedUsers: Set<number> = new Set();
+  teamManager: UserDTO | null = null; // Manager de l'équipe
+  teamMembers: UserDTO[] = []; // Membres de l'équipe
+  equipeId: number | null = null; // ID de l'équipe de l'utilisateur
 
   // Wish Modal State
   isWishModalOpen: boolean = false;
@@ -38,6 +43,7 @@ export class RightSidebarComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private userService: UserService,
+    private equipeService: EquipeService, // Ajout du service EquipeService
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
@@ -55,9 +61,10 @@ export class RightSidebarComponent implements OnInit {
       return;
     }
 
-    // Fetch users who have already been wished today
+    // Initialiser les utilisateurs déjà souhaités
     this.initializeWishedUsers();
 
+    // Charger les anniversaires du jour
     this.birthdayUsers$ = this.userService.getBirthdays().pipe(
       map(users => users.filter(user => user.isTodayBirthday)),
       catchError((error) => {
@@ -65,8 +72,70 @@ export class RightSidebarComponent implements OnInit {
         return of([]);
       })
     );
+
+    // Charger les anniversaires du mois
+    this.monthlyBirthdays$ = this.userService.getBirthdays().pipe(
+      map(users => {
+        const today = new Date();
+        const currentMonth = today.getMonth();
+        return users
+          .filter(user => {
+            const birthDate = new Date(user.birthdate.split('/').reverse().join('-')); // Convertir jj/mm en date
+            return birthDate.getMonth() === currentMonth && !user.isTodayBirthday;
+          })
+          .sort((a, b) => {
+            const dateA = new Date(a.birthdate.split('/').reverse().join('-')).getDate();
+            const dateB = new Date(b.birthdate.split('/').reverse().join('-')).getDate();
+            return dateA - dateB;
+          })
+          .slice(0, 3); // Prendre les 3 premiers
+      }),
+      catchError((error) => {
+        console.error('Erreur lors du chargement des anniversaires du mois', error);
+        return of([]);
+      })
+    );
+
+    // Charger les informations de l'équipe
+    this.loadTeamInfo();
   }
 
+  // Charger les informations de l'équipe
+  loadTeamInfo(): void {
+    this.userService.getUserById(this.authenticatedUserId!).subscribe({
+      next: (user) => {
+        this.equipeId = user.equipeId || null;
+        if (this.equipeId) {
+          // Charger le manager
+          this.equipeService.getManagerByEquipeId(this.equipeId).subscribe({
+            next: (manager) => {
+              this.teamManager = manager;
+              this.cdr.markForCheck();
+            },
+            error: (error) => {
+              console.error('Erreur lors du chargement du manager', error);
+            }
+          });
+
+          // Charger les membres (excluant le manager)
+          this.equipeService.getUsersByEquipeIdExcludingManager(this.equipeId).subscribe({
+            next: (members) => {
+              this.teamMembers = members;
+              this.cdr.markForCheck();
+            },
+            error: (error) => {
+              console.error('Erreur lors du chargement des membres', error);
+            }
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des informations de l\'utilisateur', error);
+      }
+    });
+  }
+
+  // Méthodes existantes inchangées
   initializeWishedUsers(): void {
     if (this.authenticatedUserId) {
       this.userService.getWishedUsersToday(this.authenticatedUserId).subscribe({
@@ -144,7 +213,6 @@ export class RightSidebarComponent implements OnInit {
           showConfirmButton: false,
         });
 
-        // Add the user to the wishedUsers set
         this.wishedUsers.add(userId);
         this.closeWishModal();
         this.cdr.markForCheck();
@@ -170,7 +238,6 @@ export class RightSidebarComponent implements OnInit {
           timer: 1500,
           showConfirmButton: false,
         });
-        // Add the user to the wishedUsers set
         this.wishedUsers.add(user.id);
         this.cdr.markForCheck();
       },

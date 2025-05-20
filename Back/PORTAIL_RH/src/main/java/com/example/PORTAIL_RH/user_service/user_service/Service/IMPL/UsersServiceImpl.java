@@ -475,6 +475,25 @@ public class UsersServiceImpl implements UsersService {
         usersRepository.delete(user);
     }
 
+
+    @Override
+    public boolean modifierPWD(Long userId, String newPassword) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        // Valider le nouveau mot de passe (exemple : minimum 8 caractères)
+        if (newPassword == null || newPassword.length() < 8) {
+            throw new IllegalArgumentException("Le nouveau mot de passe doit contenir au moins 8 caractères.");
+        }
+
+        // Encoder et mettre à jour le nouveau mot de passe
+        user.setPassword(passwordEncoder.encode(newPassword));
+        usersRepository.save(user);
+
+        return true;
+    }
+
+
     @Override
     public DossierUser getDossierByUserId(Long userId) {
         Users user = usersRepository.findById(userId)

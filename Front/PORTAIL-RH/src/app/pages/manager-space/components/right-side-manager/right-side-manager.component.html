@@ -1,52 +1,140 @@
 <aside class="right-sidebar">
-  <section class="calendar">
-    <mat-card>
-      <mat-calendar [(selected)]="selected" ngSkipHydration></mat-calendar>
-    </mat-card>
-  </section>
-
-  <section class="team-members">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>
-          MEMBRES DE L'EQUIPE
-         
+  <ng-container *ngIf="birthdayUsers$ | async as birthdayUsers">
+    <div *ngFor="let user of birthdayUsers" class="birthday-message" [ngClass]="{'highlight': !hasWished(user) && user.id !== authenticatedUserId}">
+      <div class="birthday-content">
+        <div class="birthday-icon">🎂</div>
+        <div class="birthday-text">
+          <span class="user-name">{{ user.fullName }}</span>
+          <span class="celebration-text">fête son anniversaire aujourd'hui !</span>
           
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="members-grid">
-          <ng-container *ngFor="let member of teamMembers | slice:0:maxVisibleMembers; let i = index">
-            <div class="member-photo" [style.backgroundImage]="getBackgroundImage(member)" [attr.title]="member.prenom + ' ' + member.nom"></div>
+          <!-- Cas où l'utilisateur authentifié a son anniversaire -->
+          <ng-container *ngIf="user.id === authenticatedUserId; else otherUser">
+            <span class="self-birthday-message">Joyeux anniversaire !</span>
+            <span class="view-wishes" (click)="navigateToWishes()">
+              <mat-icon>visibility</mat-icon>
+              Voir les souhaits
+            </span>
           </ng-container>
-          <div *ngIf="teamMembers.length > maxVisibleMembers" class="more-members">
-            +{{ teamMembers.length - maxVisibleMembers }}
-          </div>
+          
+          <!-- Cas pour les autres utilisateurs -->
+          <ng-template #otherUser>
+            <button *ngIf="!hasWished(user)" class="wish-button" (click)="openWishModal(user)">
+              <mat-icon>celebration</mat-icon>
+              Souhaiter
+            </button>
+            <span *ngIf="hasWished(user)" class="wished-confirmation">
+              Vous avez déjà souhaité un joyeux anniversaire !
+            </span>
+            <!-- Le bouton "Voir les souhaits" n'est pas affiché pour les autres utilisateurs -->
+          </ng-template>
         </div>
-        <p *ngIf="teamMembers.length === 0" class="no-members">Aucun membre dans l'équipe.</p>
-      </mat-card-content>
-    </mat-card>
-  </section>
-
-  <!-- Birthday message section -->
-  <ng-container *ngIf="(birthdayUsers$ | async) as birthdayUsers">
-    <section class="birthday-message" *ngIf="birthdayUsers.length > 0">
-      <ng-container *ngFor="let user of birthdayUsers | slice:0:1">
-        <ng-container *ngIf="authenticatedUserId === user.id; else otherUserBirthday">
-          <!-- Special message for the authenticated user -->
-          <p class="highlight">Joyeux anniversaire <span class="user-name">{{ user.fullName }}</span> ! 🎉</p>
-        </ng-container>
-        <ng-template #otherUserBirthday>
-          <!-- Message for other users with a birthday today -->
-          <p>
-            C'est l'anniversaire de <span class="user-name">{{ user.fullName }}</span>,
-            souhaitez-lui un joyeux anniversaire !
-            <button class="wish-button" (click)="wishHappyBirthday(user)">Souhaiter</button>
-          </p>
-        </ng-template>
-      </ng-container>
-    </section>
+      </div>
+    </div>
   </ng-container>
 
-  
+  <div class="sidebar-section monthly-birthdays">
+    <div class="section-header">
+      <mat-icon>cake</mat-icon>
+      <h3>Anniversaires du mois</h3>
+    </div>
+    <ng-container *ngIf="monthlyBirthdays$ | async as monthlyBirthdays; else noBirthdays">
+      <div class="birthday-list">
+        <div *ngFor="let user of monthlyBirthdays" class="birthday-item" [class.today]="user.isTodayBirthday">
+          <div class="user-avatar">
+            <img [src]="user.avatar || 'assets/icons/user-default.png'" [alt]="user.fullName"/>
+          </div>
+          <div class="user-info">
+            <span class="user-name">{{ user.fullName }}</span>
+            <span class="birthdate">{{ user.birthdate }}</span>
+          </div>
+          
+        </div>
+      </div>
+      <div *ngIf="monthlyBirthdays.length === 0" class="empty-state">
+        <mat-icon>event_busy</mat-icon>
+        <span>Aucun anniversaire ce mois-ci</span>
+      </div>
+    </ng-container>
+    <ng-template #noBirthdays>
+      <div class="empty-state">
+        <mat-icon>event_busy</mat-icon>
+        <span>Aucun anniversaire ce mois-ci</span>
+      </div>
+    </ng-template>
+  </div>
+
+  <div class="team-section">
+    <div class="section-header">
+      <mat-icon>groups</mat-icon>
+      <h3>Équipe</h3>
+    </div>
+    <ng-container *ngIf="equipeId; else noTeam">
+      <div class="manager-section">
+        
+        <div class="manager-info" *ngIf="teamManager">
+          <div class="manager-avatar">
+            <img [src]="teamManager.image || 'assets/icons/user-login-icon-14.png'" [alt]="teamManager.prenom"/>
+          </div>
+          <span class="manager-name">{{ teamManager.prenom }} {{ teamManager.nom }}</span>
+        </div>
+      </div>
+      <div class="members-section">
+       
+        <div class="members-grid">
+          <div *ngFor="let member of teamMembers" class="member-item" [title]="member.prenom + ' ' + member.nom">
+            <img [src]="member.image || 'assets/icons/user-login-icon-14.png'" [alt]="member.prenom"/>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #noTeam>
+      <div class="empty-state">
+        <mat-icon>group_off</mat-icon>
+        <span>Vous n'êtes pas assigné à une équipe</span>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Modal pour les souhaits -->
+  <div *ngIf="isWishModalOpen" class="wish-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>
+          <mat-icon>celebration</mat-icon>
+          Souhaiter un joyeux anniversaire
+        </h3>
+        <button class="close-button" (click)="closeWishModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="recipient">
+          À: <span class="recipient-name">{{ selectedUser?.fullName }}</span>
+        </div>
+
+        <div class="message-section">
+          <textarea 
+            class="wish-textarea" 
+            [(ngModel)]="wishMessage" 
+            placeholder="Écrivez votre message..."
+            rows="4">
+          </textarea>
+        </div>
+
+        
+      </div>
+
+      <div class="modal-footer">
+        <button class="cancel-button" (click)="closeWishModal()">
+          <mat-icon>close</mat-icon>
+          Annuler
+        </button>
+        <button class="send-button" (click)="sendWish()">
+          <mat-icon>send</mat-icon>
+          Envoyer
+        </button>
+      </div>
+    </div>
+  </div>
 </aside>

@@ -1,29 +1,57 @@
 <div class="collab-home">
-    <app-header></app-header>
-  
-    <div class="main-content">
-      <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
-      
-      <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+    
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <div class="wishes-container">
         <div class="wishes-header">
-          <h2>Chér(e) X, EXCELLIA team vous souhaite tout le bonheur du monde !</h2>
+          <div class="header-content">
+            <h2>Joyeux Anniversaire !</h2>
+            <p class="header-description">EXCELLIA team vous souhaite tout le bonheur du monde</p>
+          </div>
+          <div class="header-badge">
+            <span class="badge-icon">🎉</span>
+            <span class="badge-text">Célébration</span>
+          </div>
         </div>
+
         <div class="wishes-grid">
           <ng-container *ngIf="(wishes$ | async) as wishes; else noWishes">
-            <div *ngFor="let wish of wishes; let i = index" class="wish-card" [ngClass]="'card-position-' + (i % 9)">
-              <div class="wish-photo">
-                <img [src]="wish.senderPhotoUrl || 'assets/icons/user-login-icon-14.png'" alt="Sender Photo" class="user-photo">
+            <div *ngFor="let wish of wishes" class="wish-card" [@fadeInUp]>
+              <div class="wish-header">
+                <div class="sender-info">
+                  <div class="sender-avatar">
+                    <img [src]="wish.senderPhotoUrl || 'assets/icons/user-login-icon-14.png'" [alt]="wish.senderPrenom">
+                  </div>
+                  <div class="sender-details">
+                    <h3 class="sender-name">{{ wish.senderPrenom }} {{ wish.senderNom }}</h3>
+                    <span class="sender-role">Collègue</span>
+                  </div>
+                </div>
+                <div class="wish-date">
+                  <mat-icon>event</mat-icon>
+                  <span>current date day</span>
+                </div>
               </div>
-              <div class="wish-details">
-                <p class="wish-name">{{ wish.senderPrenom }} {{ wish.senderNom }}</p>
+
+              <div class="wish-content">
                 <p class="wish-message">{{ wish.message }}</p>
               </div>
+
+              
             </div>
           </ng-container>
+
           <ng-template #noWishes>
-            <p>Aucun souhait d'anniversaire pour le moment.</p>
+            <div class="no-wishes">
+              <mat-icon>celebration_off</mat-icon>
+              <p>Aucun souhait d'anniversaire pour le moment.</p>
+            </div>
           </ng-template>
         </div>
       </div>
     </div>
   </div>
+</div>

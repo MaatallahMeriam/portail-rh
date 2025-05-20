@@ -5,6 +5,28 @@
   background: #F8F9FA ;
   border-radius: 10px;
 }
+
+input[type="password"] {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #230046;
+  background: #f8f9fa;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &::placeholder {
+    color: #999;
+    font-size: 14px;
+  }
+
+  &:focus {
+    border-color: #230046;
+    box-shadow: 0 0 5px rgba(35, 0, 70, 0.2);
+    outline: none;
+  }
+}
 .modal-content {
   background: #FFFF;
   padding: 30px;

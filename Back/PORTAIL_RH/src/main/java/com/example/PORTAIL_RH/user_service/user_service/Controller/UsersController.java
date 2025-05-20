@@ -173,7 +173,30 @@ public class UsersController {
         UsersDTO user = usersService.getUserById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
-
+    @PostMapping("/{id}/modifier-password")
+    public ResponseEntity<Map<String, String>> modifierPWD(@PathVariable Long id,
+                                                           @RequestParam String newPassword) {
+        try {
+            boolean success = usersService.modifierPWD(id, newPassword);
+            if (success) {
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Mot de passe mis à jour avec succès.");
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Échec de la mise à jour du mot de passe.");
+                return ResponseEntity.badRequest().body(response);
+            }
+        } catch (IllegalArgumentException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Une erreur est survenue.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
     @GetMapping("/{id}/conges")
     public ResponseEntity<List<UserCongesDTO>> getUserConges(@PathVariable Long id) {
         List<UserCongesDTO> conges = usersService.getUserConges(id);
