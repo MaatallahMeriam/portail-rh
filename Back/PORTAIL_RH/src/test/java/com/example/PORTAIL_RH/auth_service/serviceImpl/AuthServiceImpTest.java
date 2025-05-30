@@ -1,10 +1,14 @@
 package com.example.PORTAIL_RH.auth_service.serviceImpl;
-
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.example.PORTAIL_RH.auth_service.DTO.NewRegisterRequest;
 import com.example.PORTAIL_RH.auth_service.DTO.RegisterResponse;
 import com.example.PORTAIL_RH.auth_service.Service.IMPL.EnhancedUserServiceImpl;
-import com.example.PORTAIL_RH.user_service.conges_service.Entity.CongeType;
-import com.example.PORTAIL_RH.user_service.conges_service.Repo.CongeTypeRepository;
+import com.example.PORTAIL_RH.conges_service.Entity.CongeType;
+import com.example.PORTAIL_RH.conges_service.Repo.CongeTypeRepository;
 import com.example.PORTAIL_RH.user_service.user_service.Entity.Users;
 import com.example.PORTAIL_RH.user_service.user_service.Repo.UsersRepository;
 import com.example.PORTAIL_RH.utils.EnhancedEmailService;
@@ -104,7 +108,72 @@ public class AuthServiceImpTest {
         // Vérifier que l'exception est levée
         assertThrows(IllegalArgumentException.class, () -> enhancedUserService.register(request));
     }
+    @Test
+    void testFindByMail_UserExists() {
+        // Arrange
+        String email = "test@example.com";
+        Users user = new Users();
+        user.setMail(email);
+        user.setPassword("encodedPassword");
+        user.setRole(Users.Role.COLLAB);
+        when(usersRepository.findByMail(email)).thenReturn(Optional.of(user));
 
+        // Act
+        Users result = enhancedUserService.findByMail(email);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(email, result.getMail());
+        verify(usersRepository, times(1)).findByMail(email);
+    }
+
+    @Test
+    void testFindByMail_UserDoesNotExist() {
+        // Arrange
+        String email = "notfound@example.com";
+        when(usersRepository.findByMail(email)).thenReturn(Optional.empty());
+
+        // Act
+        Users result = enhancedUserService.findByMail(email);
+
+        // Assert
+        assertNull(result);
+        verify(usersRepository, times(1)).findByMail(email);
+    }
+
+    @Test
+    void testLoadUserByUsername_UserExists() {
+        // Arrange
+        String email = "test@example.com";
+        Users user = new Users();
+        user.setMail(email);
+        user.setPassword("encodedPassword");
+        user.setRole(Users.Role.COLLAB);
+        when(usersRepository.findByMail(email)).thenReturn(Optional.of(user));
+
+        // Act
+        UserDetails userDetails = enhancedUserService.loadUserByUsername(email);
+
+        // Assert
+        assertNotNull(userDetails);
+        assertEquals(email, userDetails.getUsername());
+        assertEquals("encodedPassword", userDetails.getPassword());
+        assertEquals(1, userDetails.getAuthorities().size());
+        assertTrue(userDetails.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_COLLAB")));
+        verify(usersRepository, times(1)).findByMail(email);
+    }
+
+    @Test
+    void testLoadUserByUsername_UserNotFound() {
+        // Arrange
+        String email = "notfound@example.com";
+        when(usersRepository.findByMail(email)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(UsernameNotFoundException.class, () -> enhancedUserService.loadUserByUsername(email));
+        verify(usersRepository, times(1)).findByMail(email);
+    }
     @Test
     void testRegister_InvalidDateFormat() {
         // Préparer une requête avec une date invalide

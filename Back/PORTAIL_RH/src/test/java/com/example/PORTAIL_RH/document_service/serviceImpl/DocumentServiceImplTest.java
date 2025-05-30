@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mock.web.MockMultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,7 +34,49 @@ class DocumentServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
+    @Test
+    void testSaveDocument_Failure() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "content".getBytes());
+        String description = "Test document";
+        String categorie = "Test";
 
+        try (var mockedFiles = mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.createDirectories(any(Path.class))).thenThrow(new IOException("Directory creation failed"));
+
+            assertThrows(RuntimeException.class, () -> documentService.saveDocument(file, description, categorie));
+            verify(documentRepository, never()).save(any(Document.class));
+        }
+    }
+
+    @Test
+    void testDeleteDocument_Failure() throws Exception {
+        Document document = new Document();
+        document.setId(1L);
+        document.setUrl("uploads/test.txt");
+        when(documentRepository.findById(1L)).thenReturn(Optional.of(document));
+
+        try (var mockedFiles = mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.deleteIfExists(any(Path.class))).thenThrow(new IOException("File deletion failed"));
+
+            assertThrows(RuntimeException.class, () -> documentService.deleteDocument(1L));
+            verify(documentRepository, never()).deleteById(1L);
+        }
+    }
+
+    @Test
+    void testDownloadDocumentById_Failure() throws Exception {
+        Document document = new Document();
+        document.setId(1L);
+        document.setUrl("uploads/test.txt");
+
+        when(documentRepository.findById(1L)).thenReturn(Optional.of(document));
+
+        try (var mockedFiles = mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(false);
+
+            assertThrows(RuntimeException.class, () -> documentService.downloadDocumentById(1L));
+        }
+    }
     @Test
     void testSaveDocument_Success() throws Exception {
         MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "content".getBytes());

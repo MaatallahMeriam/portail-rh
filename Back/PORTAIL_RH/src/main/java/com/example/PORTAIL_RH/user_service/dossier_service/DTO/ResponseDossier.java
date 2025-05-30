@@ -1,8 +1,12 @@
 package com.example.PORTAIL_RH.user_service.dossier_service.DTO;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
+@Getter
+@Setter
 public class ResponseDossier {
     private String cvDownloadUrl;
     private String contratDownloadUrl;

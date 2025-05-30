@@ -32,7 +32,7 @@ public class NotificationServiceImpl implements NotificationService {
     private NotificationDTO mapToDTO(Notification notification) {
         NotificationDTO dto = new NotificationDTO();
         dto.setId(notification.getId());
-        dto.setUserId(notification.getUser().getId()); // This is the recipient (manager for both cases)
+        dto.setUserId(notification.getUser().getId());
         dto.setMessage(notification.getMessage());
         dto.setType(notification.getType());
         dto.setDemandeId(notification.getDemandeId());
@@ -56,7 +56,6 @@ public class NotificationServiceImpl implements NotificationService {
         return dto;
     }
 
-
     @Transactional
     public void createNotificationForUser(Users user, String message, String type, Long demandeId, Users triggeredByUser) {
         Notification notification = new Notification();
@@ -65,10 +64,9 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setType(type);
         notification.setDemandeId(demandeId);
         notification.setRead(false);
-        notification.setTriggeredByUser(triggeredByUser); // This is set correctly
+        notification.setTriggeredByUser(triggeredByUser);
         notificationRepository.save(notification);
 
-        // Envoyer via WebSocket
         NotificationDTO notificationDTO = mapToDTO(notification);
         messagingTemplate.convertAndSendToUser(
                 String.valueOf(user.getId()),
@@ -76,43 +74,32 @@ public class NotificationServiceImpl implements NotificationService {
                 notificationDTO
         );
     }
+
     @Override
     @Transactional
     public void createNotificationForRole(Demande demande) {
-        // Déterminer le rôle cible pour la notification
         Users.Role targetRole = demande.getType() == Demande.DemandeType.CONGES ? Users.Role.MANAGER : Users.Role.RH;
-
-        // Récupérer l'utilisateur qui a soumis la demande
         Users user = demande.getUser();
         String userFullName = user.getPrenom() + " " + user.getNom();
 
-        // Si c'est une demande de congé, envoyer uniquement au manager de l'équipe de l'utilisateur
         if (demande.getType() == Demande.DemandeType.CONGES) {
-            // Vérifier si l'utilisateur appartient à une équipe
             if (user.getEquipe() == null) {
                 throw new RuntimeException("L'utilisateur n'appartient à aucune équipe");
             }
-
-            // Récupérer le manager de l'équipe
             Users manager = user.getEquipe().getManager();
             if (manager == null) {
                 throw new RuntimeException("Aucun manager assigné à l'équipe de l'utilisateur");
             }
-
-            // Créer le message de notification avec le nom du demandeur
             String message = String.format("Membre %s a soumis une demande de congé", userFullName);
-
-            // Créer et sauvegarder la notification pour le manager
             Notification notification = new Notification();
             notification.setUser(manager);
             notification.setMessage(message);
             notification.setType(demande.getType().toString());
             notification.setDemandeId(demande.getId());
             notification.setRead(false);
-            notification.setTriggeredByUser(user); // Set the user who triggered the notification
+            notification.setTriggeredByUser(user);
             notificationRepository.save(notification);
 
-            // Envoyer la notification via WebSocket
             NotificationDTO notificationDTO = mapToDTO(notification);
             messagingTemplate.convertAndSendToUser(
                     String.valueOf(manager.getId()),
@@ -120,7 +107,6 @@ public class NotificationServiceImpl implements NotificationService {
                     notificationDTO
             );
         } else {
-            // Pour les demandes LOGISTIQUE ou DOCUMENT, envoyer à tous les RH
             List<Users> targetUsers = usersRepository.findByRole(targetRole);
             String message = String.format("Nouvelle demande de %s soumise par %s",
                     demande.getType().toString().toLowerCase(), userFullName);
@@ -132,10 +118,9 @@ public class NotificationServiceImpl implements NotificationService {
                 notification.setType(demande.getType().toString());
                 notification.setDemandeId(demande.getId());
                 notification.setRead(false);
-                notification.setTriggeredByUser(user); // Set the user who triggered the notification
+                notification.setTriggeredByUser(user);
                 notificationRepository.save(notification);
 
-                // Envoyer via WebSocket
                 NotificationDTO notificationDTO = mapToDTO(notification);
                 messagingTemplate.convertAndSendToUser(
                         String.valueOf(targetUser.getId()),
@@ -154,10 +139,8 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setType(type);
         notification.setDemandeId(demandeId);
         notification.setRead(false);
-        // Note: For this method, the caller should set the triggeredByUser if needed
         notificationRepository.save(notification);
 
-        // Envoyer via WebSocket
         NotificationDTO notificationDTO = mapToDTO(notification);
         messagingTemplate.convertAndSendToUser(
                 String.valueOf(user.getId()),
@@ -166,7 +149,6 @@ public class NotificationServiceImpl implements NotificationService {
         );
     }
 
-    // New method to notify all users with a specific role
     @Transactional
     public void createNotificationForRoleUsers(Users.Role role, String message, String type, Long demandeId) {
         List<Users> targetUsers = usersRepository.findByRole(role);
@@ -179,7 +161,6 @@ public class NotificationServiceImpl implements NotificationService {
             notification.setRead(false);
             notificationRepository.save(notification);
 
-            // Envoyer via WebSocket
             NotificationDTO notificationDTO = mapToDTO(notification);
             messagingTemplate.convertAndSendToUser(
                     String.valueOf(targetUser.getId()),
@@ -188,6 +169,7 @@ public class NotificationServiceImpl implements NotificationService {
             );
         }
     }
+
     @Override
     @Transactional
     public void notifyRequesterStatusChange(Demande demande, String status, Users triggeredByUser) {
@@ -195,7 +177,6 @@ public class NotificationServiceImpl implements NotificationService {
         String type = demande.getType().toString();
         String message;
 
-        // Ajouter le nom de l'utilisateur qui a traité la demande dans le message
         if (triggeredByUser != null) {
             String processingUserName = triggeredByUser.getPrenom() + " " + triggeredByUser.getNom();
             message = String.format("Votre demande de %s a été %s par %s",
@@ -211,10 +192,9 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setType(type);
         notification.setDemandeId(demande.getId());
         notification.setRead(false);
-        notification.setTriggeredByUser(triggeredByUser); // Utiliser le triggeredByUser passé
+        notification.setTriggeredByUser(triggeredByUser);
         notificationRepository.save(notification);
 
-        // Envoyer via WebSocket
         NotificationDTO notificationDTO = mapToDTO(notification);
         messagingTemplate.convertAndSendToUser(
                 String.valueOf(user.getId()),
@@ -241,7 +221,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public NotificationDTO markAsRead(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("Notification non trouvée"));
+                .orElseThrow(() -> new IllegalStateException("Notification non trouvée"));
         notification.setRead(true);
         notificationRepository.save(notification);
         return mapToDTO(notification);

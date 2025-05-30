@@ -1,6 +1,6 @@
 package com.example.PORTAIL_RH.user_service.user_service.Service;
 
-import com.example.PORTAIL_RH.user_service.conges_service.DTO.UserCongesDTO;
+import com.example.PORTAIL_RH.conges_service.DTO.UserCongesDTO;
 import com.example.PORTAIL_RH.user_service.user_service.DTO.BirthdayWishDTO;
 import com.example.PORTAIL_RH.user_service.user_service.DTO.UsersDTO;
 import com.example.PORTAIL_RH.user_service.dossier_service.Entity.DossierUser;

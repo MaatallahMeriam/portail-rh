@@ -1,14 +1,14 @@
 package com.example.PORTAIL_RH.user_service.user_service.Entity;
 
 import com.example.PORTAIL_RH.teletravail_service.entity.UserTeletravail;
-import com.example.PORTAIL_RH.user_service.conges_service.Entity.UserConges;
+import com.example.PORTAIL_RH.conges_service.Entity.UserConges;
 import com.example.PORTAIL_RH.request_service.Entity.Demande;
 import com.example.PORTAIL_RH.feed_service.pub_service.Entity.Publication;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Comment;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.Reaction;
 import com.example.PORTAIL_RH.feed_service.Reaction_service.Entity.IdeaRating;
 import com.example.PORTAIL_RH.user_service.dossier_service.Entity.DossierUser;
-import com.example.PORTAIL_RH.user_service.equipe_service.Entity.Equipe;
+import com.example.PORTAIL_RH.equipe_service.Entity.Equipe;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;

@@ -4,7 +4,7 @@ import com.example.PORTAIL_RH.notification_service.Service.NotificationService;
 import com.example.PORTAIL_RH.teletravail_service.dto.TeletravailPointageDTO;
 import com.example.PORTAIL_RH.teletravail_service.entity.TeletravailPointage;
 import com.example.PORTAIL_RH.teletravail_service.entity.UserTeletravail;
-import com.example.PORTAIL_RH.user_service.equipe_service.Entity.Equipe;
+import com.example.PORTAIL_RH.equipe_service.Entity.Equipe;
 import com.example.PORTAIL_RH.utils.EnhancedEmailService;
 import com.example.PORTAIL_RH.teletravail_service.repo.TeletravailPointageRepository;
 import com.example.PORTAIL_RH.teletravail_service.repo.UserTeletravailRepository;

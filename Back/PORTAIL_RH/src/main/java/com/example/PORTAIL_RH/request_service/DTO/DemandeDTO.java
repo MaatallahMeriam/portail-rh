@@ -2,7 +2,7 @@ package com.example.PORTAIL_RH.request_service.DTO;
 
 import com.example.PORTAIL_RH.request_service.Entity.Demande.DemandeType;
 import com.example.PORTAIL_RH.request_service.Entity.Demande.StatutType;
-import com.example.PORTAIL_RH.user_service.conges_service.Entity.CongeType;
+import com.example.PORTAIL_RH.conges_service.Entity.CongeType;
 import lombok.Data;
 
 import java.util.Date;

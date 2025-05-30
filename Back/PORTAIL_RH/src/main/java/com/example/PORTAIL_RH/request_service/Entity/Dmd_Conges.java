@@ -1,7 +1,7 @@
 package com.example.PORTAIL_RH.request_service.Entity;
 
-import com.example.PORTAIL_RH.user_service.conges_service.Entity.CongeType;
-import com.example.PORTAIL_RH.user_service.conges_service.Entity.UserConges;
+import com.example.PORTAIL_RH.conges_service.Entity.CongeType;
+import com.example.PORTAIL_RH.conges_service.Entity.UserConges;
 import jakarta.persistence.*;
 import lombok.*;
 

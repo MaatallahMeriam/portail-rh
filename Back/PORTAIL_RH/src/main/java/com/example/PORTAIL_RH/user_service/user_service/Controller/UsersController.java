@@ -1,6 +1,6 @@
 package com.example.PORTAIL_RH.user_service.user_service.Controller;
 
-import com.example.PORTAIL_RH.user_service.conges_service.DTO.UserCongesDTO;
+import com.example.PORTAIL_RH.conges_service.DTO.UserCongesDTO;
 import com.example.PORTAIL_RH.user_service.user_service.DTO.BirthdayWishDTO;
 import com.example.PORTAIL_RH.user_service.user_service.DTO.UsersDTO;
 import com.example.PORTAIL_RH.user_service.dossier_service.Entity.DossierUser;
@@ -9,10 +9,7 @@ import com.example.PORTAIL_RH.user_service.user_service.Entity.UserUpdateBasicDT
 import com.example.PORTAIL_RH.user_service.user_service.Entity.UserUpdateFullDTO;
 import com.example.PORTAIL_RH.user_service.user_service.Service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -223,7 +220,9 @@ public class UsersController {
         byte[] csvData = usersService.exportUserCongesToCSV();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("text/csv"));
-        headers.setContentDispositionFormData("attachment", "user_conges.csv");
+        headers.setContentDisposition(ContentDisposition.builder("attachment")
+                .filename("user_conges.csv")
+                .build());
         headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
         return new ResponseEntity<>(csvData, headers, HttpStatus.OK);
     }
@@ -237,8 +236,9 @@ public class UsersController {
         byte[] csvData = usersService.exportActiveUsersToCSV();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("text/csv"));
-        headers.setContentDispositionFormData("attachment", "active_users.csv");
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        headers.setContentDisposition(ContentDisposition.builder("attachment")
+                .filename("active_users.csv")
+                .build());        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
         return new ResponseEntity<>(csvData, headers, HttpStatus.OK);
     }
 }
