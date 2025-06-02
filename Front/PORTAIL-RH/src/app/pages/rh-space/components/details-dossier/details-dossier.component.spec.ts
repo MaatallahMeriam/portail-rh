@@ -1,23 +1,24 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { TestBed } from '@angular/core/testing';
 import { DetailsDossierComponent } from './details-dossier.component';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('DetailsDossierComponent', () => {
-  let component: DetailsDossierComponent;
-  let fixture: ComponentFixture<DetailsDossierComponent>;
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DetailsDossierComponent]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(DetailsDossierComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+      declarations: [DetailsDossierComponent],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: { params: of({ id: '1' }) } // Mock des paramètres de route
+        }
+      ]
+    }).compileComponents();
   });
 
   it('should create', () => {
+    const fixture = TestBed.createComponent(DetailsDossierComponent);
+    const component = fixture.componentInstance;
     expect(component).toBeTruthy();
   });
 });

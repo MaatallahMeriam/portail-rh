@@ -1,20 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { TestBed } from '@angular/core/testing';
 import { DetailsIdeeComponent } from './details-idee.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { PublicationService } from '../../../../services/publication.service'; // Adjust the path
 
 describe('DetailsIdeeComponent', () => {
   let component: DetailsIdeeComponent;
-  let fixture: ComponentFixture<DetailsIdeeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DetailsIdeeComponent]
-    })
-    .compileComponents();
+      imports: [HttpClientTestingModule], // Add this
+      declarations: [DetailsIdeeComponent] // Remove if standalone
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(DetailsIdeeComponent);
+    const fixture = TestBed.createComponent(DetailsIdeeComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
