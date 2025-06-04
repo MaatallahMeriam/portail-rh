@@ -1,0 +1,57 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
+    
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <div class="feed-header">
+        <div class="header-content">
+          <h2>Liste des projets</h2>
+          <p class="subtitle">Gérez et suivez vos projets</p>
+        </div>
+        <button class="add-project-btn" (click)="openAddProjetDialog()">
+          <mat-icon>add</mat-icon>
+          <span>Nouveau projet</span>
+        </button>
+      </div>
+
+      <div class="project-grid">
+        <div *ngIf="isLoading" class="loading-state">
+          <mat-spinner diameter="48" color="primary"></mat-spinner>
+          <p>Chargement des projets...</p>
+        </div>
+
+        <div *ngFor="let projet of projets" class="project-card" (click)="navigateToDetails(projet.id!)">
+          <div class="card-header">
+            <div class="project-icon">
+              <mat-icon>folder_special</mat-icon>
+            </div>
+            <h3>{{ projet.nom }}</h3>
+          </div>
+          
+          <p class="project-description">{{ projet.description || 'Aucune description disponible' }}</p>
+          
+          <div class="card-footer">
+            <button class="download-btn" (click)="downloadCahierCharge(projet.id!); $event.stopPropagation()">
+              <mat-icon>download</mat-icon>
+              <span>Cahier des charges</span>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteProjet(projet.id!); $event.stopPropagation()">
+              <mat-icon class="delete">delete</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="!isLoading && projets.length === 0" class="empty-state">
+          <mat-icon>folder_open</mat-icon>
+          <p>Aucun projet disponible pour le moment</p>
+          <button class="add-project-btn" (click)="openAddProjetDialog()">
+            <mat-icon>add</mat-icon>
+            <span>Créer un projet</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

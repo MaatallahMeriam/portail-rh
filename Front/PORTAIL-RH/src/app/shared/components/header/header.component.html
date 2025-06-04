@@ -27,7 +27,7 @@
           <img [src]="notification.userImage || 'assets/icons/user-login-icon-14.png'" alt="User Avatar" class="user-avatar">
           <div class="notification-details">
             <div class="notification-user">
-              <span class="user-name">{{ notification.userName || 'Utilisateur' }}</span>
+              <span class="user-name">{{ notification.userName || 'Notification' }}</span>
             </div>
             <div class="notification-message">{{ formatNotificationMessage(notification) }}</div>
             <span class="notification-time">{{ notification.createdAt | date:'shortTime' }}</span>

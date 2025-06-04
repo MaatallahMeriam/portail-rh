@@ -35,6 +35,7 @@ export class SidebarComponent implements OnInit {
 
       ]
     },
+    { label: 'Gestion projets', route: 'projet-rh', icon: 'kanban' },
     { label: 'Boîte à Idées', route: 'idee-rh', icon: 'lightbulb' },
     { label: 'Dashboard', route: 'kpi-rh', icon: 'graph-up' },
     { label: 'Paramétrage', route: 'parametrage-rh', icon: 'gear' }

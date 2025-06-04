@@ -37,6 +37,8 @@ export class SideBarManagerComponent implements OnInit {
       ],
     },
     { label: 'Traitement Demandes', route: 'trait-dmd', icon: 'clipboard-check' },
+    { label: 'Gestion Projets', route: 'gest-proj-manager', icon: 'kanban' },
+
     { label: 'Planning Télétravail', route: 'planning-manager', icon: 'calendar-week', hasNotification: false },
     { label: 'Boîte à Idées', route: 'idee-manager', icon: 'lightbulb' },
     { label: 'Documenthèque', route: 'doc-manager', icon: 'folder' },

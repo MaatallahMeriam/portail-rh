@@ -1,0 +1,38 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <h2 class="section-title">Mes Projets</h2>
+      <!-- Liste des projets -->
+      <div class="projects-container">
+        <div *ngIf="userProjects.length === 0" class="no-projects">
+          <p>Aucun projet affecté pour le moment.</p>
+        </div>
+        <div *ngIf="userProjects.length > 0">
+          <div class="project-card" *ngFor="let project of userProjects">
+            <div class="project-header">
+              <h3>{{ project.nom }}</h3>
+              <button mat-icon-button (click)="viewProjectDetails(project.id!)" *ngIf="project.id">
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </div>
+            <p class="project-description">
+              {{ project.description || 'Aucune description disponible.' }}
+            </p>
+            <div class="project-competences">
+              <span class="label">Compétences requises :</span>
+              <ul>
+                <li *ngFor="let competence of project.competencesRequises">
+                  {{ competence.competenceNom }} (Niveau : {{ competence.niveauRequis }} )
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

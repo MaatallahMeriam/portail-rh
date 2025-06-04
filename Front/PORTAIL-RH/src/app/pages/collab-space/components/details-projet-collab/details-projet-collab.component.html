@@ -1,0 +1,43 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-sidebar (sidebarStateChange)="onSidebarStateChange($event)"></app-sidebar>
+
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <div class="project-details">
+        <!-- Détails du projet -->
+        <div *ngIf="projet; else loading">
+          <h2 class="project-title">{{ projet.nom }}</h2>
+          <p class="project-description">{{ projet.description || 'Aucune description disponible.' }}</p>
+
+          <!-- Bouton pour télécharger le cahier de charges -->
+          <div class="cahier-charge-section">
+            <button mat-raised-button color="primary" (click)="downloadCahierCharge()" [disabled]="!projet.cahierCharge">
+              Télécharger le Cahier de Charges
+              <mat-icon>download</mat-icon>
+            </button>
+          </div>
+
+          <!-- Liste des utilisateurs associés -->
+          <div class="team-section">
+            <h3 class="section-title">Équipe du Projet</h3>
+            <div class="team-members" *ngIf="affectations.length > 0; else noTeam">
+              <div class="team-member" *ngFor="let affectation of affectations">
+                <div class="member-photo" [style.background-image]="affectation.user?.image ? 'url(' + affectation.user?.image + ')' : 'url(/assets/default-user.png)'">
+                </div>
+                <p class="member-name">{{ affectation.user?.nom || 'Utilisateur inconnu' }}</p>
+              </div>
+            </div>
+            <ng-template #noTeam>
+              <p class="no-team">Aucun membre affecté à ce projet.</p>
+            </ng-template>
+          </div>
+        </div>
+        <ng-template #loading>
+          <p>Chargement des détails du projet...</p>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

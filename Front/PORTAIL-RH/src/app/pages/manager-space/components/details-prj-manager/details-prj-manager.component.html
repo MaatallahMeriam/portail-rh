@@ -1,0 +1,127 @@
+<div class="collab-home">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
+    
+    <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <div class="project-details">
+        <div class="details-header">
+          <div class="header-content">
+            <h2>{{ projet?.nom || 'Détails du projet' }}</h2>
+            <p class="description">{{ projet?.description || 'Aucune description disponible' }}</p>
+          </div>
+          <div class="cahier-charge-section" *ngIf="projet?.cahierCharge" (click)="downloadCahierCharge()">
+            <div class="document-icon">
+              <mat-icon>description</mat-icon>
+            </div>
+            <span>Cahier des charges</span>
+          </div>
+        </div>
+
+        <!-- Liste des utilisateurs affectés -->
+        <section class="section-container">
+          <div class="section-header">
+            <h3>Utilisateurs affectés</h3>
+            <span class="count-badge">{{ affectations.length }}</span>
+          </div>
+          
+          <div class="affectation-grid" *ngIf="affectations.length > 0">
+            <div class="user-card" *ngFor="let affectation of affectations">
+              <div class="user-avatar">
+                <img [src]="affectation.user?.image || 'assets/default-user.png'" alt="Photo de profil" />
+              </div>
+              <div class="user-info">
+                <h4>{{ affectation.user?.nom }} {{ affectation.user?.prenom }}</h4>
+                <p class="user-id"> {{ affectation.user?.poste }}</p>
+              </div>
+              <button class="remove-btn" (click)="desaffecterEmploye(affectation.employeId)">
+                <mat-icon>person_remove</mat-icon>
+              </button>
+            </div>
+          </div>
+          
+          <div class="empty-state" *ngIf="affectations.length === 0">
+            <mat-icon>group_off</mat-icon>
+            <p>Aucun utilisateur affecté à ce projet</p>
+          </div>
+        </section>
+
+        <!-- Section de matching -->
+        <section class="section-container">
+          <div class="section-header">
+            <h3>Matching des compétences</h3>
+            <button class="match-btn" (click)="matchEmployes()" [disabled]="isLoading">
+              <mat-icon *ngIf="isLoading" class="spinning">autorenew</mat-icon>
+              <mat-icon *ngIf="!isLoading">psychology</mat-icon>
+              <span>{{ isLoading ? 'Analyse en cours...' : 'Matcher les employés' }}</span>
+            </button>
+          </div>
+
+          <div class="matching-grid" *ngIf="matchingResults.length > 0">
+            <div class="match-card" *ngFor="let result of matchingResults">
+              <div class="match-score">
+                <div class="score-circle">
+                  {{ (result.score * 100) | number:'1.0-0' }}%
+                </div>
+              </div>
+              <div class="match-info">
+                <h4>{{ result.employeNom }}</h4>
+              </div>
+              <button class="affect-btn" 
+                      [disabled]="isAffecte(result.employeId)"
+                      (click)="affecterEmploye(result.employeId)">
+                <mat-icon>person_add</mat-icon>
+                <span>{{ isAffecte(result.employeId) ? 'Déjà affecté' : 'Affecter' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="matchingResults.length === 0 && !isLoading">
+            <mat-icon>search_off</mat-icon>
+            <p>Aucun résultat de matching disponible</p>
+          </div>
+        </section>
+
+        <!-- Section de recherche utilisateurs -->
+        <section class="section-container">
+          <div class="section-header">
+            <h3>Tous les utilisateurs</h3>
+            <div class="search-box">
+              <mat-icon>search</mat-icon>
+              <input 
+                type="text" 
+                [(ngModel)]="searchQuery" 
+                (input)="filterUsers()" 
+                placeholder="Rechercher un utilisateur..."
+              />
+            </div>
+          </div>
+
+          <div class="users-grid">
+            <div class="user-card" *ngFor="let user of filteredUsers">
+              <div class="user-avatar">
+                <img [src]="user.image || 'assets/default-user.png'" alt="Photo de profil" />
+              </div>
+              <div class="user-info">
+                <h4>{{ user.nom }} {{ user.prenom }}</h4>
+                <p class="user-id"> {{ user.poste }}</p>
+              </div>
+              <button class="affect-btn" 
+                      [disabled]="isAffecte(user.id)"
+                      (click)="affecterEmploye(user.id)">
+                <mat-icon>person_add</mat-icon>
+                <span>{{ isAffecte(user.id) ? 'Déjà affecté' : 'Affecter' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="filteredUsers.length === 0">
+            <mat-icon>person_search</mat-icon>
+            <p>Aucun utilisateur trouvé</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

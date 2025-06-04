@@ -67,10 +67,22 @@ import { TraitDmdComponent } from './pages/manager-space/components/trait-dmd/tr
 import { HistoDmdCongesComponent } from './pages/rh-space/components/histo-dmd-conges/histo-dmd-conges.component';
 import { TraitDmdDetailsComponent } from './pages/rh-space/components/trait-dmd-details/trait-dmd-details.component';
 import { PlanningManagerComponent } from './pages/manager-space/components/planning-manager/planning-manager.component';
+import { GestionProjetComponent } from './pages/rh-space/components/gestion-projet/gestion-projet.component';
+import { DetailsProjetComponent } from './pages/rh-space/components/details-projet/details-projet.component';
+import { ProjetCollabComponent } from './pages/collab-space/components/projet-collab/projet-collab.component';
+import { DetailsProjetCollabComponent } from './pages/collab-space/components/details-projet-collab/details-projet-collab.component';
+import { GestProjManagerComponent } from './pages/manager-space/components/gest-proj-manager/gest-proj-manager.component';
+import { DetailsPrjManagerComponent } from './pages/manager-space/components/details-prj-manager/details-prj-manager.component';
 
 export const routes: Routes = [
+  {path:'projet-collab',component:ProjetCollabComponent},
   {path:'pointage-collab',component: PointageCollabComponent},
   {path:'pointage-manager',component: PointageManagerComponent},
+    {path:'projet-rh',component: GestionProjetComponent},
+{path:'details-projet',component:DetailsProjetComponent},
+{path:'details-projet-collab', component:DetailsProjetCollabComponent},
+  {path:'gest-proj-manager', component:GestProjManagerComponent},
+  {path:'details-prj-manager', component:DetailsPrjManagerComponent },
 
     {path:'profil-rh',component:ProfilRhComponent},
     {path:'profil-manager',component:ProfilManagerComponent},

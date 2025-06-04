@@ -37,6 +37,8 @@ export class SidebarComponent implements OnInit {
         { label: 'Congés', route: '/demandeCongCollab', icon: 'calendar' }
       ]
     },
+  { label: 'Liste Projets', route: '/projet-collab', icon: 'kanban', hasNotification: false },
+
     { label: 'Planning Télétravail', route: '/planning-user', icon: 'calendar-week', hasNotification: false },
     { label: 'Boîte à Idées', route: '/idee-collab', icon: 'lightbulb' },
     { label: 'Documenthèque', route: '/doc-collab', icon: 'folder' }

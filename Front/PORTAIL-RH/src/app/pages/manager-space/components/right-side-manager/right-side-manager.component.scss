@@ -114,7 +114,7 @@ $shadow-lg: 0 8px 16px rgba(35, 0, 70, 0.15);
     }
     
     h3 {
-      margin-top: -10px;
+      margin-top: -4px;
       color: #E5007F;
       font-size: 15px;
       font-weight: 600;
@@ -251,8 +251,8 @@ $shadow-lg: 0 8px 16px rgba(35, 0, 70, 0.15);
     }
 
     .user-avatar {
-      width: 25px;
-      height: 25px;
+      width: 35px;
+      height: 35px;
       margin-top: -20px;
       border-radius: 50%;
       overflow: hidden;
@@ -323,8 +323,9 @@ $shadow-lg: 0 8px 16px rgba(35, 0, 70, 0.15);
       border-radius: 12px;
       
       .manager-avatar {
-        width: 25px;
-        height: 25px;
+        width:35px;
+        margin-right: -10px;
+        height: 35px;
         border-radius: 50%;
         border: 2px solid #F5AF06;
 
@@ -389,7 +390,7 @@ $shadow-lg: 0 8px 16px rgba(35, 0, 70, 0.15);
   color: $text-secondary;
   
   mat-icon {
-    font-size: 32px;
+    font-size: 25px;
     opacity: 0.5;
   }
   
@@ -452,6 +453,7 @@ $shadow-lg: 0 8px 16px rgba(35, 0, 70, 0.15);
         transition: $transition;
         
         &:hover {
+          background: rgba($primary, 0.1);
           color: $primary;
         }
       }

@@ -97,9 +97,11 @@ $transition: all 0.3s ease;
   overflow-y: auto;
   padding: 32px;
   transition: $transition;
+  max-width: 1200px;
   
-  &.sidebar-collapsed {
-    left: 100px;
+ &.sidebar-collapsed {
+    left: 80px;
+    max-width: 1420px;
   }
   
   &::-webkit-scrollbar {

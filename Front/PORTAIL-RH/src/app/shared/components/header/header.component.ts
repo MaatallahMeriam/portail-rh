@@ -1,4 +1,3 @@
-// src/app/components/header/header.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -133,6 +132,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       return notification.message; // e.g., "John Doe a réagi à votre publication : 'Premiers mots...'"
     } else if (type === 'comment') {
       return notification.message; // e.g., "John Doe a commenté votre publication : 'Premiers mots...'"
+    } else if (type === 'projet_affectation') {
+      return notification.message; // e.g., "Vous avez été affecté au projet 'Projet X'... voir détails"
     }
     return message || 'Nouvelle notification';
   }
@@ -140,6 +141,32 @@ export class HeaderComponent implements OnInit, OnDestroy {
   goToDemande(notification: Notification): void {
     const userRole = this.authService.getUserRole();
     const notificationType = notification.type?.toUpperCase();
+
+    if (notificationType === 'PROJET_AFFECTATION') {
+      // PROJET_AFFECTATION notifications: navigate to project details
+      if (notification.demandeId) {
+        this.router.navigate(['/details-projet'], {
+          queryParams: { id: notification.demandeId },
+        });
+      }
+      // Mark as read
+      if (!notification.read) {
+        this.notificationService.markAsRead(notification.id).subscribe({
+          next: (updatedNotification) => {
+            const updatedNotifications = this.notifications.map((n) =>
+              n.id === notification.id ? { ...n, read: true } : n
+            );
+            this.notificationService.updateNotifications(updatedNotifications);
+            this.notificationCount = this.notifications.filter((n) => !n.read).length;
+          },
+          error: (error) => {
+            console.error('Erreur lors de la mise à jour de la notification', error);
+          },
+        });
+      }
+      this.showNotificationsDropdown = false;
+      return;
+    }
 
     if (notificationType === 'POINTAGE') {
       // POINTAGE notifications: mark as read without navigation
@@ -266,8 +293,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       case 'MANAGER':
         this.router.navigate(['/details-eq']);
         break;
-
-       case 'ADMIN':
+      case 'ADMIN':
         this.router.navigate(['/eq-admin']);
         break;
       default:

@@ -65,7 +65,20 @@ import { QrPointageComponent } from './shared/components/qr-pointage/qr-pointage
 import { PointageCollabComponent } from './pages/collab-space/components/pointage-collab/pointage-collab.component';
 import { PointageManagerComponent } from './pages/manager-space/components/pointage-manager/pointage-manager.component';
 import { EquipeAdminComponent } from './pages/admin-space/component/equipe-admin/equipe-admin.component';
+
+import { DetailsProjetComponent } from './pages/rh-space/components/details-projet/details-projet.component';
+import { GestionProjetComponent } from './pages/rh-space/components/gestion-projet/gestion-projet.component';
+import { GestProjManagerComponent } from './pages/manager-space/components/gest-proj-manager/gest-proj-manager.component';
+import { ProjetCollabComponent } from './pages/collab-space/components/projet-collab/projet-collab.component';
+import { DetailsProjetCollabComponent } from './pages/collab-space/components/details-projet-collab/details-projet-collab.component';
+import { DetailsPrjManagerComponent } from './pages/manager-space/components/details-prj-manager/details-prj-manager.component';
 const routes: Routes = [
+  {path:'details-prj-manager', component:DetailsPrjManagerComponent },
+  {path:'gest-proj-manager', component:GestProjManagerComponent},
+    {path:'projet-collab',component:ProjetCollabComponent},
+{path:'details-projet-collab', component:DetailsProjetCollabComponent},
+    {path:'projet-rh',component: GestionProjetComponent},
+{path:'details-projet',component:DetailsProjetComponent},
   {path:'pointage-manager',component: PointageManagerComponent},
   {path:'eq-admin',component:EquipeAdminComponent},
   {path:'pointage-collab',component: PointageCollabComponent},

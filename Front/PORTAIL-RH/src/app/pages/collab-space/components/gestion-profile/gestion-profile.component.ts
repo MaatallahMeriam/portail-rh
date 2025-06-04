@@ -8,8 +8,14 @@ import { UserService, UserDTO, UserUpdateBasicDTO } from '../../../../services/u
 import { AuthService } from '../../../../shared/services/auth.service';
 import { FileService } from '../../../../services/file.service';
 import { DemandeService, UserDemandeDetailsDTO } from '../../../../services/demande.service';
+import { CompetenceService, EmployeCompetenceDTO } from '../../../../services/competence.service';
 import Swal from 'sweetalert2';
 import { trigger, transition, style, animate } from '@angular/animations';
+
+interface Skill {
+  name: string;
+  level: 'Débutant' | 'Intermédiaire' | 'Expert';
+}
 
 @Component({
   selector: 'app-gestion-profile',
@@ -23,18 +29,17 @@ import { trigger, transition, style, animate } from '@angular/animations';
   ],
   templateUrl: './gestion-profile.component.html',
   styleUrls: ['./gestion-profile.component.scss'],
-   animations: [
-      trigger('fadeInOut', [
-        transition(':enter', [
-          style({ opacity: 0, transform: 'translateY(10px)' }),
-          animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-        ]),
-        transition(':leave', [
-          animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(10px)' }))
-        ])
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(10px)' }))
       ])
-    ]
-
+    ])
+  ]
 })
 export class GestionProfileComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
@@ -69,7 +74,7 @@ export class GestionProfileComponent implements OnInit {
   editingField: keyof UserUpdateBasicDTO | null = null;
   editingValue: string = '';
   showSaveAnimation: boolean = false;
-  activeTab: 'personal' | 'dossier' | 'password' = 'personal';
+  activeTab: 'personal' | 'dossier' | 'password' | 'skills' = 'personal';
   showAttachForm: string | null = null;
   selectedDossierFile: File | null = null;
   userDemandeDetails: UserDemandeDetailsDTO[] = [];
@@ -78,11 +83,18 @@ export class GestionProfileComponent implements OnInit {
   newPassword: string = '';
   confirmPassword: string = '';
 
+  // Variables pour la gestion des compétences
+  skills: Skill[] = [];
+  showSkillDialog = false;
+  newSkillName = '';
+  newSkillLevel: 'Débutant' | 'Intermédiaire' | 'Expert' = 'Débutant';
+
   constructor(
     private userService: UserService,
     private authService: AuthService,
     private fileService: FileService,
-    private demandeService: DemandeService
+    private demandeService: DemandeService,
+    private competenceService: CompetenceService
   ) {}
 
   ngOnInit(): void {
@@ -99,6 +111,89 @@ export class GestionProfileComponent implements OnInit {
 
     this.loadUserDetails(this.userId);
     this.loadUserDemandeDetails(this.userId);
+    this.loadUserCompetences(this.userId);
+  }
+
+  private loadUserCompetences(userId: number): void {
+    this.competenceService.getCompetencesByEmploye(userId).subscribe({
+      next: (competences: EmployeCompetenceDTO[]) => {
+        this.skills = competences.map(competence => ({
+          name: competence.competenceNom, // Plus de competenceId, on utilise competenceNom
+          level: competence.niveau as 'Débutant' | 'Intermédiaire' | 'Expert'
+        }));
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des compétences:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Impossible de charger les compétences.',
+        });
+      }
+    });
+  }
+
+  openSkillDialog(): void {
+    this.showSkillDialog = true;
+    this.newSkillName = '';
+    this.newSkillLevel = 'Débutant';
+  }
+
+  closeSkillDialog(): void {
+    this.showSkillDialog = false;
+  }
+
+  addSkill(): void {
+    if (!this.userId || !this.newSkillName || !this.newSkillLevel) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Veuillez remplir tous les champs.',
+      });
+      return;
+    }
+
+    const employeCompetenceDTO: EmployeCompetenceDTO = {
+      employeId: this.userId,
+      competenceNom: this.newSkillName,
+      niveau: this.newSkillLevel
+    };
+
+    this.competenceService.addEmployeCompetence(employeCompetenceDTO).subscribe({
+      next: (response: EmployeCompetenceDTO) => {
+        this.skills.push({
+          name: response.competenceNom,
+          level: response.niveau as 'Débutant' | 'Intermédiaire' | 'Expert'
+        });
+        this.closeSkillDialog();
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'Compétence ajoutée avec succès.',
+        });
+      },
+      error: (err) => {
+        console.error('Erreur lors de l\'ajout de la compétence:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Impossible d\'ajouter la compétence.',
+        });
+      }
+    });
+  }
+
+  getStars(level: 'Débutant' | 'Intermédiaire' | 'Expert'): boolean[] {
+    switch (level) {
+      case 'Débutant':
+        return [true, false, false];
+      case 'Intermédiaire':
+        return [true, true, false];
+      case 'Expert':
+        return [true, true, true];
+      default:
+        return [false, false, false];
+    }
   }
 
   triggerProfilePictureInput(): void {

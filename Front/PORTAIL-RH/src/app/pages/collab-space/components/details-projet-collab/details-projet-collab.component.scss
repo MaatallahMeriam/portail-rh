@@ -1,0 +1,299 @@
+.collab-home {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f9f9f9;
+  position: relative;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.project-details {
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.project-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #230046;
+  margin-bottom: 24px;
+  position: relative;
+  padding-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(to right, #230046, #FF8C00);
+    border-radius: 2px;
+  }
+}
+
+.project-description {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 32px;
+  max-width: 800px;
+  padding: 20px;
+  background: rgba(35, 0, 70, 0.02);
+  border-radius: 8px;
+  border-left: 4px solid #FF8C00;
+}
+
+.cahier-charge-section {
+  margin: 40px 0;
+  text-align: center;
+
+  button {
+    background: linear-gradient(135deg, #230046, #FF8C00);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(35, 0, 70, 0.2);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(35, 0, 70, 0.3);
+    }
+
+    &:disabled {
+      background: #e0e0e0;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    mat-icon {
+      font-size: 24px;
+    }
+  }
+}
+
+.team-section {
+  margin-top: 40px;
+  padding: 32px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid rgba(35, 0, 70, 0.1);
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #230046;
+    margin-bottom: 32px;
+    position: relative;
+    padding-bottom: 12px;
+
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(to right, #230046, #FF8C00);
+      border-radius: 2px;
+    }
+  }
+}
+
+.team-members {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 32px;
+  padding: 20px 0;
+}
+
+.team-member {
+  text-align: center;
+  padding: 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: white;
+  border: 1px solid rgba(35, 0, 70, 0.1);
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(35, 0, 70, 0.1);
+
+    .member-photo {
+      border-color: #FF8C00;
+      transform: scale(1.05);
+    }
+  }
+}
+
+.member-photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  margin: 0 auto 16px;
+  border: 4px solid #230046;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(35, 0, 70, 0.1);
+}
+
+.member-name {
+  font-size: 16px;
+  color: #230046;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.no-team {
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+  padding: 40px;
+  background: rgba(35, 0, 70, 0.02);
+  border-radius: 8px;
+  border: 2px dashed rgba(35, 0, 70, 0.1);
+}
+
+.feed {
+  position: fixed;
+  top: 60px;
+  left: 270px;
+  right: 30px;
+  bottom: 10px;
+  overflow-y: auto;
+  background: #f8f9fa;
+  padding: 24px;
+  border-radius: 8;
+  transition: all 0.3s ease;
+
+ &.sidebar-collapsed {
+    left: 80px;
+    max-width: 1420px;
+  }
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 4px;
+
+    &:hover {
+      background: #230046;
+    }
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 4px;
+  }
+}
+
+@media screen and (max-width: 1300px) {
+  .feed {
+    left: 250px;
+    right: 20px;
+    padding: 20px;
+  }
+
+  .team-members {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 24px;
+  }
+
+  .member-photo {
+    width: 90px;
+    height: 90px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .feed {
+    left: 220px;
+    padding: 16px;
+  }
+
+  .project-title {
+    font-size: 28px;
+  }
+
+  .team-members {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .feed {
+    left: 0;
+    right: 0;
+    border-radius: 0;
+  }
+
+  .project-details {
+    padding: 20px;
+  }
+
+  .team-members {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 16px;
+  }
+
+  .member-photo {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .feed {
+    padding: 12px;
+  }
+
+  .project-details {
+    padding: 16px;
+  }
+
+  .project-title {
+    font-size: 24px;
+  }
+
+  .cahier-charge-section button {
+    width: 100%;
+    padding: 14px 20px;
+  }
+
+  .team-members {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 12px;
+  }
+
+  .member-photo {
+    width: 70px;
+    height: 70px;
+  }
+}
