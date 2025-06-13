@@ -97,15 +97,13 @@ public class AuthServiceImpTest {
 
     @Test
     void testRegister_EmailAlreadyExists() {
-        // Simuler un email existant
+        // tester un email existant
         NewRegisterRequest request = new NewRegisterRequest();
         request.setMail("test@example.com");
         request.setUserName("testuser");
         request.setRole("COLLAB");
 
         when(usersRepository.findByMail("test@example.com")).thenReturn(Optional.of(new Users()));
-
-        // Vérifier que l'exception est levée
         assertThrows(IllegalArgumentException.class, () -> enhancedUserService.register(request));
     }
     @Test

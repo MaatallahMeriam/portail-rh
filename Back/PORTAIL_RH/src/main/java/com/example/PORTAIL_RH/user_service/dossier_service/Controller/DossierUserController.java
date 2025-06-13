@@ -71,4 +71,3 @@ public class DossierUserController {
     }
 }
 
-// New class for JSON response

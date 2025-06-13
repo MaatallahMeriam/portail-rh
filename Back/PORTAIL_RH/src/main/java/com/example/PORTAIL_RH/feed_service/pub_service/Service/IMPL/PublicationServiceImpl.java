@@ -120,7 +120,7 @@ public class PublicationServiceImpl implements PublicationService {
             Files.write(filePath, image.getBytes());
 
             NewsPost news = new NewsPost();
-            news.setImageUrl(uniqueFileName); // Store only the filename
+            news.setImageUrl(uniqueFileName);
             news.setTitre(titre);
             news.setDescription(description);
             news.setUser(user);

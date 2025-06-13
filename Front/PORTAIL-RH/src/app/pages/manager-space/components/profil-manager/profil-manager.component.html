@@ -4,7 +4,6 @@
   <div class="main-content">
     <app-side-bar-manager (sidebarStateChange)="onSidebarStateChange($event)"></app-side-bar-manager>
 
-  
     <div class="content-wrapper">
       <div class="feed" [class.sidebar-collapsed]="isSidebarCollapsed">
         <main class="content">
@@ -358,11 +357,17 @@
                   <mat-icon>add</mat-icon>
                 </button>
                 <div class="skills-grid">
-                  <div *ngFor="let skill of skills" class="skill-card">
-                    <h4>{{ skill.name }}</h4>
+                  <div *ngFor="let skill of skills; let i = index" class="skill-card">
+                    <div class="skill-header">
+                      <h4>{{ skill.name }}</h4>
+                      <button class="delete-skill-button" (click)="deleteSkill(i)">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
                     <div class="stars">
                       <mat-icon *ngFor="let star of getStars(skill.level)" [class.active]="star">star</mat-icon>
                     </div>
+                    <div class="skill-level">{{ skill.level }}</div>
                   </div>
                 </div>
               </div>
@@ -372,55 +377,184 @@
       </div>
     </div>
 
-    <!-- Edit Modal -->
-    <div class="modal-overlay" *ngIf="editingField" [@fadeInOut]>
-      <div class="modal-content">
-        <h3 class="modal-title">
-          <mat-icon>edit</mat-icon>
-          Modifier {{ fieldDisplayName(editingField) }}
-        </h3>
-        <input
-          [type]="editingField === 'dateNaissance' ? 'date' : 'text'"
-          [(ngModel)]="editingValue"
-          [placeholder]="'Nouveau ' + fieldDisplayName(editingField)"
-          class="modal-input"
-        >
+    <!-- Enhanced Edit Modal -->
+    <div class="modal-overlay" *ngIf="editingField" [@fadeInOut] (click)="onModalBackdropClick($event)">
+      <div class="modal-content enhanced-edit-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">
+            <mat-icon class="field-icon">{{ getFieldIcon(editingField) }}</mat-icon>
+            Modifier {{ fieldDisplayName(editingField) }}
+          </h3>
+          <button class="close-button" (click)="cancelEdit()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="form-field">
+            <label class="field-label">
+              <mat-icon class="field-icon">{{ getFieldIcon(editingField) }}</mat-icon>
+              {{ fieldDisplayName(editingField) }}
+            </label>
+            <div class="input-container" [class.error]="hasValidationError">
+              <input
+                #editInput
+                [type]="getInputType(editingField)"
+                [(ngModel)]="editingValue"
+                [placeholder]="getFieldPlaceholder(editingField)"
+                class="modal-input"
+                [class.error]="hasValidationError"
+                (input)="validateField()"
+                (keyup.enter)="saveEdit()"
+                (keyup.escape)="cancelEdit()"
+              >
+              <div class="input-status" *ngIf="!hasValidationError && editingValue">
+                <mat-icon class="success-icon">check_circle</mat-icon>
+              </div>
+            </div>
+            <div class="error-message" *ngIf="validationErrorMessage">
+              <mat-icon>error</mat-icon>
+              {{ validationErrorMessage }}
+            </div>
+            <div class="field-hint" *ngIf="getFieldHint(editingField) && !hasValidationError">
+              <mat-icon>info</mat-icon>
+              {{ getFieldHint(editingField) }}
+            </div>
+          </div>
+        </div>
+
         <div class="modal-actions">
           <button class="cancel-button" (click)="cancelEdit()">
+            <mat-icon>close</mat-icon>
             Annuler
           </button>
-          <button class="save-button" (click)="saveEdit()">
+          <button class="save-button" [disabled]="hasValidationError || !editingValue" (click)="saveEdit()">
+            <mat-icon>save</mat-icon>
             Enregistrer
           </button>
         </div>
       </div>
     </div>
 
-     <!-- Skill Dialog -->
-    <div class="modal-overlay" *ngIf="showSkillDialog" [@fadeInOut]>
-      <div class="modal-content skill-dialog">
-        <h3 class="modal-title">
-          <mat-icon>add</mat-icon>
-          Ajouter une compétence
-        </h3>
-        <div class="form-field">
-          <label>Nom de la compétence</label>
-          <input [(ngModel)]="newSkillName" placeholder="Entrez le nom de la compétence" />
+    <!-- Enhanced Skill Dialog -->
+    <div class="modal-overlay" *ngIf="showSkillDialog" [@fadeInOut] (click)="onSkillModalBackdropClick($event)">
+      <div class="modal-content skill-dialog enhanced-skill-dialog" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">
+            <mat-icon>star</mat-icon>
+            Ajouter une compétence
+          </h3>
+          <button class="close-button" (click)="closeSkillDialog()">
+            <mat-icon>close</mat-icon>
+          </button>
         </div>
-        <div class="form-field">
-          <label>Niveau</label>
-          <select [(ngModel)]="newSkillLevel">
-            <option value="Débutant">Débutant</option>
-            <option value="Intermédiaire">Intermédiaire</option>
-            <option value="Expert">Expert</option>
-          </select>
+
+        <div class="modal-body">
+          <div class="form-field">
+            <label class="field-label">
+              <mat-icon class="field-icon">psychology</mat-icon>
+              Nom de la compétence
+            </label>
+            <div class="input-container">
+              <input 
+                [(ngModel)]="newSkillName" 
+                placeholder="Tapez pour rechercher ou ajouter une compétence" 
+                class="skill-input"
+                (input)="onSkillNameInput($event)"
+                (focus)="showSkillSuggestions = true"
+                (blur)="onSkillInputBlur()"
+              />
+              <mat-icon class="search-icon">search</mat-icon>
+            </div>
+            
+            <!-- Suggestions dropdown -->
+            <div class="suggestions-dropdown" *ngIf="showSkillSuggestions && filteredSkillSuggestions.length > 0">
+              <div 
+                class="suggestion-item" 
+                *ngFor="let suggestion of filteredSkillSuggestions"
+                (click)="selectSkillSuggestion(suggestion)"
+              >
+                <mat-icon>psychology</mat-icon>
+                {{ suggestion }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="field-label">
+              <mat-icon class="field-icon">trending_up</mat-icon>
+              Niveau de maîtrise
+            </label>
+            <div class="level-selector">
+              <div 
+                class="level-option" 
+                *ngFor="let level of skillLevels"
+                [class.selected]="newSkillLevel === level.value"
+                (click)="selectSkillLevel(level.value)"
+              >
+                <div class="level-stars">
+                  <mat-icon *ngFor="let star of level.stars" [class.active]="star">star</mat-icon>
+                </div>
+                <div class="level-info">
+                  <div class="level-name">{{ level.value }}</div>
+                  <div class="level-description">{{ level.description }}</div>
+                </div>
+                <div class="level-check" *ngIf="newSkillLevel === level.value">
+                  <mat-icon>check_circle</mat-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview -->
+          <div class="skill-preview" *ngIf="newSkillName">
+            <h4>Aperçu</h4>
+            <div class="preview-skill-card">
+              <div class="skill-name">{{ newSkillName }}</div>
+              <div class="skill-stars">
+                <mat-icon *ngFor="let star of getStars(newSkillLevel)" [class.active]="star">star</mat-icon>
+              </div>
+              <div class="skill-level-text">{{ newSkillLevel }}</div>
+            </div>
+          </div>
         </div>
+
         <div class="modal-actions">
           <button class="cancel-button" (click)="closeSkillDialog()">
+            <mat-icon>close</mat-icon>
             Annuler
           </button>
-          <button class="save-button" (click)="addSkill()">
-            Ajouter
+          <button class="save-button" [disabled]="!newSkillName.trim()" (click)="addSkill()">
+            <mat-icon>add</mat-icon>
+            Ajouter la compétence
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Skill Confirmation Modal -->
+    <div class="modal-overlay" *ngIf="showDeleteSkillConfirm" [@fadeInOut]>
+      <div class="modal-content delete-confirm-modal">
+        <div class="modal-header">
+          <h3 class="modal-title">
+            <mat-icon class="warning-icon">warning</mat-icon>
+            Supprimer la compétence
+          </h3>
+        </div>
+        
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer la compétence <strong>"{{ skillToDelete?.name }}"</strong> ?</p>
+          <p class="warning-text">Cette action est irréversible.</p>
+        </div>
+
+        <div class="modal-actions">
+          <button class="cancel-button" (click)="cancelDeleteSkill()">
+            <mat-icon>close</mat-icon>
+            Annuler
+          </button>
+          <button class="delete-button" (click)="confirmDeleteSkill()">
+            <mat-icon>delete</mat-icon>
+            Supprimer
           </button>
         </div>
       </div>

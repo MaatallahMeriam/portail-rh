@@ -21,7 +21,7 @@ import { MatIconModule } from "@angular/material/icon";
           <canvas #chartCanvas></canvas>
         </div>
         <div class="chart-info">
-          <div class="chart-percentage">55%</div>
+          <div class="chart-percentage">72%</div>
           <div class="chart-label">Présents</div>
         </div>
       </div>
@@ -41,7 +41,7 @@ import { MatIconModule } from "@angular/material/icon";
           </div>
           <div class="legend-content">
             <span class="legend-label">Employés en congés</span>
-            <span class="legend-value">45%</span>
+            <span class="legend-value">28%</span>
           </div>
         </div>
       </div>

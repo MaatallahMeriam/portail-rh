@@ -1,21 +1,29 @@
-import { Component, ViewChild, ElementRef, OnInit, HostListener } from '@angular/core';
+
+import { SidebarComponent } from '../sidebar-collab/sidebar.component';
+import { Component, ViewChild, ElementRef, OnInit, HostListener, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { SidebarComponent } from '../sidebar-collab/sidebar.component';
 import { HeaderComponent } from '../../../../shared/components/header/header.component';
-import { UserService, UserDTO, UserUpdateBasicDTO } from '../../../../services/users.service';
+import { UserService, UserDTO ,UserUpdateBasicDTO} from '../../../../services/users.service';
 import { AuthService } from '../../../../shared/services/auth.service';
-import { FileService } from '../../../../services/file.service';
-import { DemandeService, UserDemandeDetailsDTO } from '../../../../services/demande.service';
-import { CompetenceService, EmployeCompetenceDTO } from '../../../../services/competence.service';
+import { FileService } from '../../../../services/file.service'; // Service pour gérer les fichiers
+import { DemandeService, UserDemandeDetailsDTO } from '../../../../services/demande.service'; // Service pour gérer les demandes
 import Swal from 'sweetalert2';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { CompetenceService, EmployeCompetenceDTO } from '../../../../services/competence.service';
 
 interface Skill {
   name: string;
   level: 'Débutant' | 'Intermédiaire' | 'Expert';
 }
+
+interface SkillLevel {
+  value: 'Débutant' | 'Intermédiaire' | 'Expert';
+  description: string;
+  stars: boolean[];
+}
+
 
 @Component({
   selector: 'app-gestion-profile',
@@ -41,11 +49,12 @@ interface Skill {
     ])
   ]
 })
-export class GestionProfileComponent implements OnInit {
+export class GestionProfileComponent implements OnInit, AfterViewInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('fileInputCV') fileInputCV?: ElementRef;
   @ViewChild('fileInputDiplome') fileInputDiplome?: ElementRef;
   @ViewChild('fileInputContrat') fileInputContrat?: ElementRef;
+  @ViewChild('editInput') editInput?: ElementRef;
 
   user: UserDTO = {
     id: 0,
@@ -89,6 +98,45 @@ export class GestionProfileComponent implements OnInit {
   newSkillName = '';
   newSkillLevel: 'Débutant' | 'Intermédiaire' | 'Expert' = 'Débutant';
 
+  // Nouvelles variables pour les améliorations
+  hasValidationError = false;
+  validationErrorMessage = '';
+  
+  // Variables pour la suppression de compétences
+  showDeleteSkillConfirm = false;
+  skillToDelete: Skill | null = null;
+  skillToDeleteIndex = -1;
+
+  // Variables pour les suggestions de compétences
+  showSkillSuggestions = false;
+  skillSuggestions: string[] = [
+    'JavaScript', 'TypeScript', 'Angular', 'React', 'Vue.js', 'Node.js',
+    'Python', 'Java', 'C#', 'PHP', 'CSS', 'HTML', 'SQL', 'MongoDB',
+    'PostgreSQL', 'MySQL', 'Docker', 'Kubernetes', 'AWS', 'Azure',
+    'Git', 'Jenkins', 'Linux', 'Windows Server', 'Agile', 'Scrum',
+    'Management', 'Communication', 'Leadership', 'Teamwork', 'Problem Solving',
+    'Analytics', 'Marketing', 'Design', 'UX/UI', 'Project Management'
+  ];
+  filteredSkillSuggestions: string[] = [];
+
+  skillLevels: SkillLevel[] = [
+    {
+      value: 'Débutant',
+      description: 'Connaissances de base, besoin d\'accompagnement',
+      stars: [true, false, false]
+    },
+    {
+      value: 'Intermédiaire',
+      description: 'Autonome sur les tâches courantes',
+      stars: [true, true, false]
+    },
+    {
+      value: 'Expert',
+      description: 'Maîtrise complète, capable de former d\'autres',
+      stars: [true, true, true]
+    }
+  ];
+
   constructor(
     private userService: UserService,
     private authService: AuthService,
@@ -114,11 +162,21 @@ export class GestionProfileComponent implements OnInit {
     this.loadUserCompetences(this.userId);
   }
 
+  ngAfterViewInit(): void {
+    // Focus sur le champ d'édition après ouverture du modal
+    setTimeout(() => {
+      if (this.editInput?.nativeElement) {
+        this.editInput.nativeElement.focus();
+        this.editInput.nativeElement.select();
+      }
+    }, 100);
+  }
+
   private loadUserCompetences(userId: number): void {
     this.competenceService.getCompetencesByEmploye(userId).subscribe({
       next: (competences: EmployeCompetenceDTO[]) => {
         this.skills = competences.map(competence => ({
-          name: competence.competenceNom, // Plus de competenceId, on utilise competenceNom
+          name: competence.competenceNom,
           level: competence.niveau as 'Débutant' | 'Intermédiaire' | 'Expert'
         }));
       },
@@ -133,22 +191,247 @@ export class GestionProfileComponent implements OnInit {
     });
   }
 
+  // Nouvelles méthodes pour les améliorations du modal d'édition
+  getFieldIcon(field: keyof UserUpdateBasicDTO): string {
+    const iconMap: { [key in keyof UserUpdateBasicDTO]: string } = {
+      nom: 'person',
+      prenom: 'person',
+      userName: 'account_circle',
+      mail: 'email',
+      dateNaissance: 'cake',
+      numero: 'phone',
+      adresse: 'location_on'
+    };
+    return iconMap[field] || 'edit';
+  }
+
+  getInputType(field: keyof UserUpdateBasicDTO): string {
+    const typeMap: { [key in keyof UserUpdateBasicDTO]: string } = {
+      nom: 'text',
+      prenom: 'text',
+      userName: 'text',
+      mail: 'email',
+      dateNaissance: 'date',
+      numero: 'tel',
+      adresse: 'text'
+    };
+    return typeMap[field] || 'text';
+  }
+
+  getFieldPlaceholder(field: keyof UserUpdateBasicDTO): string {
+    const placeholderMap: { [key in keyof UserUpdateBasicDTO]: string } = {
+      nom: 'Votre nom de famille',
+      prenom: 'Votre prénom',
+      userName: 'Votre nom d\'utilisateur',
+      mail: 'votre.email@exemple.com',
+      dateNaissance: 'Sélectionnez votre date de naissance',
+      numero: '0123456789',
+      adresse: 'Votre adresse complète'
+    };
+    return placeholderMap[field] || `Nouveau ${this.fieldDisplayName(field)}`;
+  }
+
+  getFieldHint(field: keyof UserUpdateBasicDTO): string {
+    const hintMap: { [key in keyof UserUpdateBasicDTO]: string } = {
+      nom: 'Le nom de famille tel qu\'il apparaît sur vos documents officiels',
+      prenom: 'Votre prénom usuel',
+      userName: 'Nom d\'utilisateur unique pour la connexion',
+      mail: 'Adresse email valide pour les notifications',
+      dateNaissance: 'Format: JJ/MM/AAAA',
+      numero: 'Numéro de téléphone avec indicatif',
+      adresse: 'Adresse postale complète'
+    };
+    return hintMap[field] || '';
+  }
+
+  validateField(): void {
+    if (!this.editingField || !this.editingValue) {
+      this.hasValidationError = false;
+      this.validationErrorMessage = '';
+      return;
+    }
+
+    const value = this.editingValue.trim();
+    
+    switch (this.editingField) {
+      case 'mail':
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+          this.hasValidationError = true;
+          this.validationErrorMessage = 'Format d\'email invalide';
+        } else {
+          this.hasValidationError = false;
+          this.validationErrorMessage = '';
+        }
+        break;
+        
+      case 'numero':
+        const phoneRegex = /^[+]?[0-9\s\-\(\)]{8,}$/;
+        if (!phoneRegex.test(value)) {
+          this.hasValidationError = true;
+          this.validationErrorMessage = 'Format de numéro invalide';
+        } else {
+          this.hasValidationError = false;
+          this.validationErrorMessage = '';
+        }
+        break;
+        
+      case 'userName':
+        if (value.length < 3) {
+          this.hasValidationError = true;
+          this.validationErrorMessage = 'Le nom d\'utilisateur doit contenir au moins 3 caractères';
+        } else if (!/^[a-zA-Z0-9._-]+$/.test(value)) {
+          this.hasValidationError = true;
+          this.validationErrorMessage = 'Seuls les lettres, chiffres, points, tirets et underscores sont autorisés';
+        } else {
+          this.hasValidationError = false;
+          this.validationErrorMessage = '';
+        }
+        break;
+        
+      case 'nom':
+      case 'prenom':
+        if (value.length < 2) {
+          this.hasValidationError = true;
+          this.validationErrorMessage = 'Doit contenir au moins 2 caractères';
+        } else if (!/^[a-zA-ZÀ-ÿ\s\-']+$/.test(value)) {
+          this.hasValidationError = true;
+          this.validationErrorMessage = 'Caractères spéciaux non autorisés';
+        } else {
+          this.hasValidationError = false;
+          this.validationErrorMessage = '';
+        }
+        break;
+        
+      case 'dateNaissance':
+        const birthDate = new Date(value);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        
+        if (isNaN(birthDate.getTime())) {
+          this.hasValidationError = true;
+          this.validationErrorMessage = 'Date invalide';
+        } else if (birthDate > today) {
+          this.hasValidationError = true;
+          this.validationErrorMessage = 'La date de naissance ne peut pas être dans le futur';
+        } else if (age < 16 || age > 100) {
+          this.hasValidationError = true;
+          this.validationErrorMessage = 'L\'âge doit être entre 16 et 100 ans';
+        } else {
+          this.hasValidationError = false;
+          this.validationErrorMessage = '';
+        }
+        break;
+        
+      case 'adresse':
+        if (value.length < 10) {
+          this.hasValidationError = true;
+          this.validationErrorMessage = 'L\'adresse doit être plus détaillée';
+        } else {
+          this.hasValidationError = false;
+          this.validationErrorMessage = '';
+        }
+        break;
+        
+      default:
+        this.hasValidationError = false;
+        this.validationErrorMessage = '';
+    }
+  }
+
+  onModalBackdropClick(event: Event): void {
+    if (event.target === event.currentTarget) {
+      this.cancelEdit();
+    }
+  }
+
+  // Nouvelles méthodes pour la gestion des compétences
+  onSkillNameInput(event: any): void {
+    const value = event.target.value.toLowerCase();
+    this.filteredSkillSuggestions = this.skillSuggestions
+      .filter(skill => skill.toLowerCase().includes(value))
+      .filter(skill => !this.skills.some(existingSkill => existingSkill.name.toLowerCase() === skill.toLowerCase()))
+      .slice(0, 5);
+  }
+
+  onSkillInputBlur(): void {
+    // Délai pour permettre le clic sur une suggestion
+    setTimeout(() => {
+      this.showSkillSuggestions = false;
+    }, 200);
+  }
+
+  selectSkillSuggestion(suggestion: string): void {
+    this.newSkillName = suggestion;
+    this.showSkillSuggestions = false;
+  }
+
+  selectSkillLevel(level: 'Débutant' | 'Intermédiaire' | 'Expert'): void {
+    this.newSkillLevel = level;
+  }
+
+  onSkillModalBackdropClick(event: Event): void {
+    if (event.target === event.currentTarget) {
+      this.closeSkillDialog();
+    }
+  }
+
+  deleteSkill(index: number): void {
+    this.skillToDelete = this.skills[index];
+    this.skillToDeleteIndex = index;
+    this.showDeleteSkillConfirm = true;
+  }
+
+  cancelDeleteSkill(): void {
+    this.showDeleteSkillConfirm = false;
+    this.skillToDelete = null;
+    this.skillToDeleteIndex = -1;
+  }
+
+  confirmDeleteSkill(): void {
+    if (this.skillToDeleteIndex >= 0) {
+      this.skills.splice(this.skillToDeleteIndex, 1);
+      Swal.fire({
+        icon: 'success',
+        title: 'Succès',
+        text: 'Compétence supprimée avec succès.',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    }
+    this.cancelDeleteSkill();
+  }
+
   openSkillDialog(): void {
     this.showSkillDialog = true;
     this.newSkillName = '';
     this.newSkillLevel = 'Débutant';
+    this.showSkillSuggestions = false;
   }
 
   closeSkillDialog(): void {
     this.showSkillDialog = false;
+    this.newSkillName = '';
+    this.newSkillLevel = 'Débutant';
+    this.showSkillSuggestions = false;
   }
 
   addSkill(): void {
-    if (!this.userId || !this.newSkillName || !this.newSkillLevel) {
+    if (!this.userId || !this.newSkillName.trim()) {
       Swal.fire({
         icon: 'error',
         title: 'Erreur',
         text: 'Veuillez remplir tous les champs.',
+      });
+      return;
+    }
+
+    // Vérifier si la compétence existe déjà
+    if (this.skills.some(skill => skill.name.toLowerCase() === this.newSkillName.toLowerCase())) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Attention',
+        text: 'Cette compétence existe déjà.',
       });
       return;
     }
@@ -170,6 +453,8 @@ export class GestionProfileComponent implements OnInit {
           icon: 'success',
           title: 'Succès',
           text: 'Compétence ajoutée avec succès.',
+          timer: 2000,
+          showConfirmButton: false
         });
       },
       error: (err) => {
@@ -196,6 +481,7 @@ export class GestionProfileComponent implements OnInit {
     }
   }
 
+  // Méthodes existantes (inchangées)
   triggerProfilePictureInput(): void {
     if (this.fileInput && this.fileInput.nativeElement) {
       this.fileInput.nativeElement.click();
@@ -470,10 +756,20 @@ export class GestionProfileComponent implements OnInit {
     } else {
       this.editingValue = this.user?.[fieldName]?.toString() || '';
     }
+    
+    // Reset validation state
+    this.hasValidationError = false;
+    this.validationErrorMessage = '';
   }
 
   saveEdit(): void {
     if (!this.user || !this.editingField || !this.userId) return;
+
+    // Vérifier la validation avant de sauvegarder
+    this.validateField();
+    if (this.hasValidationError) {
+      return;
+    }
 
     const updateData: UserUpdateBasicDTO = {};
 
@@ -508,12 +804,13 @@ export class GestionProfileComponent implements OnInit {
       next: (updatedUser) => {
         this.user = updatedUser;
         this.updateProfilePicture(updatedUser.image);
-        this.editingField = null;
-        this.editingValue = '';
+        this.cancelEdit();
         Swal.fire({
           icon: 'success',
           title: 'Succès',
           text: 'Modification enregistrée avec succès.',
+          timer: 2000,
+          showConfirmButton: false
         });
       },
       error: (err) => {
@@ -530,6 +827,8 @@ export class GestionProfileComponent implements OnInit {
   cancelEdit(): void {
     this.editingField = null;
     this.editingValue = '';
+    this.hasValidationError = false;
+    this.validationErrorMessage = '';
   }
 
   @HostListener('document:click', ['$event'])

@@ -135,7 +135,7 @@
 /* Modal de sélection */
 .modal-overlay {
   position: fixed;
-  top: 30px;
+  top: 60px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -147,6 +147,7 @@
 }
 
 .modal-content {
+  margin-top:10px;
   background: var(--card-background, #ffffff);
   border-radius: var(--radius-md, 15px);
   width: 90%;
@@ -167,6 +168,7 @@
 
 
 .modal-headerr {
+  margin-bottom:  -30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -276,6 +278,8 @@
 
 .modal-actions {
   .btn {
+    margin-top: -30px;
+
   height: 40px;
   width: 90px;
   border-radius: 25px;

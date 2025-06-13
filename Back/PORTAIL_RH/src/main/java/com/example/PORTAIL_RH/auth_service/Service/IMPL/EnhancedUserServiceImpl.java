@@ -12,6 +12,7 @@ import com.example.PORTAIL_RH.user_service.user_service.Repo.UsersRepository;
 import com.example.PORTAIL_RH.utils.EnhancedEmailService;
 import com.example.PORTAIL_RH.utils.PasswordGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +43,7 @@ public class EnhancedUserServiceImpl implements EnhancedUserService {
     }
 
     @Override
-    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String mail) {
+    public UserDetails loadUserByUsername(String mail) {
         Users user = findByMail(mail);
         if (user == null) {
             throw new org.springframework.security.core.userdetails.UsernameNotFoundException("User not found with mail: " + mail);

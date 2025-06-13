@@ -85,7 +85,7 @@ public class UserCongesServiceImpl implements UserCongesService {
                     dto.setType(congeType.getType());
                     dto.setValidite(congeType.getValidite());
                     dto.setSoldeInitial(congeType.getSoldeInitial());
-                    dto.setGlobal(congeType.isGlobal()); // Maps to isGlobal
+                    dto.setGlobal(congeType.isGlobal());
                     return dto;
                 })
                 .collect(Collectors.toList());

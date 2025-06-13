@@ -101,7 +101,6 @@ public class CongeTypeServiceImpl implements CongeTypeService {
         usersRepository.saveAll(users);
     }
 
-    // Get all CongeTypes
     public List<CongeTypeDTO> getAllCongeTypes() {
         return congeTypeRepository.findAll().stream()
                 .map(this::convertToDTO)
@@ -115,7 +114,6 @@ public class CongeTypeServiceImpl implements CongeTypeService {
                 .collect(Collectors.toList());
     }
 
-    // Delete by ID
     @Transactional
     public void deleteCongeType(Long id) {
         if (!congeTypeRepository.existsById(id)) {

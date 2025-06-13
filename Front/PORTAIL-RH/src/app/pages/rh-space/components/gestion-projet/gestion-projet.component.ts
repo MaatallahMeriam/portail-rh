@@ -104,7 +104,7 @@ export class GestionProjetComponent implements OnInit {
   }
 
   navigateToDetails(projetId: number): void {
-    this.router.navigate(['/details-prj-manager'], { queryParams: { id: projetId } });
+    this.router.navigate(['/details-projet'], { queryParams: { id: projetId } });
   }
 
   deleteProjet(projetId: number): void {

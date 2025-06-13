@@ -26,7 +26,6 @@ public class UserConges {
     @Column(nullable = false)
     private int soldeActuel;
 
-    // Optional: Track last update for synchronization with CongeType periodic updates
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_updated")
     private Date lastUpdated;

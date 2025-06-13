@@ -49,18 +49,14 @@ public class KpiServiceImpl implements KpiService {
 
     @Override
     public KpiDTO calculateAndSaveKpiForMonth(LocalDate date) {
-        // Définir le début et la fin du mois
         LocalDate startOfMonth = date.with(TemporalAdjusters.firstDayOfMonth());
         LocalDate endOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
 
-        // Compter le nombre de départs (active = false)
         int nbreDepart = usersRepository.findAllByActiveFalse().size();
 
-        // Compter l'effectif au début et à la fin du mois
-        // Note : Puisqu'on n'a pas de données historiques précises, on utilise le total actuel
-        // Si tu as une table pour suivre les changements d'état, il faudrait ajuster ici
-        int effectifDebut = usersRepository.findAll().size(); // Approximation
-        int effectifFin = usersRepository.findAll().size();   // Approximation
+
+        int effectifDebut = usersRepository.findAll().size();
+        int effectifFin = usersRepository.findAll().size();
 
         // Calculer l'effectif moyen
         int effectifMoyen = (effectifDebut + effectifFin) / 2;
@@ -68,7 +64,6 @@ public class KpiServiceImpl implements KpiService {
         // Calculer le taux de turnover
         double turnover = effectifMoyen > 0 ? ((double) nbreDepart / effectifMoyen) * 100 : 0.0;
 
-        // Créer et sauvegarder le KPI
         Kpi kpi = new Kpi();
         kpi.setNbreDepart(nbreDepart);
         kpi.setEffectifDebut(effectifDebut);
@@ -81,8 +76,7 @@ public class KpiServiceImpl implements KpiService {
         return mapToDTO(savedKpi);
     }
 
-    // Scheduler pour exécuter le calcul à la fin de chaque mois
-    @Scheduled(cron = "0 0 0 L * ?") // Exécute le dernier jour du mois à minuit
+    @Scheduled(cron = "0 0 0 L * ?")
     public void calculateKpiAutomatically() {
         LocalDate today = LocalDate.now();
         calculateAndSaveKpiForMonth(today);

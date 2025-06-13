@@ -20,11 +20,9 @@ public class EmployeCompetence {
     @JoinColumn(name = "employe_id")
     private Users employe;
 
-    // Ne pas remapper competenceNom ici, car il est déjà dans la clé composite
-    // La valeur sera accessible via id.competenceNom
 
     @Column(nullable = false)
-    private String niveau; // Débutant, Intermédiaire, Expert
+    private String niveau;
 
     @Embeddable
     @Getter
@@ -34,7 +32,7 @@ public class EmployeCompetence {
     public static class EmployeCompetenceId implements java.io.Serializable {
         private Long employeId;
 
-        @Column(name = "competence_nom", nullable = false) // La colonne est mappée ici
-        private String competenceNom; // Utiliser le nom de la compétence comme partie de la clé
+        @Column(name = "competence_nom", nullable = false)
+        private String competenceNom;
     }
 }

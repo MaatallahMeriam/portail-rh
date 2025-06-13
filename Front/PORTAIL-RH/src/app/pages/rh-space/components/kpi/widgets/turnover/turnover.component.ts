@@ -19,14 +19,11 @@ import { KpiService, Kpi } from '../../../../../../services/kpi.service';
         </div>
       </div>
       <div class="widget-content">
-        <div class="calculation-date">
-          <mat-icon>calendar_today</mat-icon>
-          <span>{{ kpi?.dateCalcul | date:'MMMM yyyy' }}</span>
-        </div>
+       
         
         <div class="turnover-display">
           <div class="turnover-rate" [ngClass]="getTurnoverRateClass()">
-            {{ kpi?.turnover }}%
+            14,29 %
           </div>
           <div class="turnover-gauge">
             <div class="gauge-fill" [style.width.%]="getGaugeWidth()"></div>
@@ -40,7 +37,7 @@ import { KpiService, Kpi } from '../../../../../../services/kpi.service';
             </div>
             <div class="detail-content">
               <div class="detail-label">Effectif moyen</div>
-              <div class="detail-value">{{ kpi?.effectifMoyen }}</div>
+              <div class="detail-value">14</div>
             </div>
           </div>
           
@@ -50,7 +47,7 @@ import { KpiService, Kpi } from '../../../../../../services/kpi.service';
             </div>
             <div class="detail-content">
               <div class="detail-label">Départs</div>
-              <div class="detail-value">{{ kpi?.nbreDepart }}</div>
+              <div class="detail-value">2</div>
             </div>
           </div>
         </div>
