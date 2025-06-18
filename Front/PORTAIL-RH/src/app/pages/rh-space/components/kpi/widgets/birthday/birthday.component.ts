@@ -41,7 +41,7 @@ import Swal from 'sweetalert2';
                 <div class="upcoming-info">
                   <div class="user-name">{{ user.fullName }}</div>
                   <div class="user-birthday">
-                    <span class="days-badge">{{ user.daysUntilBirthday }} jours</span>
+                    <span class="days-badge">Anniversaire dans {{ user.daysUntilBirthday }} jours</span>
                   </div>
                 </div>
               </div>

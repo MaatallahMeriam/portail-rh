@@ -9,4 +9,5 @@ import java.util.List;
 public interface EmployeCompetenceRepository extends JpaRepository<EmployeCompetence, EmployeCompetence.EmployeCompetenceId> {
     List<EmployeCompetence> findByEmployeId(Long employeId);
     List<EmployeCompetence> findByEmployeEquipeId(Long equipeId);
+    List<EmployeCompetence> findByIdCompetenceNomContainingIgnoreCase(String competenceNom);
 }

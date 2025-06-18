@@ -1,9 +1,12 @@
 package com.example.PORTAIL_RH.competence_service.controller;
 
 import com.example.PORTAIL_RH.competence_service.dto.*;
+import com.example.PORTAIL_RH.competence_service.entity.EmployeCompetence;
 import com.example.PORTAIL_RH.competence_service.entity.Projet;
 import com.example.PORTAIL_RH.competence_service.repo.ProjetRepository;
 import com.example.PORTAIL_RH.competence_service.service.CompetenceService;
+import com.example.PORTAIL_RH.user_service.user_service.DTO.UsersDTO;
+import com.example.PORTAIL_RH.user_service.user_service.Entity.Users;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.List;
@@ -89,7 +93,28 @@ public class CompetenceController {
     public ResponseEntity<List<MatchingResultDTO>> matchEmployesToProjet(@PathVariable Long projetId) {
         return ResponseEntity.ok(competenceService.matchEmployesToProjet(projetId));
     }
-
+    @GetMapping("/search/competence")
+    public ResponseEntity<List<UsersDTO>> searchUsersByCompetence(@RequestParam String nom) {
+        List<EmployeCompetence> competences = competenceService.getCompetencesByCompetenceNom(nom);
+        List<UsersDTO> users = competences.stream()
+                .map(ec -> {
+                    Users user = ec.getEmploye();
+                    UsersDTO userDTO = new UsersDTO();
+                    userDTO.setId(user.getId());
+                    userDTO.setNom(user.getNom());
+                    userDTO.setPrenom(user.getPrenom());
+                    userDTO.setPoste(user.getPoste());
+                    String imageUrl = user.getImage() != null
+                            ? ServletUriComponentsBuilder.fromCurrentContextPath()
+                            .path("/" + user.getImage().replace("\\", "/"))
+                            .toUriString()
+                            : null;
+                    userDTO.setImage(imageUrl);
+                    return userDTO;
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(users);
+    }
     @GetMapping("/employe/{employeId}")
     public ResponseEntity<List<EmployeCompetenceDTO>> getCompetencesByEmploye(@PathVariable Long employeId) {
         return ResponseEntity.ok(competenceService.getCompetencesByEmploye(employeId));

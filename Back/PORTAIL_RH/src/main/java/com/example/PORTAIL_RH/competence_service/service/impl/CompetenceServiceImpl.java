@@ -58,7 +58,10 @@ public class CompetenceServiceImpl implements CompetenceService {
         employeCompetenceRepository.save(employeCompetence);
         return employeCompetenceDTO;
     }
-
+    @Override
+    public List<EmployeCompetence> getCompetencesByCompetenceNom(String competenceNom) {
+        return employeCompetenceRepository.findByIdCompetenceNomContainingIgnoreCase(competenceNom);
+    }
     @Override
     public ProjetDTO createProjet(ProjetDTO projetDTO) {
         Projet projet = new Projet();

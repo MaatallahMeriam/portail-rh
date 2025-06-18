@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { UserDTO } from './users.service';
 // Ajuster les DTOs pour correspondre au backend
 export interface EmployeCompetenceDTO {
   employeId: number;
@@ -44,6 +44,9 @@ export class CompetenceService {
   // Ajouter une compétence à un employé
   addEmployeCompetence(employeCompetence: EmployeCompetenceDTO): Observable<EmployeCompetenceDTO> {
     return this.http.post<EmployeCompetenceDTO>(`${this.apiUrl}/employe`, employeCompetence);
+  }
+  searchUsersByCompetence(competenceNom: string): Observable<UserDTO[]> {
+    return this.http.get<UserDTO[]>(`${this.apiUrl}/search/competence?nom=${encodeURIComponent(competenceNom)}`);
   }
   getProjetsByEmploye(employeId: number): Observable<ProjetDTO[]> {
   return this.http.get<ProjetDTO[]>(`${this.apiUrl}/employe/${employeId}/projets`);

@@ -33,7 +33,10 @@
               </div>
               <div class="user-info">
                 <h4>{{ affectation.user?.nom }} {{ affectation.user?.prenom }}</h4>
-                <p class="user-id"> {{ affectation.user?.poste }}</p>
+                <p class="user-id">{{ affectation.user?.poste }}</p>
+                <p class="competences" *ngIf="affectation.formattedCompetences">
+                  <strong>Compétences:</strong> {{ affectation.formattedCompetences }}
+                </p>
               </div>
               <button class="remove-btn" (click)="desaffecterEmploye(affectation.employeId)">
                 <mat-icon>person_remove</mat-icon>
@@ -86,39 +89,42 @@
         <!-- Section de recherche utilisateurs -->
         <section class="section-container">
           <div class="section-header">
-            <h3>Tous les utilisateurs</h3>
+            <h3>Rechercher par compétence</h3>
             <div class="search-box">
               <mat-icon>search</mat-icon>
               <input 
                 type="text" 
                 [(ngModel)]="searchQuery" 
                 (input)="filterUsers()" 
-                placeholder="Rechercher un utilisateur..."
+                placeholder="Rechercher une compétence..."
               />
             </div>
           </div>
 
           <div class="users-grid">
-            <div class="user-card" *ngFor="let user of filteredUsers">
+            <div class="user-card" *ngFor="let filteredUser of filteredUsers">
               <div class="user-avatar">
-                <img [src]="user.image || 'assets/default-user.png'" alt="Photo de profil" />
+                <img [src]="filteredUser.user.image || 'assets/default-user.png'" alt="Photo de profil" />
               </div>
               <div class="user-info">
-                <h4>{{ user.nom }} {{ user.prenom }}</h4>
-                <p class="user-id"> {{ user.poste }}</p>
+                <h4>{{ filteredUser.user.nom }} {{ filteredUser.user.prenom }}</h4>
+                <p class="user-id">{{ filteredUser.user.poste }}</p>
+                <p class="competences" *ngIf="filteredUser.formattedCompetences">
+                  <strong>Compétences:</strong> {{ filteredUser.formattedCompetences }}
+                </p>
               </div>
               <button class="affect-btn" 
-                      [disabled]="isAffecte(user.id)"
-                      (click)="affecterEmploye(user.id)">
+                      [disabled]="isAffecte(filteredUser.user.id)"
+                      (click)="affecterEmploye(filteredUser.user.id)">
                 <mat-icon>person_add</mat-icon>
-                <span>{{ isAffecte(user.id) ? 'Déjà affecté' : 'Affecter' }}</span>
+                <span>{{ isAffecte(filteredUser.user.id) ? 'Déjà affecté' : 'Affecter' }}</span>
               </button>
             </div>
           </div>
 
           <div class="empty-state" *ngIf="filteredUsers.length === 0">
             <mat-icon>person_search</mat-icon>
-            <p>Aucun utilisateur trouvé</p>
+            <p>Aucun utilisateur trouvé avec cette compétence</p>
           </div>
         </section>
       </div>
